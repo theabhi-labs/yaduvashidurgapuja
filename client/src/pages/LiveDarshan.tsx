@@ -19,6 +19,7 @@ import { liveDarshanService } from '../services/liveDarshanService';
 import { LiveSessionInfo, LiveSessionJoinResponse } from '../types';
 import { DonateButton } from '../components/donation/DonateButton';
 import { DonationCard } from '../components/donation/DonationCard';
+import { ArtiChatPanel } from '../components/chat/ArtiChatPanel';
 import { useDonationSocket } from '../hooks/useDonationSocket';
 import { Button } from '../components/common/Button';
 import { useToast } from '../context/ToastContext';
@@ -100,7 +101,7 @@ export const LiveDarshan: React.FC = () => {
         setActiveSession(null);
         setJoinData(null);
       }
-    } catch (err: any) {
+    } catch {
       toast.error('लाइव सत्र सूची लोड करने में समस्या आई');
     } finally {
       setIsLoading(false);
@@ -126,7 +127,7 @@ export const LiveDarshan: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cream-200 text-dark-900 pb-16 pt-6">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header Title */}
         <div className="text-center mb-8">
           <motion.div
@@ -159,46 +160,57 @@ export const LiveDarshan: React.FC = () => {
             <RefreshCw className="w-8 h-8 text-maroon-700 animate-spin" />
           </div>
         ) : activeSession && joinData ? (
-          /* Active Live Stream Video */
-          <div className="max-w-4xl mx-auto space-y-6">
-            <LiveKitRoom
-              video={false}
-              audio={false}
-              token={joinData.token}
-              serverUrl={joinData.wsUrl}
-              connect={true}
-              data-lk-theme="default"
-              className="w-full"
-            >
-              <LiveStreamPlayer
-                hostName={activeSession.hostName}
-              />
-            </LiveKitRoom>
-
-            {/* Stream Info & Actions bar */}
-            <div className="bg-cream-50 p-4 sm:p-6 rounded-2xl border border-gold-500/30 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 text-center sm:text-left">
-                <div className="w-12 h-12 rounded-xl bg-maroon-800 text-gold-300 flex items-center justify-center font-bold text-xl shrink-0 shadow-inner">
-                  🕉️
-                </div>
-                <div>
-                  <h3 className="font-devanagari-heading font-bold text-lg text-maroon-950">
-                    यदुवंशी दुर्गा पूजा कपूरिपुर — महाआरती
-                  </h3>
-                  <p className="text-xs text-muted font-devanagari-body">
-                    प्रसारणकर्ता: {activeSession.hostName} • कपूरिपुर, बिहार
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <DonateButton
-                  liveSessionRoomName={activeSession.roomName}
-                  size="lg"
-                  className="w-full sm:w-auto"
+          /* Active Live Stream with Video & Ephemeral Live Chat */
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left 2 Cols: Live Video Player & Stream Info */}
+            <div className="lg:col-span-2 space-y-6">
+              <LiveKitRoom
+                video={false}
+                audio={false}
+                token={joinData.token}
+                serverUrl={joinData.wsUrl}
+                connect={true}
+                data-lk-theme="default"
+                className="w-full"
+              >
+                <LiveStreamPlayer
+                  hostName={activeSession.hostName}
                 />
+              </LiveKitRoom>
+
+              {/* Stream Info & Actions bar */}
+              <div className="bg-cream-50 p-4 sm:p-6 rounded-2xl border border-gold-500/30 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3 text-center sm:text-left">
+                  <div className="w-12 h-12 rounded-xl bg-maroon-800 text-gold-300 flex items-center justify-center font-bold text-xl shrink-0 shadow-inner">
+                    🕉️
+                  </div>
+                  <div>
+                    <h3 className="font-devanagari-heading font-bold text-lg text-maroon-950">
+                      यदुवंशी दुर्गा पूजा कपूरिपुर — महाआरती
+                    </h3>
+                    <p className="text-xs text-muted font-devanagari-body">
+                      प्रसारणकर्ता: {activeSession.hostName} • कपूरिपुर, बिहार
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <DonateButton
+                    liveSessionRoomName={activeSession.roomName}
+                    size="lg"
+                    className="w-full sm:w-auto"
+                  />
+                </div>
               </div>
+            </div>
+
+            {/* Right 1 Col: Ephemeral Live Chat Panel */}
+            <div className="lg:col-span-1">
+              <ArtiChatPanel
+                roomName={activeSession.roomName}
+                defaultExpanded={true}
+              />
             </div>
           </div>
         ) : (

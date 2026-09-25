@@ -6,6 +6,7 @@ import {
   endLiveSession,
   listLiveSessions,
   joinLiveSession,
+  getRoomComments,
 } from '../controllers/liveDarshanController';
 
 const router = Router();
@@ -17,5 +18,6 @@ router.post('/:roomName/end', authenticate, requireAdmin, endLiveSession);
 // Public — see what's live right now, join as viewer (guests allowed)
 router.get('/', listLiveSessions);
 router.get('/:roomName/join', optionalAuthenticate, joinLiveSession);
+router.get('/:roomName/comments', getRoomComments);
 
 export default router;

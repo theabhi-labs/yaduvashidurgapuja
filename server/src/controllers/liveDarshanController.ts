@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import { roomService, createAccessToken, LIVEKIT_WS_URL } from '../config/livekit';
+import { getCommentsFromRedis } from '../config/redis';
 import { LiveSession } from '../models/LiveSession';
 import { ApiError, sendResponse } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
@@ -155,6 +156,21 @@ export const joinLiveSession = async (req: Request, res: Response, next: NextFun
       hostName: session.hostName,
       startedAt: session.startedAt,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ---- PUBLIC: Get recent ephemeral comments for a room (from Redis only) ----
+export const getRoomComments = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { roomName } = req.params;
+    if (!roomName) {
+      throw new ApiError(400, 'रूम का नाम आवश्यक है');
+    }
+
+    const comments = await getCommentsFromRedis(roomName);
+    return sendResponse(res, 200, 'लाइव आरती टिप्पणियाँ प्राप्त हुईं', comments);
   } catch (err) {
     next(err);
   }

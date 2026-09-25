@@ -1,5 +1,5 @@
 import { api } from './api';
-import { ApiResponse, LiveSessionInfo, LiveSessionJoinResponse, LiveSessionStartResponse } from '../types';
+import { ApiResponse, LiveSessionInfo, LiveSessionJoinResponse, LiveSessionStartResponse, ChatComment } from '../types';
 
 export const liveDarshanService = {
   // Public: List all active live sessions
@@ -11,6 +11,12 @@ export const liveDarshanService = {
   // Public/Guest: Join active live session and get viewer token
   async joinSession(roomName: string) {
     const res = await api.get<ApiResponse<LiveSessionJoinResponse>>(`/live-darshan/${roomName}/join`);
+    return res.data;
+  },
+
+  // Public: Get ephemeral recent comments from Redis
+  async getRoomComments(roomName: string) {
+    const res = await api.get<ApiResponse<ChatComment[]>>(`/live-darshan/${roomName}/comments`);
     return res.data;
   },
 
@@ -26,3 +32,4 @@ export const liveDarshanService = {
     return res.data;
   },
 };
+

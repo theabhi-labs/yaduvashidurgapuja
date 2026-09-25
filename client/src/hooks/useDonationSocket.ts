@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useEffect, useState } from 'react';
+import { getSocket } from '../services/socket';
 
 export interface DonationEvent {
   donorName: string;
@@ -12,36 +12,14 @@ export interface DonationEvent {
 export const useDonationSocket = (roomName?: string) => {
   const [latestDonation, setLatestDonation] = useState<DonationEvent | null>(null);
   const [donationQueue, setDonationQueue] = useState<DonationEvent[]>([]);
-  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Determine socket server URL
-    const apiUrl = import.meta.env.VITE_API_URL as string | undefined;
-    let socketUrl = window.location.origin;
-    if (apiUrl && apiUrl.startsWith('http')) {
-      try {
-        const parsed = new URL(apiUrl);
-        socketUrl = parsed.origin;
-      } catch {
-        socketUrl = window.location.origin;
-      }
-    } else if (import.meta.env.DEV) {
-      socketUrl = 'http://localhost:5000';
+    const socket = getSocket();
+
+    if (roomName) {
+      socket.emit('join-arti-room', { roomName });
+      socket.emit('join_room', roomName);
     }
-
-    const socket = io(socketUrl, {
-      transports: ['websocket', 'polling'],
-      withCredentials: true,
-      autoConnect: true,
-    });
-
-    socketRef.current = socket;
-
-    socket.on('connect', () => {
-      if (roomName) {
-        socket.emit('join_room', roomName);
-      }
-    });
 
     const handleDonation = (donation: DonationEvent) => {
       setLatestDonation(donation);
@@ -52,12 +30,8 @@ export const useDonationSocket = (roomName?: string) => {
     socket.on('donation_global', handleDonation);
 
     return () => {
-      if (roomName) {
-        socket.emit('leave_room', roomName);
-      }
       socket.off('donation', handleDonation);
       socket.off('donation_global', handleDonation);
-      socket.disconnect();
     };
   }, [roomName]);
 

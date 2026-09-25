@@ -29,4 +29,8 @@ export const ENV = {
   // Razorpay Payment Gateway
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
+
+  // Redis for Ephemeral Live Chat
+  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
 };
+
