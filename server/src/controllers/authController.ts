@@ -25,9 +25,9 @@ export class AuthController {
       const salt = await bcrypt.genSalt(12);
       const passwordHash = await bcrypt.hash(password, salt);
 
-      // Check if this is the first user registered in the database, make them ADMIN
-      const totalUsers = await User.countDocuments();
-      const role = totalUsers === 0 ? 'ADMIN' : 'USER';
+      // All publicly registered accounts are strictly 'USER' (भक्त).
+      // Only SuperAdmin can promote a user to 'ADMIN' from the admin panel.
+      const role = 'USER';
 
       // Create email verification token
       const verificationToken = crypto.randomBytes(32).toString('hex');
