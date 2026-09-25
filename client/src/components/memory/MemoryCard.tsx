@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Memory } from '../../types';
-import { formatDate, getImageUrl } from '../../utils/helpers';
+import { formatDate, getImageUrl, formatImpressions } from '../../utils/helpers';
 import { ShareButton } from './ShareButton';
-import { Calendar, User as UserIcon } from 'lucide-react';
+import { Calendar, User as UserIcon, Eye } from 'lucide-react';
 
 interface MemoryCardProps {
   memory: Memory;
@@ -44,11 +44,19 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
                 <UserIcon className="w-4 h-4 text-maroon-700" />
               )}
             </div>
-            <div className="min-w-0">
-              <p className="text-xs sm:text-sm font-devanagari-body font-semibold text-dark-900 truncate">
-                {memory.userId?.name || 'श्रद्धालु भक्त'}
-              </p>
-              <div className="flex items-center gap-1 text-[11px] text-muted font-devanagari-body">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-xs sm:text-sm font-devanagari-body font-semibold text-dark-900 truncate">
+                  {memory.userId?.name || 'श्रद्धालु भक्त'}
+                </p>
+                {/* Impressions Counter (No Likes, No Comments) */}
+                <span className="inline-flex items-center gap-1 text-[11px] font-devanagari-body text-maroon-800 bg-maroon-900/5 px-2 py-0.5 rounded-full border border-maroon-800/15 font-medium shrink-0">
+                  <Eye className="w-3 h-3 text-maroon-700" />
+                  <span>{formatImpressions(memory.impressions)} दर्शन</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1 text-[11px] text-muted font-devanagari-body mt-0.5">
                 <Calendar className="w-3 h-3 text-gold-600 shrink-0" />
                 <span>{formatDate(memory.createdAt)}</span>
               </div>

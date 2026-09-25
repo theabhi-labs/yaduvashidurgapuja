@@ -4,7 +4,7 @@ import { memoryService } from '../services/memoryService';
 import { Memory } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
-import { formatDate, getImageUrl } from '../utils/helpers';
+import { formatDate, getImageUrl, formatImpressions } from '../utils/helpers';
 import { ShareButton } from '../components/memory/ShareButton';
 import { ReportModal } from '../components/memory/ReportModal';
 import { Button } from '../components/common/Button';
@@ -19,6 +19,7 @@ import {
   Loader2,
   ShieldCheck,
   AlertTriangle,
+  Eye,
 } from 'lucide-react';
 
 export const MemoryDetail: React.FC = () => {
@@ -203,9 +204,16 @@ export const MemoryDetail: React.FC = () => {
                 <h2 className="text-base sm:text-lg font-devanagari-body font-bold text-dark-950">
                   {memory.userId?.name || 'श्रद्धालु भक्त'}
                 </h2>
-                <div className="flex items-center gap-2 text-xs font-devanagari-body text-muted">
-                  <Calendar className="w-3.5 h-3.5 text-gold-600 shrink-0" />
-                  <span>साझा की गई तिथि: {formatDate(memory.createdAt)}</span>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-devanagari-body text-muted mt-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-gold-600 shrink-0" />
+                    <span>साझा की गई तिथि: {formatDate(memory.createdAt)}</span>
+                  </div>
+                  <span className="text-cream-400">•</span>
+                  <div className="flex items-center gap-1 text-maroon-900 font-semibold bg-maroon-900/10 px-2.5 py-0.5 rounded-full border border-maroon-900/20">
+                    <Eye className="w-3.5 h-3.5 text-maroon-700" />
+                    <span>{formatImpressions(memory.impressions)} भक्तों द्वारा दर्शन</span>
+                  </div>
                 </div>
               </div>
             </div>

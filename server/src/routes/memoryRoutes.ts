@@ -17,6 +17,10 @@ router.get('/my', authenticate, MemoryController.getMyMemories);
 // Single canonical memory
 router.get('/:id', optionalAuthenticate, MemoryController.getMemoryById);
 
+// Record memory impression
+router.post('/:id/impression', MemoryController.recordImpression);
+
+
 // Upload new memory
 router.post(
   '/',

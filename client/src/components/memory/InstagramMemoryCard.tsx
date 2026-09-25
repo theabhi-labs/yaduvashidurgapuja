@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Memory } from '../../types';
-import { formatDate, getImageUrl, generateShareText } from '../../utils/helpers';
+import { formatDate, getImageUrl, generateShareText, formatImpressions } from '../../utils/helpers';
 import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
 import { useAuth } from '../../context/AuthContext';
@@ -14,7 +14,8 @@ import {
   Share2, 
   Copy, 
   Sparkles,
-  Calendar
+  Calendar,
+  Eye,
 } from 'lucide-react';
 
 interface InstagramMemoryCardProps {
@@ -242,8 +243,14 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
           </button>
         </div>
 
+        {/* Impression (Views/Darshan) Counter — No likes, No comments */}
+        <div className="mt-2.5 flex items-center gap-1.5 text-xs font-devanagari-body font-semibold text-maroon-900">
+          <Eye className="w-3.5 h-3.5 text-maroon-700" />
+          <span>{formatImpressions(memory.impressions)} भक्तों द्वारा दर्शन</span>
+        </div>
+
         {/* 4. Caption & Details */}
-        <div className="mt-3 font-devanagari-body text-sm text-dark-900 leading-relaxed">
+        <div className="mt-2 font-devanagari-body text-sm text-dark-900 leading-relaxed">
           <span className="font-bold text-maroon-900 mr-2">{uploaderName}</span>
           <span className={!isCaptionExpanded && memory.caption?.length > 120 ? 'line-clamp-2 inline' : 'inline'}>
             {memory.caption || 'माँ जगदम्बा की पावन स्मृति'}

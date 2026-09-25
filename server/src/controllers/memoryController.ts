@@ -72,7 +72,12 @@ export class MemoryController {
     try {
       const { id } = req.params;
 
-      const memory = await Memory.findById(id).populate('userId', 'name avatar');
+      const memory = await Memory.findByIdAndUpdate(
+        id,
+        { $inc: { impressions: 1 } },
+        { new: true }
+      ).populate('userId', 'name avatar');
+
       if (!memory || memory.status === 'deleted') {
         throw new ApiError(404, 'स्मृति नहीं मिली या हटा दी गई है');
       }
@@ -88,6 +93,29 @@ export class MemoryController {
       }
 
       return sendResponse(res, 200, 'स्मृति विवरण', memory);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Record memory card impression (from feed or list)
+   * POST /api/memories/:id/impression
+   */
+  public static async recordImpression(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const memory = await Memory.findByIdAndUpdate(
+        id,
+        { $inc: { impressions: 1 } },
+        { new: true, select: '_id impressions' }
+      );
+
+      if (!memory) {
+        throw new ApiError(404, 'स्मृति नहीं मिली');
+      }
+
+      return sendResponse(res, 200, 'अवलोकन दर्ज किया गया', { impressions: memory.impressions });
     } catch (error) {
       next(error);
     }

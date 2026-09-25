@@ -29,3 +29,12 @@ export const generateShareText = (memoryId: string, caption?: string, year?: num
   const snippet = caption ? `"${caption.slice(0, 100)}${caption.length > 100 ? '...' : ''}"\n\n` : '';
   return `यादों में बसी दुर्गा पूजा ❤️\nकपूरिपुर की पावन दुर्गा पूजा स्मृति${yearText}:\n\n${snippet}देखिए इस खूबसूरत याद को:\n${url}`;
 };
+
+export const formatImpressions = (count?: number): string => {
+  const n = count || 0;
+  if (n < 1000) return n.toString();
+  if (n < 100000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+  if (n < 1000000) return `${Math.floor(n / 1000)}k`;
+  return `${(n / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+};
+

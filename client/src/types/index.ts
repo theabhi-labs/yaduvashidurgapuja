@@ -29,6 +29,7 @@ export interface Memory {
   caption: string;
   year: number;
   status: MemoryStatus;
+  impressions?: number;
   createdAt: string;
   updatedAt: string;
 }

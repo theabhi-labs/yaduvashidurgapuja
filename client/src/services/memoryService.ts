@@ -35,4 +35,14 @@ export const memoryService = {
     const res = await api.delete<ApiResponse<null>>(`/memories/${id}`);
     return res.data;
   },
+
+  async recordImpression(id: string) {
+    try {
+      const res = await api.post<ApiResponse<{ impressions: number }>>(`/memories/${id}/impression`);
+      return res.data;
+    } catch {
+      return null;
+    }
+  },
 };
+

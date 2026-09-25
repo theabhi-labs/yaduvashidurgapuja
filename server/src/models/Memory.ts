@@ -9,6 +9,7 @@ export interface IMemory extends Document {
   caption: string;
   year: number;
   status: MemoryStatus;
+  impressions: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +47,12 @@ const MemorySchema = new Schema<IMemory>(
       type: String,
       enum: ['published', 'hidden', 'deleted'],
       default: 'published',
+      index: true,
+    },
+    impressions: {
+      type: Number,
+      default: 0,
+      min: 0,
       index: true,
     },
   },
