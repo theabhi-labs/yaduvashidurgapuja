@@ -32,7 +32,7 @@ export const PrivacyPolicy: React.FC = () => {
       {/* 1. Introduction */}
       <LegalSection id="intro" number="1" title="Introduction">
         <p>
-          Welcome to the official digital portal (<code>yaduvashidurgapujakapooripur.online</code>) managed by {LEGAL_ENTITY_NAME} ("we", "our committee", or "portal").
+          Welcome to the official digital portal (<code>kapooripur.in</code>) managed by {LEGAL_ENTITY_NAME} ("we", "our committee", or "portal").
         </p>
         <p>
           Our platform is a sacred digital memory archive. We fully respect the privacy and dignity of our devotees and visitors, adhering to transparent data protection practices.

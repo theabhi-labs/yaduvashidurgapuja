@@ -1,37 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/</loc>
+    <loc>https://kapooripur.in/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/memories</loc>
+    <loc>https://kapooripur.in/memories</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/committee</loc>
+    <loc>https://kapooripur.in/live-darshan</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://kapooripur.in/committee</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/about</loc>
+    <loc>https://kapooripur.in/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/contact</loc>
+    <loc>https://kapooripur.in/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/privacy</loc>
+    <loc>https://kapooripur.in/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://yaduvashidurgapujakapooripur.online/terms</loc>
+    <loc>https://kapooripur.in/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>

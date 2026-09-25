@@ -1,7 +1,7 @@
 import { ENV } from '../config/env';
 
 export const getWelcomeEmailHtml = (userName: string): string => {
-  const websiteUrl = ENV.CLIENT_URL || 'https://yaduvashidurgapujakapooripur.online';
+  const websiteUrl = ENV.CLIENT_URL || 'https://kapooripur.in';
 
   return `
 <!DOCTYPE html>

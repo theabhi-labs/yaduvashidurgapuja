@@ -31,7 +31,7 @@ export const TermsConditions: React.FC = () => {
       {/* 1. Acceptance */}
       <LegalSection id="acceptance" number="1" title="Acceptance of Terms">
         <p>
-          By accessing or using this website (<code>yaduvashidurgapujakapooripur.online</code>) and contributing photographs or memories, you signify your agreement to these Terms & Conditions and our Privacy Policy.
+          By accessing or using this website (<code>kapooripur.in</code>) and contributing photographs or memories, you signify your agreement to these Terms & Conditions and our Privacy Policy.
         </p>
         <p>
           If you do not agree with any part of these terms, please discontinue your use of the platform.

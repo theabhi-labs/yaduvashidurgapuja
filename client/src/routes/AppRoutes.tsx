@@ -9,16 +9,32 @@ import { SuperAdminRoute } from './SuperAdminRoute';
 // Core Landing Page (static for instantaneous First Contentful Paint)
 import { Home } from '../pages/Home';
 
+import { motion } from 'framer-motion';
+
 // Devotional Suspense Fallback Loader
 const PageLoadingFallback: React.FC = () => (
-  <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center space-y-3">
-    <div className="w-12 h-12 rounded-2xl bg-maroon-800 text-gold-300 flex items-center justify-center font-bold text-xl shadow-lg border border-gold-500/40 animate-pulse">
-      🕉️
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.2 }}
+    className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center space-y-4 select-none"
+  >
+    <div className="relative">
+      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-maroon-800 to-maroon-950 text-gold-300 flex items-center justify-center font-bold text-2xl shadow-xl border-2 border-gold-500/40 animate-pulse">
+        🕉️
+      </div>
+      <div className="absolute -inset-1 rounded-2xl bg-amber-400/20 blur-sm -z-10 animate-ping" />
     </div>
-    <p className="text-xs sm:text-sm font-heading font-bold text-maroon-900 animate-pulse">
-      Loading page... Please wait
-    </p>
-  </div>
+    <div className="space-y-1">
+      <p className="text-sm font-heading font-bold text-maroon-900 tracking-wide">
+        ॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर ॥
+      </p>
+      <p className="text-xs font-body text-maroon-700/80 animate-pulse">
+        पृष्ठ लोड हो रहा है, कृपया प्रतीक्षा करें...
+      </p>
+    </div>
+  </motion.div>
 );
 
 // Lazy-loaded Public Pages (Separates heavy LiveKit and external dependencies from initial bundle)
@@ -101,6 +117,12 @@ const AdminCommittee = React.lazy(() =>
 const AdminAds = React.lazy(() =>
   import('../pages/admin/AdminAds').then((m) => ({ default: m.AdminAds }))
 );
+const AdminHeroBanners = React.lazy(() =>
+  import('../pages/admin/AdminHeroBanners').then((m) => ({ default: m.AdminHeroBanners }))
+);
+const AdminPujaSchedules = React.lazy(() =>
+  import('../pages/admin/AdminPujaSchedules').then((m) => ({ default: m.AdminPujaSchedules }))
+);
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -172,6 +194,8 @@ export const AppRoutes: React.FC = () => {
             }
           />
           <Route path="live-darshan" element={<AdminLiveBroadcast />} />
+          <Route path="aarti-timings" element={<AdminPujaSchedules />} />
+          <Route path="banners" element={<AdminHeroBanners />} />
           <Route path="memories" element={<AdminMemories />} />
           <Route
             path="ads"

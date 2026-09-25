@@ -255,3 +255,29 @@ export interface Ad {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface HeroBanner {
+  _id: string;
+  title: string;
+  badge?: string;
+  subtext?: string;
+  imageUrl: string;
+  isActive: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PujaSchedule {
+  _id: string;
+  title: string;
+  time: string;
+  description?: string;
+  isSpecial: boolean;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+

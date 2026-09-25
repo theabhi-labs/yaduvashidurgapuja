@@ -18,12 +18,12 @@ export const ENV = {
   COOKIE_EXPIRES_DAYS: parseInt(process.env.COOKIE_EXPIRES_DAYS || '7', 10),
   MAX_FILE_SIZE_MB: parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10),
   UPLOAD_DIR: process.env.UPLOAD_DIR || 'uploads',
-  CONTACT_EMAIL: process.env.CONTACT_EMAIL || 'contact@yaduvashidurgapujakapooripur.online',
+  CONTACT_EMAIL: process.env.CONTACT_EMAIL || 'contact@kapooripur.in',
   isProduction: process.env.NODE_ENV === 'production',
   
   // Brevo Transactional Email
   BREVO_API_KEY: process.env.BREVO_API_KEY || '',
-  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL || 'contact@yaduvashidurgapujakapooripur.online',
+  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL || 'contact@kapooripur.in',
   BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME || 'Yaduvashi Durga Puja Kapooripur',
 
   // LiveKit WebRTC Video Streaming

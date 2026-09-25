@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../common/Button';
-import { usePWAInstall } from '../../hooks/usePWAInstall';
 import {
   Menu,
   X,
@@ -12,18 +11,15 @@ import {
   ShieldAlert,
   Bookmark,
   ChevronDown,
-  Download,
   Info,
   Phone,
   FileText,
   Shield,
-  Smartphone
 } from 'lucide-react';
 import { getImageUrl } from '../../utils/helpers';
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, isAdmin, isSuperAdmin, logout } = useAuth();
-  const { isInstalled, installApp } = usePWAInstall();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -104,18 +100,6 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Right Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Install App Button (Desktop/PWA) */}
-            {!isInstalled && (
-              <button
-                onClick={installApp}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold border border-amber-300 transition-all shadow-sm"
-                title="Install App"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Install App</span>
-              </button>
-            )}
-
             {/* Share CTA button */}
             <Link to="/share-memory">
               <Button
@@ -220,20 +204,8 @@ export const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Right Controls: Install Button + Clean Menu */}
-          <div className="flex md:hidden items-center gap-1.5">
-            {/* 1-Tap Mobile Install App Button */}
-            {!isInstalled && (
-              <button
-                onClick={installApp}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-dark-950 text-[11px] font-bold shadow-sm active:scale-95 transition-transform"
-                title="Install App"
-              >
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>Install</span>
-              </button>
-            )}
-
+          {/* Mobile Right Controls: Clean Menu */}
+          <div className="flex md:hidden items-center">
             {/* Mobile Hamburger Drawer Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -252,26 +224,6 @@ export const Navbar: React.FC = () => {
         {/* Mobile Secondary Menu Drawer */}
         {isMobileMenuOpen && (
           <div className="md:hidden pt-3 pb-5 border-t border-cream-300/80 mt-2 space-y-3 animate-fade-in">
-            {/* Install App Banner inside drawer */}
-            {!isInstalled && (
-              <div 
-                onClick={installApp}
-                className="p-3 rounded-2xl bg-gradient-to-r from-amber-100 to-amber-200 border border-amber-300/80 flex items-center justify-between cursor-pointer"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-maroon-800 text-amber-400 flex items-center justify-center font-bold">
-                    Y
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-dark-950">Install Durga Puja App</h4>
-                    <p className="text-[10px] text-dark-700">Add to home screen for 1-tap access</p>
-                  </div>
-                </div>
-                <span className="text-[10px] bg-maroon-800 text-cream-50 font-bold px-2.5 py-1 rounded-full">
-                  Install
-                </span>
-              </div>
-            )}
 
             {/* Secondary Informational Links */}
             <div className="bg-cream-100/90 rounded-2xl border border-cream-300 p-2 divide-y divide-cream-200/80">

@@ -9,6 +9,8 @@ import analyticsRoutes from './analyticsRoutes';
 import liveDarshanRoutes from './liveDarshanRoutes';
 import donationRoutes from './donationRoutes';
 import adRoutes from './adRoutes';
+import heroBannerRoutes from './heroBannerRoutes';
+import pujaScheduleRoutes from './pujaScheduleRoutes';
 
 const router = Router();
 
@@ -32,6 +34,8 @@ router.use('/analytics', analyticsRoutes);
 router.use('/live-darshan', liveDarshanRoutes);
 router.use('/donations', donationRoutes);
 router.use('/ads', adRoutes);
+router.use('/hero-banners', heroBannerRoutes);
+router.use('/puja-schedules', pujaScheduleRoutes);
 
 export default router;
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 import {
   LayoutDashboard,
@@ -15,6 +16,8 @@ import {
   Crown,
   Radio,
   Megaphone,
+  Sparkles,
+  Bell,
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -41,6 +44,8 @@ export const AdminLayout: React.FC = () => {
     ? [
         { name: 'Overview', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
+        { name: 'Aarti Timings', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
+        { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'In-Feed Ads', path: '/admin/ads', icon: <Megaphone className="w-5 h-5" /> },
         { name: 'Users & Roles', path: '/admin/users', icon: <Users className="w-5 h-5" /> },
@@ -49,6 +54,8 @@ export const AdminLayout: React.FC = () => {
       ]
     : [
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
+        { name: 'Aarti Timings', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
+        { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
         { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
@@ -182,7 +189,18 @@ export const AdminLayout: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl">
-        <Outlet />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full"
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

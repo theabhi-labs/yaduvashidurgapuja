@@ -5,4 +5,4 @@ Disallow: /profile
 Disallow: /share-memory
 Disallow: /my-memories
 
-Sitemap: https://yaduvashidurgapujakapooripur.online/sitemap.xml
+Sitemap: https://kapooripur.in/sitemap.xml

@@ -34,6 +34,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5174',
+  'https://kapooripur.in',
+  'https://www.kapooripur.in',
   'https://yaduvashidurgapujakapooripur.online',
   'https://yaduvashidurgapuja2-0.vercel.app',
   'https://yaduvashidurgapuja2-o.vercel.app',
@@ -51,6 +53,7 @@ app.use(
       const isAllowed =
         allowedOrigins.includes(origin) ||
         /^https:\/\/yaduvashidurgapuja2-[0-9a-z]+\.vercel\.app$/.test(origin) ||
+        origin.endsWith('.kapooripur.in') ||
         origin.endsWith('.yaduvashidurgapujakapooripur.online');
 
       if (isAllowed) {

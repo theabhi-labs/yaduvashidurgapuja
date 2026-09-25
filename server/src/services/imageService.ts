@@ -26,6 +26,7 @@ export class ImageService {
       path.join(this.baseUploadDir, 'committee'),
       path.join(this.baseUploadDir, 'avatars'),
       path.join(this.baseUploadDir, 'ads'),
+      path.join(this.baseUploadDir, 'banners'),
     ];
 
     dirs.forEach((dir) => {
@@ -206,6 +207,46 @@ export class ImageService {
       logger.error(`Error processing ${folder} portrait for R2:`, error);
       if (error instanceof ApiError) throw error;
       throw new ApiError(400, 'चित्र को संसाधित करने में त्रुटि हुई');
+    }
+  }
+
+  /**
+   * Process a widescreen Hero Banner image (1920x1080 / 16:9 WebP) and upload to R2
+   */
+  public static async processHeroBannerImage(buffer: Buffer): Promise<string> {
+    try {
+      const image = sharp(buffer);
+      const metadata = await image.metadata();
+
+      if (!metadata.format || !['jpeg', 'jpg', 'png', 'webp'].includes(metadata.format)) {
+        throw new ApiError(400, 'अमान्य चित्र प्रारूप (JPEG, PNG, WebP समर्थित हैं)');
+      }
+
+      const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const key = `banners/banner-${fileId}.webp`;
+
+      // 16:9 optimized widescreen WebP (max width 1920, height 1080, fit: 'inside', withoutEnlargement: true, quality: 88)
+      const bannerBuffer = await sharp(buffer)
+        .rotate()
+        .resize({ width: 1920, height: 1080, fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 88, effort: 4 })
+        .toBuffer();
+
+      if (isR2Configured) {
+        return await this.uploadBufferToR2(bannerBuffer, key, 'image/webp');
+      }
+
+      // Fallback to local disk
+      this.ensureUploadDirs();
+      const filename = `banner-${fileId}.webp`;
+      const targetPath = path.join(this.baseUploadDir, 'banners', filename);
+      await fs.promises.writeFile(targetPath, bannerBuffer);
+
+      return `/uploads/banners/${filename}`;
+    } catch (error: any) {
+      logger.error('Error processing Hero Banner image for R2:', error);
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(400, 'बैनर चित्र को संसाधित करने में त्रुटि हुई');
     }
   }
 
