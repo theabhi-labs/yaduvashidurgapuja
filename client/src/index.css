@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-cream: #F8F3EA;
+    --primary-maroon: #7A1820;
+    --dark-text: #241414;
+    --gold-accent: #B88A3B;
+  }
+
+  body {
+    background-color: #F8F3EA;
+    color: #241414;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-devanagari-heading {
+    font-family: 'Noto Serif Devanagari', 'Georgia', serif;
+  }
+
+  .font-devanagari-body {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+  }
+}
+
+/* Custom aesthetic scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8F3EA;
+}
+::-webkit-scrollbar-thumb {
+  background: #B88A3B;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7A1820;
+}
+
+/* Decorative auspicious background pattern */
+.bg-mandala-pattern {
+  background-color: #F8F3EA;
+  background-image: radial-gradient(#B88A3B 0.75px, transparent 0.75px), radial-gradient(#B88A3B 0.75px, #F8F3EA 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  background-opacity: 0.05;
+}
+
+.bg-maroon-pattern {
+  background-color: #7A1820;
+  background-image: radial-gradient(rgba(184, 138, 59, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
