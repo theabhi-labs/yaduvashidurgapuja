@@ -20,10 +20,74 @@ app.set('trust proxy', 1);
 // Ensure upload directories exist
 ImageService.ensureUploadDirs();
 
-// Security Middleware — Helmet
+// Security Middleware — Helmet with Full Content Security Policy (CSP)
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allows images to be served across ports in dev
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // Allows Google OAuth & Razorpay popups
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          'https://pagead2.googlesyndication.com',
+          'https://googleads.g.doubleclick.net',
+          'https://www.googletagservices.com',
+          'https://adservice.google.com',
+          'https://checkout.razorpay.com',
+          'https://*.googleapis.com',
+        ],
+        frameSrc: [
+          "'self'",
+          'https://googleads.g.doubleclick.net',
+          'https://tpc.googlesyndication.com',
+          'https://pagead2.googlesyndication.com',
+          'https://api.razorpay.com',
+          'https://checkout.razorpay.com',
+          'https://*.google.com',
+        ],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:',
+          'https:',
+          'https://pagead2.googlesyndication.com',
+          'https://*.googlesyndication.com',
+          'https://*.google.com',
+          'https://*.google-analytics.com',
+          'https://*.g.doubleclick.net',
+        ],
+        connectSrc: [
+          "'self'",
+          'https://pagead2.googlesyndication.com',
+          'https://*.google.com',
+          'https://*.googlesyndication.com',
+          'https://*.g.doubleclick.net',
+          'https://googleads.g.doubleclick.net',
+          'https://api.razorpay.com',
+          'https://*.livekit.cloud',
+          'wss://*.livekit.cloud',
+          'ws:',
+          'wss:',
+          ENV.CLIENT_URL,
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com',
+        ],
+        fontSrc: [
+          "'self'",
+          'https://fonts.gstatic.com',
+          'data:',
+        ],
+        mediaSrc: ["'self'", 'https:', 'blob:', 'data:'],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: null, // Let reverse proxy (Cloudflare/Nginx) handle SSL upgrades
+      },
+    },
   })
 );
 

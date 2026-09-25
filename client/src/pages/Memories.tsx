@@ -7,6 +7,7 @@ import { YearStoriesBar } from '../components/memory/YearStoriesBar';
 import { InstagramMemoryCard } from '../components/memory/InstagramMemoryCard';
 import { InstagramPostModal } from '../components/memory/InstagramPostModal';
 import { AdCard } from '../components/memory/AdCard';
+import { AdSenseInFeedUnit } from '../components/ads/AdSenseInFeedUnit';
 import { adService } from '../services/adService';
 import { Ad } from '../types';
 import { getImageUrl } from '../utils/helpers';
@@ -212,9 +213,13 @@ export const Memories: React.FC = () => {
           {viewMode === 'feed' && (
             <div className="space-y-6">
               {memories.map((memory, index) => {
-                const shouldShowAd = ads.length > 0 && (index + 1) % AD_FREQUENCY === 0;
-                const adIndex = Math.floor(index / AD_FREQUENCY) % ads.length;
-                const adToRender = ads[adIndex];
+                const isAdSlot = (index + 1) % AD_FREQUENCY === 0;
+                const adInterval = Math.floor((index + 1) / AD_FREQUENCY);
+                const hasCustomAds = ads.length > 0;
+                const showCustomAd = isAdSlot && hasCustomAds && adInterval % 2 === 1;
+                const showAdSense = isAdSlot && (!hasCustomAds || adInterval % 2 === 0);
+                const customAdIndex = Math.floor(index / AD_FREQUENCY) % (ads.length || 1);
+                const customAdToRender = ads[customAdIndex];
 
                 return (
                   <React.Fragment key={memory._id}>
@@ -222,8 +227,13 @@ export const Memories: React.FC = () => {
                       memory={memory}
                       onDelete={(id) => setMemories((prev) => prev.filter((m) => m._id !== id))}
                     />
-                    {shouldShowAd && adToRender && (
-                      <AdCard ad={adToRender} />
+                    {/* Custom Direct Sponsor Ad */}
+                    {showCustomAd && customAdToRender && (
+                      <AdCard ad={customAdToRender} />
+                    )}
+                    {/* Google AdSense In-Feed Native Unit */}
+                    {showAdSense && (
+                      <AdSenseInFeedUnit />
                     )}
                   </React.Fragment>
                 );
