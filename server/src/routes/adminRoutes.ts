@@ -5,6 +5,10 @@ import { requireAdmin, requireSuperAdmin } from '../middleware/adminMiddleware';
 import { validateRequest } from '../middleware/validateRequest';
 import { updateReportStatusSchema } from '../validators/reportValidators';
 
+import { AdController } from '../controllers/adController';
+import { upload } from '../middleware/uploadMiddleware';
+import { createAdSchema, updateAdSchema } from '../validators/adValidators';
+
 const router = Router();
 
 // Protect all admin routes with auth and at least admin role check
@@ -29,5 +33,21 @@ router.patch(
   validateRequest(updateReportStatusSchema),
   AdminController.handleReport
 );
+
+// Native In-Feed Ads management
+router.get('/ads', AdController.getAllAds);
+router.post(
+  '/ads',
+  upload.single('image'),
+  validateRequest(createAdSchema),
+  AdController.createAd
+);
+router.patch(
+  '/ads/:id',
+  upload.single('image'),
+  validateRequest(updateAdSchema),
+  AdController.updateAd
+);
+router.delete('/ads/:id', AdController.deleteAd);
 
 export default router;

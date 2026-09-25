@@ -6,6 +6,9 @@ import { Button } from '../components/common/Button';
 import { YearStoriesBar } from '../components/memory/YearStoriesBar';
 import { InstagramMemoryCard } from '../components/memory/InstagramMemoryCard';
 import { InstagramPostModal } from '../components/memory/InstagramPostModal';
+import { AdCard } from '../components/memory/AdCard';
+import { adService } from '../services/adService';
+import { Ad } from '../types';
 import { getImageUrl } from '../utils/helpers';
 import { useDebounce } from '../hooks/useDebounce';
 import { 
@@ -18,8 +21,11 @@ import {
   Sparkles
 } from 'lucide-react';
 
+const AD_FREQUENCY = 8;
+
 export const Memories: React.FC = () => {
   const [memories, setMemories] = useState<Memory[]>([]);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -32,6 +38,21 @@ export const Memories: React.FC = () => {
   const [selectedModalMemory, setSelectedModalMemory] = useState<Memory | null>(null);
 
   const debouncedSearch = useDebounce(searchTerm, 400);
+
+  // Fetch active ads in parallel
+  useEffect(() => {
+    const fetchAds = async () => {
+      try {
+        const res = await adService.getActiveAds();
+        if (res.success && Array.isArray(res.data)) {
+          setAds(res.data);
+        }
+      } catch {
+        // Silently fail if no ads configured
+      }
+    };
+    fetchAds();
+  }, []);
 
   const fetchMemories = useCallback(async () => {
     setIsLoading(true);
@@ -190,13 +211,23 @@ export const Memories: React.FC = () => {
           {/* A. Instagram Feed View */}
           {viewMode === 'feed' && (
             <div className="space-y-6">
-              {memories.map((memory) => (
-                <InstagramMemoryCard
-                  key={memory._id}
-                  memory={memory}
-                  onDelete={(id) => setMemories((prev) => prev.filter((m) => m._id !== id))}
-                />
-              ))}
+              {memories.map((memory, index) => {
+                const shouldShowAd = ads.length > 0 && (index + 1) % AD_FREQUENCY === 0;
+                const adIndex = Math.floor(index / AD_FREQUENCY) % ads.length;
+                const adToRender = ads[adIndex];
+
+                return (
+                  <React.Fragment key={memory._id}>
+                    <InstagramMemoryCard
+                      memory={memory}
+                      onDelete={(id) => setMemories((prev) => prev.filter((m) => m._id !== id))}
+                    />
+                    {shouldShowAd && adToRender && (
+                      <AdCard ad={adToRender} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
           )}
 

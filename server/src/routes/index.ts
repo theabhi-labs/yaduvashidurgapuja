@@ -8,6 +8,7 @@ import contactRoutes from './contactRoutes';
 import analyticsRoutes from './analyticsRoutes';
 import liveDarshanRoutes from './liveDarshanRoutes';
 import donationRoutes from './donationRoutes';
+import adRoutes from './adRoutes';
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.get('/health', (_req: Request, res: Response) => {
     success: true,
     message: 'API is running',
     timestamp: new Date().toISOString(),
-    service: 'Yaduvashi Durga Puja Kapoori Pur Memory Archive API',
+    service: 'Yaduvashi Durga Puja Kapooripur Memory Archive API',
   });
 });
 
@@ -30,6 +31,7 @@ router.use('/contact', contactRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/live-darshan', liveDarshanRoutes);
 router.use('/donations', donationRoutes);
+router.use('/ads', adRoutes);
 
 export default router;
 

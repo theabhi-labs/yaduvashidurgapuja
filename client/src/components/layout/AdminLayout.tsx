@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Crown,
   Radio,
+  Megaphone,
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -35,6 +36,7 @@ export const AdminLayout: React.FC = () => {
         { name: 'Overview', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
+        { name: 'In-Feed Ads', path: '/admin/ads', icon: <Megaphone className="w-5 h-5" /> },
         { name: 'Users & Roles', path: '/admin/users', icon: <Users className="w-5 h-5" /> },
         { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
         { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
@@ -42,6 +44,7 @@ export const AdminLayout: React.FC = () => {
     : [
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
+        { name: 'In-Feed Ads', path: '/admin/ads', icon: <Megaphone className="w-5 h-5" /> },
         { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
         { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
       ];

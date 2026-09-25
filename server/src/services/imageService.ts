@@ -25,6 +25,7 @@ export class ImageService {
       path.join(this.baseUploadDir, 'thumbnails'),
       path.join(this.baseUploadDir, 'committee'),
       path.join(this.baseUploadDir, 'avatars'),
+      path.join(this.baseUploadDir, 'ads'),
     ];
 
     dirs.forEach((dir) => {
@@ -122,6 +123,46 @@ export class ImageService {
       logger.error('Error processing memory image for R2:', error);
       if (error instanceof ApiError) throw error;
       throw new ApiError(400, 'चित्र को संसाधित करने में त्रुटि हुई, कृपया वैध छवि चुनें');
+    }
+  }
+
+  /**
+   * Process in-feed Ad banner image and upload to Cloudflare R2 or local disk
+   * High-quality WebP, auto-oriented, max width 1200px (q: 85)
+   */
+  public static async processAdImage(buffer: Buffer): Promise<string> {
+    try {
+      const image = sharp(buffer);
+      const metadata = await image.metadata();
+
+      if (!metadata.format || !['jpeg', 'jpg', 'png', 'webp'].includes(metadata.format)) {
+        throw new ApiError(400, 'Invalid image format (only JPG, PNG, and WebP are allowed)');
+      }
+
+      const fileId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      const key = `ads/ad-${fileId}.webp`;
+
+      const adBuffer = await sharp(buffer)
+        .rotate()
+        .resize({ width: 1200, withoutEnlargement: true })
+        .webp({ quality: 85, effort: 4 })
+        .toBuffer();
+
+      if (isR2Configured) {
+        return await this.uploadBufferToR2(adBuffer, key, 'image/webp');
+      }
+
+      // Fallback to local disk
+      this.ensureUploadDirs();
+      const filename = `ad-${fileId}.webp`;
+      const targetPath = path.join(this.baseUploadDir, 'ads', filename);
+      await fs.promises.writeFile(targetPath, adBuffer);
+
+      return `/uploads/ads/${filename}`;
+    } catch (error: any) {
+      logger.error('Error processing ad image:', error);
+      if (error instanceof ApiError) throw error;
+      throw new ApiError(400, 'Failed to process ad image. Please choose a valid image.');
     }
   }
 

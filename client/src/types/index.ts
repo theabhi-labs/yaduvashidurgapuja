@@ -239,3 +239,19 @@ export interface DashboardStats {
   };
   visitors?: VisitorAnalytics;
 }
+
+export interface Ad {
+  _id: string;
+  title: string;
+  imageUrl: string;
+  linkUrl: string;
+  sponsorName: string;
+  isActive: boolean;
+  startDate?: string | null;
+  endDate?: string | null;
+  impressions: number;
+  clicks: number;
+  priority: number;
+  createdAt: string;
+  updatedAt: string;
+}

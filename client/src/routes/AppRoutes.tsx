@@ -97,6 +97,9 @@ const AdminReports = React.lazy(() =>
 const AdminCommittee = React.lazy(() =>
   import('../pages/admin/AdminCommittee').then((m) => ({ default: m.AdminCommittee }))
 );
+const AdminAds = React.lazy(() =>
+  import('../pages/admin/AdminAds').then((m) => ({ default: m.AdminAds }))
+);
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -162,6 +165,7 @@ export const AppRoutes: React.FC = () => {
           <Route index element={<AdminDashboard />} />
           <Route path="live-darshan" element={<AdminLiveBroadcast />} />
           <Route path="memories" element={<AdminMemories />} />
+          <Route path="ads" element={<AdminAds />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="reports" element={<AdminReports />} />
           <Route path="committee" element={<AdminCommittee />} />
