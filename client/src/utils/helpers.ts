@@ -27,7 +27,7 @@ export const generateShareText = (memoryId: string, caption?: string, year?: num
   const url = `${window.location.origin}/memories/${memoryId}`;
   const yearText = year ? ` [Year ${year}]` : '';
   const snippet = caption ? `"${caption.slice(0, 100)}${caption.length > 100 ? '...' : ''}"\n\n` : '';
-  return `Sacred Memories of Durga Puja ❤️\nYaduvashi Durga Puja Kapooripur${yearText}:\n\n${snippet}View this memory here:\n${url}`;
+  return `Sacred Memories of Durga Puja ❤️\nYaduvanshi Durga Puja Kapooripur${yearText}:\n\n${snippet}View this memory here:\n${url}`;
 };
 
 export const formatImpressions = (count?: number): string => {

@@ -20,17 +20,17 @@ export const Register: React.FC = () => {
     e.preventDefault();
 
     if (!name.trim() || !email.trim() || !password) {
-      toast.error('Please fill in all required fields.');
+      toast.error('कृपया सभी आवश्यक फ़ील्ड भरें।');
       return;
     }
 
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters long.');
+      toast.error('पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।');
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match.');
+      toast.error('पासवर्ड मेल नहीं खाते।');
       return;
     }
 
@@ -47,21 +47,26 @@ export const Register: React.FC = () => {
     <div className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-md mx-auto min-h-[80vh] flex flex-col justify-center">
       <div className="bg-cream-100 rounded-3xl border border-cream-300 shadow-medium p-6 sm:p-8">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-maroon-700 text-gold-300 flex items-center justify-center font-heading font-bold text-2xl mx-auto mb-3 shadow-sm border border-gold-500/40">
-            Y
+          {/* Sacred Favicon Emblem */}
+          <div className="w-14 h-14 rounded-2xl bg-maroon-800 p-1.5 flex items-center justify-center mx-auto mb-3 shadow-md border border-amber-400/40">
+            <img
+              src="/favicon.svg"
+              alt="यदुवंशी दुर्गा पूजा"
+              className="w-full h-full object-contain filter drop-shadow"
+            />
           </div>
-          <h1 className="text-2xl font-heading font-bold text-maroon-950">
-            Devotee Registration
+          <h1 className="text-2xl font-serif font-bold text-maroon-950">
+            भक्त पंजीकरण
           </h1>
-          <p className="text-xs sm:text-sm font-body text-muted mt-1">
-            Join the Yaduvanshi Durga Puja Kapooripur Family
+          <p className="text-xs sm:text-sm font-devanagari-body text-amber-900/90 font-medium mt-1">
+            यदुवंशी दुर्गा पूजा कपूरीपुर परिवार से जुड़ें
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-dark-900 font-body mb-1.5">
-              Full Name *
+            <label className="block text-xs font-semibold text-dark-900 font-devanagari-body mb-1.5">
+              पूरा नाम (Full Name) *
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -70,15 +75,15 @@ export const Register: React.FC = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Abhishek Yadav"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm font-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
+                placeholder="उदा. अभिषेक यादव"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm font-sans focus:outline-none focus:ring-2 focus:ring-maroon-600"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-dark-900 font-body mb-1.5">
-              Email Address *
+            <label className="block text-xs font-semibold text-dark-900 font-devanagari-body mb-1.5">
+              ईमेल पता (Email Address) *
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -87,15 +92,15 @@ export const Register: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="example@kapooripur.online"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-600"
+                placeholder="example@kapooripur.in"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm font-sans focus:outline-none focus:ring-2 focus:ring-maroon-600"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-dark-900 font-body mb-1.5">
-              Password *
+            <label className="block text-xs font-semibold text-dark-900 font-devanagari-body mb-1.5">
+              पासवर्ड (Password) *
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -104,15 +109,15 @@ export const Register: React.FC = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="At least 6 characters"
+                placeholder="कम से कम 6 अक्षर"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-600"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-dark-900 font-body mb-1.5">
-              Confirm Password *
+            <label className="block text-xs font-semibold text-dark-900 font-devanagari-body mb-1.5">
+              पासवर्ड दोबारा दर्ज करें (Confirm Password) *
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -121,7 +126,7 @@ export const Register: React.FC = () => {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter password"
+                placeholder="पासवर्ड पुनः दर्ज करें"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-600"
               />
             </div>
@@ -135,14 +140,14 @@ export const Register: React.FC = () => {
             leftIcon={<UserPlus className="w-4 h-4" />}
             className="w-full font-body font-bold mt-2"
           >
-            Create Account
+            पंजीकरण करें (Create Account)
           </Button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-cream-300 text-center text-xs font-body text-muted">
-          <span>Already registered? </span>
-          <Link to="/login" className="text-maroon-800 font-bold hover:underline">
-            Log In
+        <div className="mt-6 pt-6 border-t border-cream-300 text-center text-xs font-devanagari-body text-muted">
+          <span>पहले से खाता है? </span>
+          <Link to="/login" className="text-maroon-800 font-bold hover:underline ml-1">
+            लॉगिन करें (Log In)
           </Link>
         </div>
       </div>

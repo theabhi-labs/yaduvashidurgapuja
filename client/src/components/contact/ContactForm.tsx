@@ -75,7 +75,7 @@ export const ContactForm: React.FC = () => {
           Message Received! Thank You.
         </h3>
         <p className="text-sm font-body text-muted max-w-md mx-auto leading-relaxed">
-          Your message has been received by the Yaduvashi Durga Puja Committee. We will review it and reply via email shortly.
+          Your message has been received by the Yaduvanshi Durga Puja Committee. We will review it and reply via email shortly.
         </p>
         <div className="pt-4">
           <Button

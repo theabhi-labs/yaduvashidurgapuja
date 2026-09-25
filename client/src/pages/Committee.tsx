@@ -34,7 +34,7 @@ export const Committee: React.FC = () => {
     <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[85vh]">
       <SectionHeading
         badge="Seva & Leadership"
-        title="Yaduvashi Durga Puja Committee, Kapooripur"
+        title="Yaduvanshi Durga Puja Committee, Kapooripur"
         subtitle="The executive committee and seva volunteers dedicated to organizing holy rituals, pandal arrangements, and cultural traditions with devotion."
       />
 

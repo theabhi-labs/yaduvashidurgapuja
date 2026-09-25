@@ -208,7 +208,7 @@ export const LiveDarshan: React.FC = () => {
             <span>Divine Darshan & Maha Aarti</span>
           </motion.div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-maroon-900 tracking-tight">
-            Live Darshan — Yaduvashi Durga Puja
+            Live Darshan — Yaduvanshi Durga Puja
           </h1>
           <p className="text-sm sm:text-base text-muted font-body mt-2 max-w-2xl mx-auto">
             Experience divine aarti, sacred darshan, and rituals directly from the Kapooripur Durga Puja mandap.
@@ -306,7 +306,7 @@ export const LiveDarshan: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="font-heading font-bold text-lg sm:text-xl text-maroon-950 leading-snug">
-                        {activeSession.title || 'Yaduvashi Durga Puja Kapooripur — Maha Aarti'}
+                        {activeSession.title || 'Yaduvanshi Durga Puja Kapooripur — Maha Aarti'}
                       </h3>
                       <p className="text-xs text-muted font-body mt-0.5">
                         Broadcaster: <span className="font-semibold text-dark-900">{activeSession.hostName}</span> • Kapooripur, Suriyanwa, Bhadohi

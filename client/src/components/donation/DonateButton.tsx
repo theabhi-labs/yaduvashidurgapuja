@@ -81,7 +81,7 @@ export const DonateButton: React.FC<DonateButtonProps> = ({
         key: orderData.keyId,
         amount: Math.round(orderData.amount * 100),
         currency: orderData.currency || 'INR',
-        name: 'Yaduvashi Durga Puja Kapooripur',
+        name: 'Yaduvanshi Durga Puja Kapooripur',
         description: 'Maa Durga Puja Seva Contribution',
         order_id: orderData.orderId,
         prefill: {
@@ -151,7 +151,7 @@ export const DonateButton: React.FC<DonateButtonProps> = ({
           <div className="bg-gradient-to-br from-maroon-900/10 via-gold-500/5 to-cream-100 p-4 rounded-xl border border-gold-500/20 text-center">
             <Sparkles className="w-6 h-6 text-gold-600 mx-auto mb-1" />
             <p className="text-xs sm:text-sm font-body text-maroon-950">
-              Your contribution supports the holy rituals, prasad distribution, and arrangements of Yaduvashi Durga Puja Kapooripur.
+              Your contribution supports the holy rituals, prasad distribution, and arrangements of Yaduvanshi Durga Puja Kapooripur.
             </p>
           </div>
 

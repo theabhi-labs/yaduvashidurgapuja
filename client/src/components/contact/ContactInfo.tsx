@@ -12,7 +12,7 @@ export const ContactInfo: React.FC = () => {
             <span>Committee Contact</span>
           </div>
           <h2 className="text-xl font-heading font-bold text-maroon-950">
-            Yaduvashi Durga Puja Committee, Kapooripur
+            Yaduvanshi Durga Puja Committee, Kapooripur
           </h2>
           <p className="text-xs sm:text-sm font-body text-muted mt-1 leading-relaxed">
             For archival queries, submitting old photographs, content adjustments, or general assistance, feel free to reach out to our seva team.

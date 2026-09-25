@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Heart, MapPin, ShieldCheck, Mail, Globe, Sparkles } from 'lucide-react';
 import { SITE_DOMAIN, CONTACT_EMAIL, LOCATION_TEXT } from '../../utils/constants';
 
+import { BrandLogo } from '../common/BrandLogo';
+
 export const Footer: React.FC = () => {
   return (
     <footer className="bg-dark-900 text-cream-100 border-t-4 border-gold-500 pt-14 pb-8">
@@ -17,19 +19,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-dark-700/80">
           {/* Brand & Philosophy */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-maroon-700 flex items-center justify-center text-gold-400 font-heading font-bold text-xl border border-gold-500/40 shadow-sm">
-                Y
-              </div>
-              <div className="flex flex-col">
-                <span className="font-heading font-bold text-lg text-cream-50 leading-tight">
-                  Yaduvashi Durga Puja
-                </span>
-                <span className="text-xs font-body text-gold-400">
-                  Kapooripur • Digital Archive
-                </span>
-              </div>
-            </div>
+            <BrandLogo size="md" variant="light" />
 
             <p className="text-xs sm:text-sm font-body text-cream-300/80 leading-relaxed">
               "Memories, Not Popularity" — A dignified digital archive preserving sacred memories, traditions, and devotional moments of Kapooripur Durga Puja.
@@ -74,7 +64,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/donate" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">
-                  दान सेवा (Donate)
+                  Donate
                 </Link>
               </li>
               <li>
@@ -144,7 +134,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom copyright line */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body text-cream-400/70">
-          <p>© {new Date().getFullYear()} Yaduvashi Durga Puja Committee, Kapooripur. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Yaduvanshi Durga Puja Committee, Kapooripur. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Crafted with Devotion</span>
             <Heart className="w-3.5 h-3.5 text-maroon-500 fill-maroon-500 inline mx-0.5" />

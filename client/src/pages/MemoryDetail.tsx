@@ -253,7 +253,7 @@ export const MemoryDetail: React.FC = () => {
           <div className="bg-cream-100 p-4 rounded-2xl border border-cream-300 flex items-center gap-3 text-xs font-body text-muted">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <span>
-              This photograph is preserved in original quality in the digital archive of Yaduvashi Durga Puja Kapooripur.
+              This photograph is preserved in original quality in the digital archive of Yaduvanshi Durga Puja Kapooripur.
             </span>
           </div>
         </div>

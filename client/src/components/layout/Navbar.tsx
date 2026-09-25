@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { getImageUrl } from '../../utils/helpers';
 
+import { BrandLogo } from '../common/BrandLogo';
+
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, isAdmin, isSuperAdmin, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,7 +49,7 @@ export const Navbar: React.FC = () => {
     { name: 'Committee', path: '/committee' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
-    { name: 'दान (Donate)', path: '/donate' },
+    { name: 'Donate', path: '/donate' },
   ];
 
   const handleLogout = async () => {
@@ -69,20 +71,8 @@ export const Navbar: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-maroon-800 flex items-center justify-center text-amber-400 font-bold text-lg sm:text-xl shadow-sm group-hover:scale-105 transition-transform border border-amber-500/40">
-              Y
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-sm sm:text-lg text-maroon-900 leading-tight group-hover:text-maroon-800 tracking-tight">
-                Yaduvashi Durga Puja
-              </span>
-              <span className="text-[10px] sm:text-xs text-amber-800 font-semibold tracking-wide">
-                Kapooripur • Digital Archive
-              </span>
-            </div>
-          </Link>
+          {/* Brand Logo with Favicon Emblem */}
+          <BrandLogo size="md" />
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-1 lg:gap-2">

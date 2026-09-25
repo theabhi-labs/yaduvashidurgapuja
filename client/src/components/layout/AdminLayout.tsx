@@ -74,8 +74,12 @@ export const AdminLayout: React.FC = () => {
       {/* Mobile Admin Header */}
       <div className="md:hidden bg-maroon-900 text-cream-100 p-4 flex items-center justify-between border-b border-maroon-800">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-maroon-700 flex items-center justify-center text-gold-400 font-bold border border-gold-500/40">
-            Y
+          <div className="w-8 h-8 rounded-lg bg-maroon-800 p-1 flex items-center justify-center border border-amber-400/40 shadow-sm overflow-hidden">
+            <img
+              src="/favicon.svg"
+              alt="यदुवंशी दुर्गा पूजा"
+              className="w-full h-full object-contain"
+            />
           </div>
           <div className="flex flex-col">
             <span className="font-heading font-bold text-sm">
@@ -104,12 +108,16 @@ export const AdminLayout: React.FC = () => {
         <div>
           {/* Brand header */}
           <div className="pb-6 mb-6 border-b border-dark-700">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-maroon-700 flex items-center justify-center text-gold-400 font-heading font-bold text-xl border border-gold-500/40">
-                Y
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl bg-maroon-800 p-1 flex items-center justify-center border border-amber-400/40 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+                <img
+                  src="/favicon.svg"
+                  alt="यदुवंशी दुर्गा पूजा"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="flex flex-col">
-                <span className="font-heading font-bold text-base text-cream-50 leading-tight">
+                <span className="font-serif font-bold text-base text-cream-50 leading-tight group-hover:text-amber-300 transition-colors">
                   Yaduvanshi Durga Puja
                 </span>
                 <span

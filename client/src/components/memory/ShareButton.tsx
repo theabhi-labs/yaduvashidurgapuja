@@ -45,7 +45,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Yaduvashi Durga Puja Kapooripur',
+          title: 'Yaduvanshi Durga Puja Kapooripur',
           text: shareText,
           url: shareUrl,
         });
