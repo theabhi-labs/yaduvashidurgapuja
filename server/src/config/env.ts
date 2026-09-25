@@ -38,6 +38,14 @@ export const ENV = {
 
   // Redis for Ephemeral Live Chat
   REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
+
+  // Cloudflare R2 Object Storage (S3-Compatible)
+  R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID || '',
+  R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID || '',
+  R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY || '',
+  R2_BUCKET_NAME: process.env.R2_BUCKET_NAME || 'kapooripur-media',
+  R2_PUBLIC_URL: (process.env.R2_PUBLIC_URL || '').replace(/\/+$/, ''),
 };
+
 
 

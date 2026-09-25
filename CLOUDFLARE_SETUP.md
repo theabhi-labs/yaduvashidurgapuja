@@ -107,3 +107,42 @@ app.set('trust proxy', 1);
 With `trust proxy` enabled:
 - `req.ip` correctly extracts the real client IP passed by Cloudflare via the `CF-Connecting-IP` / `X-Forwarded-For` headers.
 - `express-rate-limit` rate-limits users based on their actual IP rather than Cloudflare's shared proxy IP addresses.
+
+---
+
+## 8. 🗄️ Cloudflare R2 Object Storage Setup (Image Storage Migration)
+
+Cloudflare R2 provides S3-compatible, ultra-fast, zero-egress fee object storage.
+
+### Step 8.1: Create R2 Bucket
+1. Go to **Cloudflare Dashboard -> R2 -> Overview -> Create bucket**.
+2. **Bucket name**: `kapooripur-media` (or any unique name of your choice).
+3. **Location**: `Automatic` (Default). Click **Create bucket**.
+
+### Step 8.2: Connect Custom Domain to R2 (Recommended for Permanent URLs)
+1. Inside your bucket (`kapooripur-media`) -> Go to **Settings -> Custom Domains**.
+2. Click **Connect Domain**.
+3. Enter your custom subdomain (e.g. `media.yaduvashidurgapujakapooripur.online`).
+4. Click **Continue -> Connect Domain** (Cloudflare will automatically configure the DNS CNAME record and SSL certificate for your media domain).
+
+### Step 8.3: Generate R2 API Tokens
+1. Go to **Cloudflare Dashboard -> R2 -> Manage R2 API Tokens** (on the right sidebar).
+2. Click **Create API token**.
+3. **Token name**: `kapooripur-backend-uploader`.
+4. **Permissions**: Select **Object Read & Write**.
+5. **Specify bucket**: Select `kapooripur-media` (or All buckets).
+6. Click **Create API Token**.
+7. Copy the following credentials to your `server/.env`:
+   - **Account ID** (found on R2 overview page) -> `R2_ACCOUNT_ID=`
+   - **Access Key ID** -> `R2_ACCESS_KEY_ID=`
+   - **Secret Access Key** -> `R2_SECRET_ACCESS_KEY=`
+   - `R2_BUCKET_NAME=kapooripur-media`
+   - `R2_PUBLIC_URL=https://media.yaduvashidurgapujakapooripur.online`
+
+### Step 8.4: Run One-Time Migration Script
+To migrate existing images from `server/uploads/` to your Cloudflare R2 bucket and update MongoDB records:
+```bash
+cd server
+npm run migrate:r2
+```
+
