@@ -337,7 +337,7 @@ export const Home: React.FC = () => {
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-body font-semibold mb-6 tracking-wide"
             >
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Yaduvashi Durga Puja Kapooripur</span>
+              <span>॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर ॥</span>
             </motion.div>
 
             <motion.h1
@@ -346,7 +346,7 @@ export const Home: React.FC = () => {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="text-3xl sm:text-5xl lg:text-6xl font-heading font-black text-cream-50 tracking-tight leading-tight mb-6"
             >
-              Sacred Memories of <span className="text-amber-400">Durga Puja</span>
+              माँ दुर्गा की पावन <span className="text-amber-400">स्मृतियाँ</span>
             </motion.h1>
 
             <motion.p
@@ -355,7 +355,7 @@ export const Home: React.FC = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="text-base sm:text-xl lg:text-2xl font-body text-cream-200/90 max-w-3xl mx-auto leading-relaxed mb-10"
             >
-              The digital home for Kapooripur Durga Puja's timeless memories and devotion.
+              कपूरिपुर दुर्गा पूजा के भक्तिमय पलों, महाआरती और पावन संस्मरणों का डिजिटल संचय।
             </motion.p>
 
             <motion.div
@@ -369,9 +369,9 @@ export const Home: React.FC = () => {
                   variant="gold"
                   size="lg"
                   leftIcon={<Camera className="w-5 h-5 text-dark-950" />}
-                  className="font-body text-base shadow-gold-glow"
+                  className="font-body text-base font-bold shadow-gold-glow"
                 >
-                  Share a Memory
+                  अपनी याद साझा करें
                 </Button>
               </Link>
 
@@ -380,9 +380,9 @@ export const Home: React.FC = () => {
                   variant="secondary"
                   size="lg"
                   leftIcon={<BookOpen className="w-5 h-5 text-maroon-800" />}
-                  className="font-body text-base bg-cream-100 hover:bg-cream-50 border-cream-300"
+                  className="font-body text-base font-bold bg-cream-100 hover:bg-cream-50 border-cream-300"
                 >
-                  Explore Memories
+                  स्मृतियाँ देखें
                 </Button>
               </Link>
             </motion.div>
@@ -397,16 +397,16 @@ export const Home: React.FC = () => {
               <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-dark-950">
                 <img
                   src="/hero-durga.jpg"
-                  alt="Yaduvashi Durga Puja Kapooripur"
+                  alt="श्री यदुवंशी दुर्गा पूजा कपूरिपुर"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent flex items-end p-8">
                   <div className="text-left">
                     <span className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/90 text-dark-950 font-body uppercase tracking-wider inline-block mb-2">
-                      Kapooripur Sacred Dham
+                      कपूरिपुर पावन धाम
                     </span>
                     <p className="text-lg font-heading font-bold text-cream-50 leading-snug max-w-xl drop-shadow-md">
-                      A living digital archive honoring Maa Durga's grace and devotees' timeless faith.
+                      माँ दुर्गा की असीम कृपा और भक्तों की अनमोल आस्था को समर्पित एक पावन डिजिटल धरोहर।
                     </p>
                   </div>
                 </div>
@@ -419,9 +419,9 @@ export const Home: React.FC = () => {
                 <Flame className="w-6 h-6 text-amber-400 shrink-0" />
                 <div>
                   <h4 className="text-xs font-semibold text-cream-100 font-body">
-                    Holy Tradition
+                    पावन परंपरा
                   </h4>
-                  <p className="text-[11px] text-cream-300/70">Decades of Faith</p>
+                  <p className="text-[11px] text-cream-300/70">दशकों पुरानी अटूट आस्था</p>
                 </div>
               </div>
 
@@ -429,9 +429,9 @@ export const Home: React.FC = () => {
                 <ShieldCheck className="w-6 h-6 text-amber-400 shrink-0" />
                 <div>
                   <h4 className="text-xs font-semibold text-cream-100 font-body">
-                    Pure Archive
+                    निर्मल संचय
                   </h4>
-                  <p className="text-[11px] text-cream-300/70">No Vanity Metrics</p>
+                  <p className="text-[11px] text-cream-300/70">दिखावे व होड़ से मुक्त</p>
                 </div>
               </div>
 
@@ -439,9 +439,9 @@ export const Home: React.FC = () => {
                 <Camera className="w-6 h-6 text-amber-400 shrink-0" />
                 <div>
                   <h4 className="text-xs font-semibold text-cream-100 font-body">
-                    Devotee Photos
+                    भक्तों की यादें
                   </h4>
-                  <p className="text-[11px] text-cream-300/70">Original Quality Preservation</p>
+                  <p className="text-[11px] text-cream-300/70">मूल गुणवत्ता में संरक्षित</p>
                 </div>
               </div>
 
@@ -449,9 +449,9 @@ export const Home: React.FC = () => {
                 <HeartHandshake className="w-6 h-6 text-amber-400 shrink-0" />
                 <div>
                   <h4 className="text-xs font-semibold text-cream-100 font-body">
-                    Community Spirit
+                    सामुदायिक भाव
                   </h4>
-                  <p className="text-[11px] text-cream-300/70">Kapooripur Pride</p>
+                  <p className="text-[11px] text-cream-300/70">कपूरिपुर का गौरव</p>
                 </div>
               </div>
             </div>
@@ -464,18 +464,18 @@ export const Home: React.FC = () => {
             <div className="grid grid-cols-12 gap-14 items-center">
               <div className="col-span-7 space-y-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-maroon-100 text-maroon-900 text-xs font-semibold font-body border border-maroon-200">
-                  <span>Devotion & Harmony</span>
+                  <span>भक्ति एवं सौहार्द</span>
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-heading font-bold text-dark-950 leading-tight">
-                  The Divine Celebration of Maa Durga on the Sacred Soil of Kapooripur
+                  कपूरिपुर की पावन धरा पर माँ दुर्गा का दिव्य उत्सव
                 </h2>
                 <div className="w-16 h-1 bg-amber-500 rounded-full" />
                 <p className="text-base font-body text-dark-800 leading-relaxed">
-                  Yaduvashi Durga Puja Kapooripur is more than an annual religious celebration — it is a living symbol of devotion, togetherness, and cultural heritage for the entire village and devotees worldwide.
+                  यदुवंशी दुर्गा पूजा कपूरिपुर केवल एक वार्षिक धार्मिक उत्सव नहीं, अपितु समस्त ग्रामवासियों, प्रवासियों और माँ के अनन्य भक्तों के अगाध प्रेम, समर्पण व सांस्कृतिक धरोहर का सजीव संगम है।
                 </p>
                 <Link to="/about">
                   <Button variant="outline" size="md" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                    Read Full History & Guidelines
+                    हमारा इतिहास एवं दर्शन देखें
                   </Button>
                 </Link>
               </div>
@@ -483,13 +483,13 @@ export const Home: React.FC = () => {
               <div className="col-span-5">
                 <div className="bg-cream-100 p-8 rounded-3xl border-2 border-amber-400/40 shadow-medium relative">
                   <h3 className="text-xl font-heading font-bold text-maroon-900 mb-3">
-                    Our Archival Pledge
+                    हमारा पावन संकल्प
                   </h3>
                   <p className="text-sm font-body text-dark-800 leading-relaxed mb-6">
-                    "This platform is completely free from vanity metrics, likes, and social competitions. Our sole mission is to preserve every sacred photograph and moment of Kapooripur Durga Puja for generations to come."
+                    "यह डिजिटल मंच किसी भी प्रकार के दिखावे, लाइक्स या सामाजिक प्रतिस्पर्धा से पूर्णतः मुक्त है। हमारा एकमात्र उद्देश्य कपूरिपुर दुर्गा पूजा के प्रत्येक पावन क्षण और भक्तिमय यादों को आने वाली पीढ़ियों के लिए गरिमापूर्वक सहेजना है।"
                   </p>
                   <div className="pt-4 border-t border-cream-300 flex items-center justify-between text-xs font-body">
-                    <span className="text-maroon-800 font-semibold">— Puja Committee, Kapooripur</span>
+                    <span className="text-maroon-800 font-semibold">— पूजा समिति, कपूरिपुर</span>
                     <span className="text-amber-800 font-medium">yaduvashidurgapujakapooripur.online</span>
                   </div>
                 </div>

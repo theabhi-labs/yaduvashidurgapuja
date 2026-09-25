@@ -17,9 +17,9 @@ export const CommitteePreview: React.FC<CommitteePreviewProps> = ({ members, isL
     <section className="py-16 sm:py-20 bg-cream-100/60 border-y border-cream-300/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          badge="Committee Members"
-          title="Pillars of the Puja Committee"
-          subtitle="The devoted seva members who organize and maintain the sacred tradition of Kapooripur Durga Puja with dedication and unity."
+          badge="पूजा समिति के सेवादार"
+          title="समिति के समर्पित स्तंभ"
+          subtitle="वे निष्ठावान सेवादार जो पूर्ण समर्पण, सेवा भाव और अटूट निष्ठा के साथ कपूरिपुर दुर्गा पूजा की पावन परंपरा का निर्वहन करते हैं।"
         />
 
         {isLoading ? (
@@ -43,7 +43,7 @@ export const CommitteePreview: React.FC<CommitteePreviewProps> = ({ members, isL
                   size="md"
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                 >
-                  View All Committee Members
+                  सभी समिति सदस्यों को देखें
                 </Button>
               </Link>
             </div>
