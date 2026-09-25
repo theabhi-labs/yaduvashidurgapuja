@@ -196,3 +196,88 @@ export const getDonations = async (req: Request, res: Response, next: NextFuncti
     next(err);
   }
 };
+
+/**
+ * Razorpay Server-to-Server Webhook Handler
+ * Endpoint: POST /api/donations/webhook
+ * 
+ * Razorpay Dashboard Setup Instruction:
+ * 1. Go to: Razorpay Dashboard -> Settings -> Webhooks -> Add New Webhook
+ * 2. Webhook URL: https://<your-backend-domain>/api/donations/webhook
+ * 3. Secret: Set your RAZORPAY_WEBHOOK_SECRET (.env)
+ * 4. Active Events: select 'payment.captured' (and 'order.paid')
+ */
+export const handleRazorpayWebhook = async (req: Request, res: Response, _next: NextFunction) => {
+  try {
+    const signature = req.headers['x-razorpay-signature'] as string;
+    const webhookSecret = ENV.RAZORPAY_WEBHOOK_SECRET;
+
+    if (!webhookSecret) {
+      logger.warn('[Razorpay Webhook] RAZORPAY_WEBHOOK_SECRET is not configured in .env. Webhook rejected.');
+      return res.status(400).json({ success: false, message: 'Webhook secret not configured' });
+    }
+
+    if (!signature) {
+      logger.warn('[Razorpay Webhook] Missing x-razorpay-signature header');
+      return res.status(400).json({ success: false, message: 'Missing webhook signature' });
+    }
+
+    // Get raw body buffer preserved by express.json({ verify })
+    const rawBody = (req as any).rawBody
+      ? (req as any).rawBody.toString('utf8')
+      : JSON.stringify(req.body);
+
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(rawBody)
+      .digest('hex');
+
+    if (expectedSignature !== signature) {
+      logger.warn('[Razorpay Webhook] Invalid signature verification');
+      return res.status(400).json({ success: false, message: 'Invalid webhook signature' });
+    }
+
+    const event = req.body?.event;
+    logger.info(`[Razorpay Webhook] Received valid webhook event: ${event}`);
+
+    if (event === 'payment.captured' || event === 'order.paid') {
+      const paymentEntity = req.body?.payload?.payment?.entity;
+      const orderId = paymentEntity?.order_id || req.body?.payload?.order?.entity?.id;
+      const paymentId = paymentEntity?.id;
+
+      if (orderId) {
+        const donation = await Donation.findOne({ razorpayOrderId: orderId });
+        if (donation) {
+          // Idempotency check: Only update and emit if not already marked paid
+          if (donation.status !== 'paid') {
+            donation.status = 'paid';
+            if (paymentId) donation.razorpayPaymentId = paymentId;
+            donation.razorpaySignature = signature;
+            await donation.save();
+
+            logger.info(`[Razorpay Webhook] Marked donation ${donation._id} as paid for order ${orderId}`);
+
+            // Emit real-time donation event to viewers
+            emitDonation({
+              donorName: donation.isAnonymous ? 'गुमनाम भक्त' : donation.donorName,
+              amount: donation.amount,
+              message: donation.message,
+              roomName: donation.liveSessionRoomName,
+              timestamp: new Date().toISOString(),
+            });
+          } else {
+            logger.info(`[Razorpay Webhook] Donation ${donation._id} was already marked paid. Skipping duplicate emit.`);
+          }
+        } else {
+          logger.warn(`[Razorpay Webhook] No matching donation found for order ${orderId}`);
+        }
+      }
+    }
+
+    return res.status(200).json({ status: 'ok' });
+  } catch (err: any) {
+    logger.error('[Razorpay Webhook] Error processing webhook:', err);
+    return res.status(500).json({ success: false, message: 'Internal server error in webhook handler' });
+  }
+};
+

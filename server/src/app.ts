@@ -23,7 +23,7 @@ app.use(
   })
 );
 
-// CORS configuration
+// CORS configuration — strict explicit allowed origins
 const allowedOrigins = [
   ENV.CLIENT_URL,
   'http://localhost:5173',
@@ -31,26 +31,45 @@ const allowedOrigins = [
   'http://localhost:5174',
   'http://127.0.0.1:5174',
   'https://yaduvashidurgapujakapooripur.online',
+  'https://yaduvashidurgapuja2-0.vercel.app',
+  'https://yaduvashidurgapuja2-o.vercel.app',
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin or matching domains
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      // Allow requests with no origin (e.g. server-to-server, mobile apps, or webhooks)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Check against explicit allowed origins list and official deployment domains
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        /^https:\/\/yaduvashidurgapuja2-[0-9a-z]+\.vercel\.app$/.test(origin) ||
+        origin.endsWith('.yaduvashidurgapujakapooripur.online');
+
+      if (isAllowed) {
         callback(null, true);
       } else {
-        callback(null, true); // Permissive fallback
+        callback(new Error(`Blocked by CORS policy: Origin ${origin} not allowed`), false);
       }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-razorpay-signature'],
   })
 );
 
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
+// Body parsing with rawBody preservation for Webhook Signature Verification
+app.use(
+  express.json({
+    limit: '10mb',
+    verify: (req: any, _res, buf) => {
+      req.rawBody = buf;
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
@@ -59,8 +78,16 @@ if (ENV.NODE_ENV !== 'test') {
   app.use(morgan(ENV.isProduction ? 'combined' : 'dev'));
 }
 
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+// Serve uploaded files statically with optimal 7-day browser & CDN caching
+const uploadsPath = path.resolve(process.cwd(), 'uploads');
+app.use(
+  '/uploads',
+  express.static(uploadsPath, {
+    maxAge: '7d',
+    immutable: true,
+    etag: true,
+  })
+);
 
 // General API rate limiting
 app.use('/api', generalLimiter);

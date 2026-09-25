@@ -3,12 +3,17 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set.');
+  process.exit(1);
+}
+
 export const ENV = {
   PORT: parseInt(process.env.PORT || '5000', 10),
   NODE_ENV: process.env.NODE_ENV || 'development',
   CLIENT_URL: (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/+$/, ''),
   MONGODB_URI: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/durgapujakapooripur',
-  JWT_SECRET: process.env.JWT_SECRET || 'yaduvashi_durga_puja_secret_key_super_secure_2026_kapooripur',
+  JWT_SECRET: process.env.JWT_SECRET as string,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   COOKIE_EXPIRES_DAYS: parseInt(process.env.COOKIE_EXPIRES_DAYS || '7', 10),
   MAX_FILE_SIZE_MB: parseInt(process.env.MAX_FILE_SIZE_MB || '10', 10),
@@ -29,8 +34,10 @@ export const ENV = {
   // Razorpay Payment Gateway
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
+  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || '',
 
   // Redis for Ephemeral Live Chat
   REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
 };
+
 
