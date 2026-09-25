@@ -4,6 +4,10 @@ import {
   StopCircle,
   Play,
   Video,
+  VideoOff,
+  Mic,
+  MicOff,
+  RefreshCw,
   AlertTriangle,
   Heart,
   Sparkles,
@@ -18,11 +22,14 @@ import {
 } from 'lucide-react';
 import {
   LiveKitRoom,
-  VideoConference,
   RoomAudioRenderer,
-  ControlBar,
+  VideoTrack,
   ConnectionQualityIndicator,
+  useLocalParticipant,
+  useTracks,
+  isTrackReference,
 } from '@livekit/components-react';
+import { Track } from 'livekit-client';
 import '@livekit/components-styles';
 
 import { liveDarshanService } from '../../services/liveDarshanService';
@@ -35,6 +42,7 @@ import {
 } from '../../types';
 import { Button } from '../../components/common/Button';
 import { Modal } from '../../components/common/Modal';
+import { ErrorBoundary } from '../../components/common/ErrorBoundary';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useDonationSocket } from '../../hooks/useDonationSocket';
@@ -42,6 +50,206 @@ import { DonationCard } from '../../components/donation/DonationCard';
 import { getSocket } from '../../services/socket';
 import { formatDate } from '../../utils/helpers';
 
+// =========================================================================
+// CUSTOM CRASH-PROOF BROADCASTER STAGE (CAMERA & AUDIO BROADCASTER STUDIO)
+// =========================================================================
+interface BroadcasterStageProps {
+  onEndBroadcast: () => void;
+  title: string;
+  hostName?: string;
+  currentViewers: number;
+  peakViewers: number;
+}
+
+const BroadcasterStage: React.FC<BroadcasterStageProps> = ({
+  onEndBroadcast,
+  currentViewers,
+  peakViewers,
+}) => {
+  const { localParticipant, isCameraEnabled, isMicrophoneEnabled } = useLocalParticipant();
+  const tracks = useTracks([{ source: Track.Source.Camera, withPlaceholder: false }]);
+  const localCameraTrack = tracks.find(
+    (t) => isTrackReference(t) && t.participant.isLocal && t.source === Track.Source.Camera
+  );
+
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const [duration, setDuration] = useState<number>(0);
+  const [isTogglingCam, setIsTogglingCam] = useState<boolean>(false);
+  const [isTogglingMic, setIsTogglingMic] = useState<boolean>(false);
+
+  // Broadcast duration timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setDuration((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatDuration = (secs: number) => {
+    const hrs = Math.floor(secs / 3600);
+    const mins = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    if (hrs > 0) {
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    return `${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const toggleCamera = async () => {
+    if (!localParticipant) return;
+    try {
+      setIsTogglingCam(true);
+      await localParticipant.setCameraEnabled(!isCameraEnabled);
+    } catch (err: any) {
+      console.error('Camera toggle error:', err);
+    } finally {
+      setIsTogglingCam(false);
+    }
+  };
+
+  const toggleMicrophone = async () => {
+    if (!localParticipant) return;
+    try {
+      setIsTogglingMic(true);
+      await localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled);
+    } catch (err: any) {
+      console.error('Microphone toggle error:', err);
+    } finally {
+      setIsTogglingMic(false);
+    }
+  };
+
+  const flipCamera = async () => {
+    if (!localParticipant) return;
+    try {
+      const nextFacing = facingMode === 'environment' ? 'user' : 'environment';
+      setFacingMode(nextFacing);
+      await localParticipant.setCameraEnabled(false);
+      await localParticipant.setCameraEnabled(true, {
+        facingMode: nextFacing,
+      });
+    } catch (err) {
+      console.error('Flip camera error:', err);
+    }
+  };
+
+  return (
+    <div className="relative w-full aspect-video bg-dark-950 rounded-2xl overflow-hidden shadow-2xl border-2 border-gold-500/50 flex flex-col justify-between">
+      {/* Video Stream Preview Display */}
+      {isCameraEnabled && localCameraTrack && isTrackReference(localCameraTrack) ? (
+        <VideoTrack
+          trackRef={localCameraTrack}
+          className="w-full h-full object-cover bg-black"
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-dark-900 via-maroon-950/80 to-dark-950">
+          <div className="w-16 h-16 rounded-full bg-maroon-900/80 border border-gold-500/40 flex items-center justify-center mb-3">
+            <VideoOff className="w-8 h-8 text-gold-400" />
+          </div>
+          <h4 className="text-base font-heading font-bold text-cream-100 mb-1">
+            {isCameraEnabled ? 'कैमरा शुरू हो रहा है (Starting Camera...)' : 'कैमरा बंद है (Camera is Off)'}
+          </h4>
+          <p className="text-xs text-cream-300 font-body max-w-md mb-4">
+            भक्तों को लाइव आरती दिखाने के लिए नीचे दिए गए बटन से कैमरा चालू करें।
+          </p>
+          <Button
+            size="sm"
+            onClick={toggleCamera}
+            isLoading={isTogglingCam}
+            className="bg-gold-500 hover:bg-gold-600 text-maroon-950 font-bold border border-gold-300 shadow-lg"
+          >
+            <Video className="w-4 h-4 mr-1.5" />
+            कैमरा चालू करें (Turn On Camera)
+          </Button>
+        </div>
+      )}
+
+      {/* Top Floating Status Bar */}
+      <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs shadow-lg backdrop-blur-md animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-white" />
+            LIVE ON-AIR
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-dark-900/80 text-gold-300 font-mono text-xs backdrop-blur-md border border-gold-500/30">
+            ⏱️ {formatDuration(duration)}
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-dark-900/80 text-emerald-300 font-semibold text-xs backdrop-blur-md border border-emerald-500/30">
+            <Users className="w-3.5 h-3.5" />
+            {currentViewers} Viewers (Peak: {peakViewers})
+          </span>
+        </div>
+
+        <div className="pointer-events-auto">
+          <ConnectionQualityIndicator />
+        </div>
+      </div>
+
+      {/* Bottom Floating Controls Bar */}
+      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between p-2 rounded-xl bg-dark-950/85 backdrop-blur-md border border-gold-500/30 z-20">
+        {/* Left: Device Controls */}
+        <div className="flex items-center gap-2">
+          {/* Camera Toggle */}
+          <button
+            type="button"
+            onClick={toggleCamera}
+            disabled={isTogglingCam}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md ${
+              isCameraEnabled
+                ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                : 'bg-red-700 hover:bg-red-800 text-white'
+            }`}
+            title={isCameraEnabled ? 'कैमरा बंद करें' : 'कैमरा चालू करें'}
+          >
+            {isCameraEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isCameraEnabled ? 'Cam On' : 'Cam Off'}</span>
+          </button>
+
+          {/* Mic Toggle */}
+          <button
+            type="button"
+            onClick={toggleMicrophone}
+            disabled={isTogglingMic}
+            className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-md ${
+              isMicrophoneEnabled
+                ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                : 'bg-red-700 hover:bg-red-800 text-white'
+            }`}
+            title={isMicrophoneEnabled ? 'माइक म्यूट करें' : 'माइक चालू करें'}
+          >
+            {isMicrophoneEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isMicrophoneEnabled ? 'Mic On' : 'Muted'}</span>
+          </button>
+
+          {/* Flip / Switch Camera (Back/Front for Smartphones) */}
+          <button
+            type="button"
+            onClick={flipCamera}
+            className="px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-dark-800 hover:bg-dark-700 text-gold-300 border border-gold-500/30 shadow-md transition-all"
+            title="कैमरा बदलें (Flip Camera)"
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span className="hidden sm:inline">Flip Camera</span>
+          </button>
+        </div>
+
+        {/* Right: End Broadcast Button */}
+        <button
+          type="button"
+          onClick={onEndBroadcast}
+          className="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white border border-red-400 shadow-md transition-all"
+        >
+          <StopCircle className="w-4 h-4" />
+          <span>End Live</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// =========================================================================
+// MAIN ADMIN LIVE BROADCAST CONTROLLER COMPONENT
+// =========================================================================
 export const AdminLiveBroadcast: React.FC = () => {
   const { user, isSuperAdmin } = useAuth();
   const toast = useToast();
@@ -380,28 +588,33 @@ export const AdminLiveBroadcast: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Broadcaster Video Stage (3 cols) */}
-            <div className="lg:col-span-3 bg-dark-950 rounded-2xl overflow-hidden shadow-2xl border-2 border-maroon-700 aspect-video relative flex flex-col">
-              <LiveKitRoom
-                video={true}
-                audio={true}
-                token={broadcastData.token}
-                serverUrl={broadcastData.wsUrl}
-                connect={true}
-                data-lk-theme="default"
-                className="w-full h-full flex flex-col justify-between"
+            <div className="lg:col-span-3">
+              <ErrorBoundary
+                fallbackTitle="लाइव प्रसारण कैमरा त्रुटि (Camera Studio Error)"
+                fallbackMessage="कैमरा या लाइवकिट कनेक्शन में समस्या आई। पुनः प्रयास करें।"
               >
-                <RoomAudioRenderer />
-                <div className="flex-1 w-full relative">
-                  <VideoConference />
-                </div>
-                <div className="bg-dark-900/90 border-t border-dark-800 p-2 flex items-center justify-between">
-                  <ControlBar controls={{ chat: false, screenShare: false }} />
-                  <div className="flex items-center gap-2 pr-4 text-xs text-gold-300 font-semibold">
-                    <span>Network Quality:</span>
-                    <ConnectionQualityIndicator />
-                  </div>
-                </div>
-              </LiveKitRoom>
+                <LiveKitRoom
+                  video={true}
+                  audio={true}
+                  token={broadcastData.token}
+                  serverUrl={broadcastData.wsUrl}
+                  connect={true}
+                  data-lk-theme="default"
+                  onError={(err) => {
+                    console.error('LiveKit Broadcaster Error:', err);
+                  }}
+                  className="w-full"
+                >
+                  <RoomAudioRenderer />
+                  <BroadcasterStage
+                    title={broadcastData.title || 'Maa Durga Maha Aarti Live'}
+                    hostName={user?.name}
+                    currentViewers={currentViewers}
+                    peakViewers={peakViewers}
+                    onEndBroadcast={() => setShowEndModal(true)}
+                  />
+                </LiveKitRoom>
+              </ErrorBoundary>
             </div>
 
             {/* Live Donations Feed Sidebar (1 col) */}
@@ -850,3 +1063,4 @@ export const AdminLiveBroadcast: React.FC = () => {
     </div>
   );
 };
+export default AdminLiveBroadcast;

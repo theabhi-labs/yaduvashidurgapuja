@@ -29,6 +29,7 @@ import { useDonationSocket } from '../hooks/useDonationSocket';
 import { getSocket } from '../services/socket';
 import { Button } from '../components/common/Button';
 import { useToast } from '../context/ToastContext';
+import { ErrorBoundary } from '../components/common/ErrorBoundary';
 
 // Custom View-only Player inside LiveKit Room
 const LiveStreamPlayer: React.FC<{
@@ -37,11 +38,19 @@ const LiveStreamPlayer: React.FC<{
   currentViewers?: number;
 }> = ({ hostName, title, currentViewers = 0 }) => {
   const tracks = useTracks(
-    [{ source: Track.Source.Camera, withPlaceholder: false }],
+    [
+      { source: Track.Source.Camera, withPlaceholder: false },
+      { source: Track.Source.ScreenShare, withPlaceholder: false },
+    ],
     { onlySubscribed: false }
   );
 
-  const cameraTrack = tracks[0];
+  const cameraTrack =
+    tracks.find(
+      (t) =>
+        isTrackReference(t) &&
+        (t.source === Track.Source.Camera || t.source === Track.Source.ScreenShare)
+    ) || tracks[0];
 
   return (
     <div className="relative w-full aspect-video bg-dark-950 rounded-2xl overflow-hidden shadow-2xl border-2 border-gold-500/50 flex items-center justify-center">
@@ -281,21 +290,26 @@ export const LiveDarshan: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left 2 Cols: Live Video Player & Stream Info */}
             <div className="lg:col-span-2 space-y-4">
-              <LiveKitRoom
-                video={false}
-                audio={false}
-                token={joinData.token}
-                serverUrl={joinData.wsUrl}
-                connect={true}
-                data-lk-theme="default"
-                className="w-full"
+              <ErrorBoundary
+                fallbackTitle="लाइव दर्शन प्लेयर त्रुटि (Live Player Error)"
+                fallbackMessage="लाइव प्रसारण लोड करने में समस्या आई। पुनः प्रयास करें।"
               >
-                <LiveStreamPlayer
-                  hostName={activeSession.hostName}
-                  title={activeSession.title}
-                  currentViewers={liveViewerCount}
-                />
-              </LiveKitRoom>
+                <LiveKitRoom
+                  video={false}
+                  audio={false}
+                  token={joinData.token}
+                  serverUrl={joinData.wsUrl}
+                  connect={true}
+                  data-lk-theme="default"
+                  className="w-full"
+                >
+                  <LiveStreamPlayer
+                    hostName={activeSession.hostName}
+                    title={activeSession.title}
+                    currentViewers={liveViewerCount}
+                  />
+                </LiveKitRoom>
+              </ErrorBoundary>
 
               {/* Stream Info & Actions bar */}
               <div className="bg-cream-50 p-4 sm:p-6 rounded-2xl border border-gold-500/30 shadow-md space-y-4">
