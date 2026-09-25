@@ -138,6 +138,9 @@ export const AppRoutes: React.FC = () => {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/live-darshan" element={<LiveDarshan />} />
+          <Route path="/live darshan" element={<LiveDarshan />} />
+          <Route path="/live%20darshan" element={<LiveDarshan />} />
+          <Route path="/live" element={<LiveDarshan />} />
           <Route path="/donate" element={<Donation />} />
           <Route path="/donation" element={<Donation />} />
           <Route path="/memories" element={<Memories />} />
@@ -203,6 +206,10 @@ export const AppRoutes: React.FC = () => {
           />
           <Route path="donations" element={<AdminDonations />} />
           <Route path="live-darshan" element={<AdminLiveBroadcast />} />
+          <Route path="live darshan" element={<AdminLiveBroadcast />} />
+          <Route path="live%20darshan" element={<AdminLiveBroadcast />} />
+          <Route path="live" element={<AdminLiveBroadcast />} />
+          <Route path="broadcast" element={<AdminLiveBroadcast />} />
           <Route path="aarti-timings" element={<AdminPujaSchedules />} />
           <Route path="banners" element={<AdminHeroBanners />} />
           <Route path="memories" element={<AdminMemories />} />
