@@ -3,12 +3,12 @@ import { ApiResponse, User } from '../types';
 
 export const authService = {
   async register(data: { name: string; email: string; password: string }) {
-    const res = await api.post<ApiResponse<{ user: User }>>('/auth/register', data);
+    const res = await api.post<ApiResponse<{ user: User; token: string }>>('/auth/register', data);
     return res.data;
   },
 
   async login(data: { email: string; password: string }) {
-    const res = await api.post<ApiResponse<{ user: User }>>('/auth/login', data);
+    const res = await api.post<ApiResponse<{ user: User; token: string }>>('/auth/login', data);
     return res.data;
   },
 
@@ -28,7 +28,7 @@ export const authService = {
   },
 
   async resetPassword(data: { token: string; newPassword: string }) {
-    const res = await api.post<ApiResponse<{ user: User }>>('/auth/reset-password', data);
+    const res = await api.post<ApiResponse<{ user: User; token: string }>>('/auth/reset-password', data);
     return res.data;
   },
 

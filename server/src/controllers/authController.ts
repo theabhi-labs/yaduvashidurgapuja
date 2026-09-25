@@ -50,7 +50,7 @@ export class AuthController {
         res,
         201,
         'पंजीकरण सफल हुआ! स्वागत है यदुवंशी दुर्गा पूजा कपूरिपुर में।',
-        { user }
+        { user, token }
       );
     } catch (error) {
       next(error);
@@ -92,7 +92,7 @@ export class AuthController {
 
       logger.info(`User logged in: ${user.email}`);
 
-      return sendResponse(res, 200, 'लॉगिन सफल हुआ!', { user: safeUser });
+      return sendResponse(res, 200, 'लॉगिन सफल हुआ!', { user: safeUser, token });
     } catch (error) {
       next(error);
     }
@@ -190,7 +190,7 @@ export class AuthController {
       const jwtToken = generateToken(user);
       setAuthCookie(res, jwtToken);
 
-      return sendResponse(res, 200, 'पासवर्ड सफलतापूर्वक बदल दिया गया है!', { user });
+      return sendResponse(res, 200, 'पासवर्ड सफलतापूर्वक बदल दिया गया है!', { user, token: jwtToken });
     } catch (error) {
       next(error);
     }

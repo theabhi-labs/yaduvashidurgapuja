@@ -29,9 +29,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(res.data.user);
       } else {
         setUser(null);
+        localStorage.removeItem('auth_token');
       }
     } catch {
       setUser(null);
+      localStorage.removeItem('auth_token');
     } finally {
       setIsLoading(false);
     }
@@ -45,6 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await authService.login({ email, password });
+      if (res.data.token) {
+        localStorage.setItem('auth_token', res.data.token);
+      }
       setUser(res.data.user);
       toast.success(`जय माँ दुर्गे! स्वागत है ${res.data.user.name}`);
       return res.data.user;
@@ -60,6 +65,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await authService.register({ name, email, password });
+      if (res.data.token) {
+        localStorage.setItem('auth_token', res.data.token);
+      }
       setUser(res.data.user);
       toast.success(`पंजीकरण सफल! आपका स्वागत है ${res.data.user.name}`);
       return res.data.user;
@@ -74,9 +82,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await authService.logout();
+      localStorage.removeItem('auth_token');
       setUser(null);
       toast.info('सफलतापूर्वक लॉगआउट किया गया');
     } catch (err: any) {
+      localStorage.removeItem('auth_token');
+      setUser(null);
       toast.error(err.message || 'लॉगआउट में समस्या आई');
     }
   };
