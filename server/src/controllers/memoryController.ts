@@ -86,7 +86,7 @@ export class MemoryController {
       // If hidden, only owner or admin can view
       if (memory.status === 'hidden') {
         const isOwner = req.user && req.user._id.toString() === memory.userId._id.toString();
-        const isAdmin = req.user && req.user.role === 'ADMIN';
+        const isAdmin = req.user && (req.user.role === 'ADMIN' || req.user.role === 'SUPERADMIN');
 
         if (!isOwner && !isAdmin) {
           throw new ApiError(404, 'यह स्मृति वर्तमान में समीक्षाधीन या छिपी हुई है');
@@ -207,7 +207,7 @@ export class MemoryController {
       }
 
       const isOwner = memory.userId.toString() === req.user._id.toString();
-      const isAdmin = req.user.role === 'ADMIN';
+      const isAdmin = req.user.role === 'ADMIN' || req.user.role === 'SUPERADMIN';
 
       if (!isOwner && !isAdmin) {
         throw new ApiError(403, 'आप केवल अपनी ही स्मृति को संपादित कर सकते हैं');
@@ -246,7 +246,7 @@ export class MemoryController {
       }
 
       const isOwner = memory.userId.toString() === req.user._id.toString();
-      const isAdmin = req.user.role === 'ADMIN';
+      const isAdmin = req.user.role === 'ADMIN' || req.user.role === 'SUPERADMIN';
 
       if (!isOwner && !isAdmin) {
         throw new ApiError(403, 'आप केवल अपनी ही स्मृति को हटा सकते हैं');
