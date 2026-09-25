@@ -2,11 +2,12 @@ import { Router } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticate } from '../middleware/authMiddleware';
 import { validateRequest } from '../middleware/validateRequest';
-import { authLimiter } from '../middleware/rateLimiter';
+import { authLimiter, otpLimiter } from '../middleware/rateLimiter';
 import {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
+  verifyOtpSchema,
   resetPasswordSchema,
   verifyEmailSchema,
 } from '../validators/authValidators';
@@ -31,11 +32,19 @@ router.post('/logout', AuthController.logout);
 
 router.get('/me', authenticate, AuthController.getMe);
 
+// OTP Forgot Password Flow
 router.post(
   '/forgot-password',
-  authLimiter,
+  otpLimiter,
   validateRequest(forgotPasswordSchema),
   AuthController.forgotPassword
+);
+
+router.post(
+  '/verify-otp',
+  authLimiter,
+  validateRequest(verifyOtpSchema),
+  AuthController.verifyOtp
 );
 
 router.post(

@@ -13,6 +13,7 @@ import {
   X,
   ShieldCheck,
   Crown,
+  Radio,
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -32,12 +33,14 @@ export const AdminLayout: React.FC = () => {
   const adminNavItems = isSuperAdmin
     ? [
         { name: 'नियंत्रण कक्ष (Overview)', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
+        { name: 'लाइव दर्शन प्रसारण (Live)', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'स्मृतियाँ (Memories)', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'उपयोगकर्ता व भूमिकाएँ (Users)', path: '/admin/users', icon: <Users className="w-5 h-5" /> },
         { name: 'रिपोर्ट्स (Reports)', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
         { name: 'समिति (Committee)', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
       ]
     : [
+        { name: 'लाइव दर्शन प्रसारण (Live)', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'स्मृतियाँ (Memories)', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'रिपोर्ट्स (Reports)', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
         { name: 'समिति (Committee)', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },

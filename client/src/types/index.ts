@@ -64,6 +64,55 @@ export interface Report {
   updatedAt: string;
 }
 
+export interface LiveSessionInfo {
+  _id?: string;
+  roomName: string;
+  hostName: string;
+  startedAt: string;
+  peakViewers?: number;
+}
+
+export interface LiveSessionJoinResponse {
+  roomName: string;
+  token: string;
+  wsUrl: string;
+  hostName?: string;
+  startedAt?: string;
+}
+
+export interface LiveSessionStartResponse {
+  sessionId: string;
+  roomName: string;
+  token: string;
+  wsUrl: string;
+}
+
+export type DonationStatus = 'created' | 'paid' | 'failed';
+
+export interface Donation {
+  _id: string;
+  donorName: string;
+  amount: number;
+  currency: string;
+  razorpayOrderId: string;
+  razorpayPaymentId?: string;
+  status: DonationStatus;
+  liveSessionRoomName?: string;
+  isAnonymous: boolean;
+  message?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DonationOrderResponse {
+  orderId: string;
+  amount: number;
+  currency: string;
+  keyId: string;
+  donorName: string;
+  donationId: string;
+}
+
 export interface PaginationMeta {
   page: number;
   limit: number;
@@ -122,4 +171,3 @@ export interface DashboardStats {
   };
   visitors?: VisitorAnalytics;
 }
-

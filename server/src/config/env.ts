@@ -15,4 +15,18 @@ export const ENV = {
   UPLOAD_DIR: process.env.UPLOAD_DIR || 'uploads',
   CONTACT_EMAIL: process.env.CONTACT_EMAIL || 'contact@yaduvashidurgapujakapooripur.online',
   isProduction: process.env.NODE_ENV === 'production',
+  
+  // Brevo Transactional Email
+  BREVO_API_KEY: process.env.BREVO_API_KEY || '',
+  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL || 'contact@yaduvashidurgapujakapooripur.online',
+  BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME || 'Yaduvashi Durga Puja Kapooripur',
+
+  // LiveKit WebRTC Video Streaming
+  LIVEKIT_URL: process.env.LIVEKIT_URL || '',
+  LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY || '',
+  LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET || '',
+
+  // Razorpay Payment Gateway
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
 };

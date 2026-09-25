@@ -7,7 +7,9 @@ import { CommitteePreview } from '../components/committee/CommitteePreview';
 import { Memory, CommitteeMember } from '../types';
 import { memoryService } from '../services/memoryService';
 import { committeeService } from '../services/committeeService';
+import { liveDarshanService } from '../services/liveDarshanService';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { DonateButton } from '../components/donation/DonateButton';
 import {
   Camera,
   BookOpen,
@@ -21,7 +23,8 @@ import {
   Clock,
   Download,
   MapPin,
-  ChevronRight
+  ChevronRight,
+  Radio,
 } from 'lucide-react';
 
 export const Home: React.FC = () => {
@@ -29,7 +32,26 @@ export const Home: React.FC = () => {
   const [committee, setCommittee] = useState<CommitteeMember[]>([]);
   const [loadingMemories, setLoadingMemories] = useState(true);
   const [loadingCommittee, setLoadingCommittee] = useState(true);
+  const [liveSessions, setLiveSessions] = useState<any[]>([]);
   const { isInstalled, installApp } = usePWAInstall();
+
+  // Poll for active live broadcasts every 30 seconds
+  useEffect(() => {
+    const checkLiveStatus = async () => {
+      try {
+        const res = await liveDarshanService.listLiveSessions();
+        if (res.success && Array.isArray(res.data)) {
+          setLiveSessions(res.data);
+        }
+      } catch (e) {
+        // quiet fallback
+      }
+    };
+
+    checkLiveStatus();
+    const liveTimer = setInterval(checkLiveStatus, 30000);
+    return () => clearInterval(liveTimer);
+  }, []);
 
   useEffect(() => {
     // Fetch latest data for desktop overview
@@ -66,6 +88,36 @@ export const Home: React.FC = () => {
       {/* 📱 MOBILE-FIRST SACRED HOME PORTAL (Visible ONLY on Mobile md:hidden)      */}
       {/* ========================================================================= */}
       <div className="block md:hidden px-3 pt-3 pb-8 space-y-4">
+        {/* 🔴 Mobile Live Darshan Active Banner */}
+        {liveSessions.length > 0 && (
+          <Link
+            to="/live-darshan"
+            className="block p-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-maroon-800 to-red-700 text-white border-2 border-amber-400 shadow-xl animate-pulse"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white">
+                  <Radio className="w-4 h-4" />
+                </span>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-300 animate-ping" />
+                    <h4 className="text-xs font-bold font-devanagari-heading uppercase tracking-wide text-amber-200">
+                      लाइव आरती चालू है
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-cream-100 font-devanagari-body">
+                    कपूरिपुर पंडाल से सीधा दर्शन करें →
+                  </p>
+                </div>
+              </div>
+              <span className="bg-amber-400 text-maroon-950 text-xs font-black px-3 py-1.5 rounded-xl font-devanagari-body shadow">
+                देखें
+              </span>
+            </div>
+          </Link>
+        )}
+
         {/* 1. Mobile Sacred Hero Banner */}
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-maroon-950 via-maroon-900 to-maroon-950 border-2 border-amber-500/40 shadow-xl p-4 text-cream-50">
           <div className="absolute inset-0 bg-maroon-pattern opacity-30 pointer-events-none" />
@@ -172,7 +224,26 @@ export const Home: React.FC = () => {
               </div>
             </Link>
 
-            {/* Tile 3: Committee */}
+            {/* Tile 3: Live Darshan */}
+            <Link
+              to="/live-darshan"
+              className="p-3.5 rounded-2xl bg-gradient-to-br from-red-100 to-cream-50 border border-red-300/80 shadow-soft flex flex-col justify-between h-28 group active:scale-95 transition-transform"
+            >
+              <div className="w-8 h-8 rounded-xl bg-red-700 text-cream-50 flex items-center justify-center">
+                <Radio className="w-4 h-4" />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-red-950 font-devanagari-heading">
+                    लाइव दर्शन
+                  </h4>
+                  <p className="text-[10px] text-red-800 font-devanagari-body">आरती व दान</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-red-800 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </Link>
+
+            {/* Tile 4: Committee */}
             <Link
               to="/committee"
               className="p-3.5 rounded-2xl bg-gradient-to-br from-cream-100 to-cream-50 border border-cream-300 shadow-soft flex flex-col justify-between h-28 group active:scale-95 transition-transform"
@@ -186,25 +257,6 @@ export const Home: React.FC = () => {
                     पूजा समिति
                   </h4>
                   <p className="text-[10px] text-muted font-devanagari-body">संरक्षक व सेवक</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-maroon-700 group-hover:translate-x-0.5 transition-transform" />
-              </div>
-            </Link>
-
-            {/* Tile 4: About & History */}
-            <Link
-              to="/about"
-              className="p-3.5 rounded-2xl bg-gradient-to-br from-cream-100 to-cream-50 border border-cream-300 shadow-soft flex flex-col justify-between h-28 group active:scale-95 transition-transform"
-            >
-              <div className="w-8 h-8 rounded-xl bg-maroon-800 text-amber-400 flex items-center justify-center">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="text-xs font-bold text-dark-950 font-devanagari-heading">
-                    इतिहास व परिचय
-                  </h4>
-                  <p className="text-[10px] text-muted font-devanagari-body">कपूरिपुर गौरव</p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-maroon-700 group-hover:translate-x-0.5 transition-transform" />
               </div>
@@ -243,6 +295,35 @@ export const Home: React.FC = () => {
       {/* 💻 DESKTOP FULL OVERVIEW SECTIONS (Visible ONLY on Desktop md:flex)        */}
       {/* ========================================================================= */}
       <div className="hidden md:flex md:flex-col">
+        {/* 🔴 Desktop Live Darshan Banner */}
+        {liveSessions.length > 0 && (
+          <div className="bg-gradient-to-r from-red-700 via-maroon-900 to-red-700 text-white py-3 px-4 border-b-2 border-gold-400 shadow-md">
+            <div className="max-w-6xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500 text-white text-xs font-black uppercase tracking-wider animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-white" />
+                  Live Now
+                </span>
+                <span className="text-sm font-devanagari-heading font-bold text-gold-200">
+                  माँ दुर्गा की पावन महाआरती का सीधा प्रसारण कपूरिपुर पंडाल से जारी है!
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Link to="/live-darshan">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="bg-gold-500 hover:bg-gold-400 text-maroon-950 font-bold shadow border border-gold-300"
+                  >
+                    🔴 लाइव दर्शन से जुड़ें
+                  </Button>
+                </Link>
+                <DonateButton size="sm" />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 1. HERO SECTION */}
         <section className="relative overflow-hidden bg-gradient-to-b from-maroon-950 via-maroon-900 to-maroon-950 text-cream-50 py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 border-b-4 border-amber-500">
           <div className="absolute inset-0 bg-maroon-pattern opacity-40 pointer-events-none" />

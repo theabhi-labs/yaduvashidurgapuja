@@ -12,6 +12,7 @@
     "seed": "ts-node-dev --transpile-only src/utils/seed.ts"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
@@ -28,14 +29,16 @@
     "express-rate-limit": "^7.3.1",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "livekit-server-sdk": "^2.19.1",
     "mongoose": "^8.5.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "razorpay": "^2.9.8",
     "rimraf": "^5.0.7",
     "sharp": "^0.33.4",
+    "socket.io": "^4.8.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.3",
     "zod": "^3.23.8"
-  },
-  "devDependencies": {}
+  }
 }

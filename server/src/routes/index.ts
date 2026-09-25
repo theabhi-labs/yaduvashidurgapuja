@@ -6,6 +6,8 @@ import reportRoutes from './reportRoutes';
 import adminRoutes from './adminRoutes';
 import contactRoutes from './contactRoutes';
 import analyticsRoutes from './analyticsRoutes';
+import liveDarshanRoutes from './liveDarshanRoutes';
+import donationRoutes from './donationRoutes';
 
 const router = Router();
 
@@ -26,5 +28,8 @@ router.use('/reports', reportRoutes);
 router.use('/admin', adminRoutes);
 router.use('/contact', contactRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/live-darshan', liveDarshanRoutes);
+router.use('/donations', donationRoutes);
 
 export default router;
+

@@ -23,11 +23,16 @@ export const authService = {
   },
 
   async forgotPassword(email: string) {
-    const res = await api.post<ApiResponse<{ resetToken?: string }>>('/auth/forgot-password', { email });
+    const res = await api.post<ApiResponse<{ email: string }>>('/auth/forgot-password', { email });
     return res.data;
   },
 
-  async resetPassword(data: { token: string; newPassword: string }) {
+  async verifyOtp(data: { email: string; otp: string }) {
+    const res = await api.post<ApiResponse<{ resetToken: string }>>('/auth/verify-otp', data);
+    return res.data;
+  },
+
+  async resetPassword(data: { resetToken: string; newPassword: string }) {
     const res = await api.post<ApiResponse<{ user: User; token: string }>>('/auth/reset-password', data);
     return res.data;
   },

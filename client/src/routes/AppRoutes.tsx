@@ -17,8 +17,10 @@ import { TermsConditions } from '../pages/TermsConditions';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import { ForgotPassword } from '../pages/ForgotPassword';
+import { VerifyOtp } from '../pages/VerifyOtp';
 import { ResetPassword } from '../pages/ResetPassword';
 import { VerifyEmail } from '../pages/VerifyEmail';
+import { LiveDarshan } from '../pages/LiveDarshan';
 import { NotFound } from '../pages/NotFound';
 
 // Protected User Pages
@@ -32,6 +34,7 @@ import { AdminMemories } from '../pages/admin/AdminMemories';
 import { AdminUsers } from '../pages/admin/AdminUsers';
 import { AdminReports } from '../pages/admin/AdminReports';
 import { AdminCommittee } from '../pages/admin/AdminCommittee';
+import { AdminLiveBroadcast } from '../pages/admin/AdminLiveBroadcast';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -39,6 +42,7 @@ export const AppRoutes: React.FC = () => {
       {/* Public and Devotee Routes within Main Website Layout */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/live-darshan" element={<LiveDarshan />} />
         <Route path="/memories" element={<Memories />} />
         <Route path="/memories/:id" element={<MemoryDetail />} />
         <Route path="/committee" element={<Committee />} />
@@ -49,6 +53,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
 
@@ -92,6 +97,7 @@ export const AppRoutes: React.FC = () => {
         }
       >
         <Route index element={<AdminDashboard />} />
+        <Route path="live-darshan" element={<AdminLiveBroadcast />} />
         <Route path="memories" element={<AdminMemories />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="reports" element={<AdminReports />} />

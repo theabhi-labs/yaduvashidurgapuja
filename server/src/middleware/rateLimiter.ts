@@ -32,3 +32,14 @@ export const uploadLimiter = rateLimit({
     message: 'अपलोड सीमा समाप्त हो गई है। कृपया 1 घंटे बाद पुनः प्रयास करें।',
   },
 });
+
+export const otpLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 3, // Max 3 requests per minute per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'OTP अनुरोध सीमा: कृपया 1 मिनट बाद पुनः प्रयास करें।',
+  },
+});

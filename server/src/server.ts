@@ -1,13 +1,19 @@
+import http from 'http';
 import app from './app';
 import { connectDB } from './config/db';
 import { ENV } from './config/env';
+import { initSocket } from './socket';
 import { logger } from './utils/logger';
 
 const startServer = async () => {
   // Connect to Database
   await connectDB();
 
-  const server = app.listen(ENV.PORT, () => {
+  // Create HTTP server and attach Socket.io
+  const httpServer = http.createServer(app);
+  initSocket(httpServer);
+
+  const server = httpServer.listen(ENV.PORT, () => {
     logger.info(`========================================================`);
     logger.info(` Durga Puja Kapoori Pur Memory Archive Backend Started`);
     logger.info(` Server Port    : ${ENV.PORT}`);
@@ -31,3 +37,4 @@ const startServer = async () => {
 };
 
 startServer();
+

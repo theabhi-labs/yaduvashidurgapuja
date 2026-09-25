@@ -1,10 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import { User, IUser } from '../models/User';
 import { ApiError, sendResponse } from '../utils/apiResponse';
 import { generateToken, setAuthCookie, clearAuthCookie } from '../services/authTokens';
+import { sendEmail } from '../config/brevo';
+import { getWelcomeEmailHtml } from '../emails/welcomeEmail';
+import { getOtpEmailHtml } from '../emails/otpEmail';
+import { ENV } from '../config/env';
 import { logger } from '../utils/logger';
+
+interface ResetTokenPayload {
+  userId: string;
+  purpose: string;
+}
 
 export class AuthController {
   /**
@@ -37,7 +47,7 @@ export class AuthController {
         email: email.toLowerCase(),
         passwordHash,
         role,
-        isEmailVerified: true, // Auto-verified for community accessibility, or via token
+        isEmailVerified: true, // Auto-verified for community accessibility
         emailVerificationToken: verificationToken,
       });
 
@@ -45,6 +55,14 @@ export class AuthController {
       setAuthCookie(res, token);
 
       logger.info(`User registered: ${user.email} (${user.role})`);
+
+      // Asynchronous non-blocking Welcome Email via Brevo
+      sendEmail({
+        to: user.email,
+        name: user.name,
+        subject: '॥ जय माँ दुर्गे ॥ यदुवंशी दुर्गा पूजा कपूरिपुर में आपका स्वागत है',
+        htmlContent: getWelcomeEmailHtml(user.name),
+      }).catch((err) => logger.warn(`[Welcome Email Error] ${err.message}`));
 
       return sendResponse(
         res,
@@ -128,34 +146,56 @@ export class AuthController {
   }
 
   /**
-   * Forgot Password
+   * Forgot Password — Send 6-Digit OTP via Brevo
    * POST /api/auth/forgot-password
    */
   public static async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = req.body;
+      const normalizedEmail = email.toLowerCase().trim();
 
-      const user = await User.findOne({ email: email.toLowerCase() });
+      const user = await User.findOne({ email: normalizedEmail });
       if (!user) {
         // Prevent user enumeration: respond identically
         return sendResponse(
           res,
           200,
-          'यदि यह ईमेल हमारे पास पंजीकृत है, तो पासवर्ड रीसेट निर्देश भेज दिए गए हैं।'
+          'यदि यह ईमेल हमारे पास पंजीकृत है, तो 6 अंकों का OTP भेज दिया गया है।',
+          { email: normalizedEmail }
         );
       }
 
-      const resetToken = crypto.randomBytes(32).toString('hex');
-      user.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-      user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+      // Generate 6-digit numeric OTP (100000 to 999999)
+      const otp = crypto.randomInt(100000, 1000000).toString();
+
+      // Securely hash OTP with SHA-256 before saving to DB
+      const resetOtpHash = crypto.createHash('sha256').update(otp).digest('hex');
+      const resetOtpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      user.resetOtpHash = resetOtpHash;
+      user.resetOtpExpiry = resetOtpExpiry;
+      user.resetOtpAttempts = 0;
       await user.save();
 
-      // Return token in dev/demo mode for easy testing
+      logger.info(`[Password Reset OTP Generated] User: ${user.email}`);
+
+      // Send OTP via Brevo Transactional Email (non-blocking)
+      sendEmail({
+        to: user.email,
+        name: user.name,
+        subject: '॥ यदुवंशी दुर्गा पूजा ॥ पासवर्ड रीसेट हेतु OTP कोड',
+        htmlContent: getOtpEmailHtml(user.name, otp),
+      }).catch((err) => logger.warn(`[OTP Email Error] ${err.message}`));
+
       return sendResponse(
         res,
         200,
-        'पासवर्ड रीसेट लिंक तैयार हो गया है।',
-        { resetToken }
+        'यदि यह ईमेल हमारे पास पंजीकृत है, तो 6 अंकों का OTP भेज दिया गया है।',
+        { 
+          email: normalizedEmail,
+          // Only in development simulation for quick testing if Brevo key is unset
+          ...(ENV.NODE_ENV !== 'production' && !ENV.BREVO_API_KEY ? { devOtp: otp } : {})
+        }
       );
     } catch (error) {
       next(error);
@@ -163,34 +203,140 @@ export class AuthController {
   }
 
   /**
-   * Reset Password
+   * Verify OTP — Returns Short-Lived JWT resetToken
+   * POST /api/auth/verify-otp
+   */
+  public static async verifyOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, otp } = req.body;
+      const normalizedEmail = email.toLowerCase().trim();
+
+      const user = await User.findOne({ email: normalizedEmail }).select(
+        '+resetOtpHash +resetOtpExpiry +resetOtpAttempts'
+      );
+
+      if (!user || !user.resetOtpHash || !user.resetOtpExpiry) {
+        throw new ApiError(400, 'अमान्य अनुरोध। कृपया पासवर्ड रीसेट का पुनः अनुरोध करें।');
+      }
+
+      // Check Expiry (10 minutes)
+      if (new Date() > user.resetOtpExpiry) {
+        user.resetOtpHash = undefined;
+        user.resetOtpExpiry = undefined;
+        user.resetOtpAttempts = 0;
+        await user.save();
+        throw new ApiError(400, 'OTP की समय सीमा समाप्त हो गई है। कृपया नया OTP मंगाएं।');
+      }
+
+      // Check Brute-Force Attempts
+      if (user.resetOtpAttempts >= 5) {
+        user.resetOtpHash = undefined;
+        user.resetOtpExpiry = undefined;
+        user.resetOtpAttempts = 0;
+        await user.save();
+        throw new ApiError(
+          400,
+          'सुरक्षा कारणों से बहुत अधिक गलत प्रयास हुए हैं। OTP अमान्य कर दिया गया है, कृपया पुनः नया OTP मंगाएं।'
+        );
+      }
+
+      // Verify SHA-256 Hash
+      const candidateHash = crypto.createHash('sha256').update(otp.trim()).digest('hex');
+      if (candidateHash !== user.resetOtpHash) {
+        user.resetOtpAttempts = (user.resetOtpAttempts || 0) + 1;
+        await user.save();
+        const remainingAttempts = 5 - user.resetOtpAttempts;
+        throw new ApiError(
+          400,
+          `गलत OTP दर्ज किया गया है। शेष प्रयास: ${Math.max(0, remainingAttempts)}`
+        );
+      }
+
+      // OTP is valid! Clear OTP fields
+      user.resetOtpHash = undefined;
+      user.resetOtpExpiry = undefined;
+      user.resetOtpAttempts = 0;
+      await user.save();
+
+      // Issue a short-lived 10-minute JWT resetToken
+      const resetToken = jwt.sign(
+        { userId: user._id.toString(), purpose: 'password_reset' },
+        ENV.JWT_SECRET,
+        { expiresIn: '10m' }
+      );
+
+      logger.info(`[OTP Verified Successfully] User: ${user.email}`);
+
+      return sendResponse(res, 200, 'OTP सफलतापूर्वक सत्यापित हो गया!', {
+        resetToken,
+        email: user.email,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Reset Password — Accepts JWT resetToken & newPassword
    * POST /api/auth/reset-password
    */
   public static async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token, newPassword } = req.body;
+      const { resetToken, token, newPassword } = req.body;
+      const incomingToken = resetToken || token;
 
-      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-      const user = await User.findOne({
-        passwordResetToken: hashedToken,
-        passwordResetExpires: { $gt: new Date() },
-      }).select('+passwordHash');
-
-      if (!user) {
-        throw new ApiError(400, 'पासवर्ड रीसेट टोकन अमान्य या समाप्त हो चुका है');
+      if (!incomingToken) {
+        throw new ApiError(400, 'रीसेट टोकन आवश्यक है');
       }
 
+      let userId: string;
+
+      // Check if it's a JWT resetToken (new OTP flow)
+      try {
+        const decoded = jwt.verify(incomingToken, ENV.JWT_SECRET) as ResetTokenPayload;
+        if (decoded.purpose !== 'password_reset' || !decoded.userId) {
+          throw new Error('Invalid token purpose');
+        }
+        userId = decoded.userId;
+      } catch {
+        // Fallback: Check if it's a legacy SHA-256 passwordResetToken
+        const hashedToken = crypto.createHash('sha256').update(incomingToken).digest('hex');
+        const legacyUser = await User.findOne({
+          passwordResetToken: hashedToken,
+          passwordResetExpires: { $gt: new Date() },
+        }).select('+passwordHash');
+
+        if (!legacyUser) {
+          throw new ApiError(400, 'पासवर्ड रीसेट टोकन अमान्य या समाप्त हो चुका है। कृपया पुनः प्रयास करें।');
+        }
+        userId = legacyUser._id.toString();
+      }
+
+      const user = await User.findById(userId).select('+passwordHash');
+      if (!user) {
+        throw new ApiError(404, 'उपयोगकर्ता खाता नहीं मिला');
+      }
+
+      // Hash and update new password
       const salt = await bcrypt.genSalt(12);
       user.passwordHash = await bcrypt.hash(newPassword, salt);
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
+      user.resetOtpHash = undefined;
+      user.resetOtpExpiry = undefined;
+      user.resetOtpAttempts = 0;
       await user.save();
 
+      // Issue new active login JWT
       const jwtToken = generateToken(user);
       setAuthCookie(res, jwtToken);
 
-      return sendResponse(res, 200, 'पासवर्ड सफलतापूर्वक बदल दिया गया है!', { user, token: jwtToken });
+      logger.info(`[Password Reset Complete] User: ${user.email}`);
+
+      return sendResponse(res, 200, 'पासवर्ड सफलतापूर्वक बदल दिया गया है!', {
+        user,
+        token: jwtToken,
+      });
     } catch (error) {
       next(error);
     }

@@ -13,6 +13,9 @@ export interface IUser extends Document {
   emailVerificationExpires?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  resetOtpHash?: string;
+  resetOtpExpiry?: Date;
+  resetOtpAttempts: number;
   isSuspended: boolean;
   suspensionReason?: string;
   createdAt: Date;
@@ -78,6 +81,19 @@ const UserSchema = new Schema<IUser>(
       type: Date,
       select: false,
     },
+    resetOtpHash: {
+      type: String,
+      select: false,
+    },
+    resetOtpExpiry: {
+      type: Date,
+      select: false,
+    },
+    resetOtpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
     isSuspended: {
       type: Boolean,
       default: false,
@@ -97,6 +113,9 @@ const UserSchema = new Schema<IUser>(
         delete ret.emailVerificationExpires;
         delete ret.passwordResetToken;
         delete ret.passwordResetExpires;
+        delete ret.resetOtpHash;
+        delete ret.resetOtpExpiry;
+        delete ret.resetOtpAttempts;
         delete ret.__v;
         return ret;
       },
