@@ -37,7 +37,7 @@ export const InstagramPostModal: React.FC<InstagramPostModalProps> = ({
       {/* Close button */}
       <button
         onClick={onClose}
-        aria-label="बंद करें"
+        aria-label="Close"
         className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-dark-900/80 text-cream-100 hover:bg-maroon-800 hover:text-cream-50 transition-colors shadow-lg border border-cream-100/20"
       >
         <X className="w-6 h-6" />

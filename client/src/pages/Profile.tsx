@@ -77,12 +77,12 @@ export const Profile: React.FC = () => {
           <div className="flex-1 text-center sm:text-left space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
               <div>
-                <h1 className="text-2xl font-devanagari-heading font-bold text-dark-950 flex items-center justify-center sm:justify-start gap-2">
+                <h1 className="text-2xl font-heading font-bold text-dark-950 flex items-center justify-center sm:justify-start gap-2">
                   <span>{user.name}</span>
-                  <span title="सत्यापित भक्त"><ShieldCheck className="w-5 h-5 text-emerald-600" /></span>
+                  <span title="Verified Devotee"><ShieldCheck className="w-5 h-5 text-emerald-600" /></span>
                 </h1>
-                <p className="text-xs font-devanagari-body text-muted mt-0.5">
-                  {user.email} • सदस्य: {formatDate(user.createdAt)}
+                <p className="text-xs font-body text-muted mt-0.5">
+                  {user.email} • Member since {formatDate(user.createdAt)}
                 </p>
               </div>
 
@@ -90,7 +90,7 @@ export const Profile: React.FC = () => {
               <div className="flex items-center justify-center sm:justify-end gap-2 pt-2 sm:pt-0">
                 <Link to="/share-memory">
                   <Button size="sm" leftIcon={<PlusSquare className="w-4 h-4" />}>
-                    याद साझा करें
+                    Share Memory
                   </Button>
                 </Link>
 
@@ -101,39 +101,39 @@ export const Profile: React.FC = () => {
                   leftIcon={<LogOut className="w-4 h-4" />}
                   className="text-rose-700 border-rose-200 hover:bg-rose-50"
                 >
-                  लॉगआउट
+                  Log Out
                 </Button>
               </div>
             </div>
 
             {/* Badges */}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-              <span className="text-xs font-devanagari-body font-semibold px-3 py-1 rounded-full bg-cream-200 text-dark-900 border border-cream-300">
-                📍 कपूरिपुर, दुर्गा पूजा परिवार
+              <span className="text-xs font-body font-semibold px-3 py-1 rounded-full bg-cream-200 text-dark-900 border border-cream-300">
+                📍 Kapooripur, Durga Puja Family
               </span>
 
               {isSuperAdmin ? (
-                <span className="text-xs font-devanagari-body font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
+                <span className="text-xs font-body font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
                   <Shield className="w-3.5 h-3.5 text-amber-700" />
-                  सुपर व्यवस्थापक (SuperAdmin)
+                  Super Administrator
                 </span>
               ) : isAdmin ? (
-                <span className="text-xs font-devanagari-body font-bold px-3 py-1 rounded-full bg-maroon-100 text-maroon-900 border border-maroon-300 flex items-center gap-1">
+                <span className="text-xs font-body font-bold px-3 py-1 rounded-full bg-maroon-100 text-maroon-900 border border-maroon-300 flex items-center gap-1">
                   <ShieldAlert className="w-3.5 h-3.5 text-maroon-700" />
-                  समिति व्यवस्थापक (Admin)
+                  Committee Admin
                 </span>
               ) : (
-                <span className="text-xs font-devanagari-body font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                  🙏 समर्पित श्रद्धालु
+                <span className="text-xs font-body font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
+                  🙏 Devotee Member
                 </span>
               )}
 
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="text-xs font-devanagari-body font-bold px-3 py-1 rounded-full bg-maroon-800 text-cream-50 hover:bg-maroon-900 transition-colors shadow-sm"
+                  className="text-xs font-body font-bold px-3 py-1 rounded-full bg-maroon-800 text-cream-50 hover:bg-maroon-900 transition-colors shadow-sm"
                 >
-                  व्यवस्थापक डैशबोर्ड खोलें →
+                  Open Admin Dashboard →
                 </Link>
               )}
             </div>
@@ -141,17 +141,17 @@ export const Profile: React.FC = () => {
             {/* Stat Counters (Instagram Style - No Vanity Followers) */}
             <div className="flex items-center justify-center sm:justify-start gap-8 pt-3 border-t border-cream-200/80">
               <div className="text-center sm:text-left">
-                <span className="block font-bold text-lg font-devanagari-heading text-maroon-900">
+                <span className="block font-bold text-lg font-heading text-maroon-900">
                   {myMemories.length}
                 </span>
-                <span className="text-xs font-devanagari-body text-muted">स्मृतियाँ साझा कीं</span>
+                <span className="text-xs font-body text-muted">Memories Shared</span>
               </div>
 
               <div className="text-center sm:text-left">
-                <span className="block font-bold text-lg font-devanagari-heading text-maroon-900">
+                <span className="block font-bold text-lg font-heading text-maroon-900">
                   {bookmarkedMemories.length}
                 </span>
-                <span className="text-xs font-devanagari-body text-muted">सहेजी गई यादें</span>
+                <span className="text-xs font-body text-muted">Saved Memories</span>
               </div>
             </div>
           </div>
@@ -162,14 +162,14 @@ export const Profile: React.FC = () => {
       <div className="flex items-center justify-center border-t border-b border-cream-300/80 mb-6 bg-cream-100/50 rounded-2xl">
         <button
           onClick={() => setActiveTab('my')}
-          className={`flex items-center gap-2 py-3 px-6 text-xs sm:text-sm font-devanagari-body font-bold transition-all relative ${
+          className={`flex items-center gap-2 py-3 px-6 text-xs sm:text-sm font-body font-bold transition-all relative ${
             activeTab === 'my'
               ? 'text-maroon-900'
               : 'text-dark-700/60 hover:text-dark-900'
           }`}
         >
           <Grid className="w-4 h-4" />
-          <span>मेरी स्मृतियाँ ({myMemories.length})</span>
+          <span>My Memories ({myMemories.length})</span>
           {activeTab === 'my' && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-maroon-800 rounded-full" />
           )}
@@ -177,14 +177,14 @@ export const Profile: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('saved')}
-          className={`flex items-center gap-2 py-3 px-6 text-xs sm:text-sm font-devanagari-body font-bold transition-all relative ${
+          className={`flex items-center gap-2 py-3 px-6 text-xs sm:text-sm font-body font-bold transition-all relative ${
             activeTab === 'saved'
               ? 'text-maroon-900'
               : 'text-dark-700/60 hover:text-dark-900'
           }`}
         >
           <Bookmark className="w-4 h-4" />
-          <span>सहेजी गई यादें ({bookmarkedMemories.length})</span>
+          <span>Saved Memories ({bookmarkedMemories.length})</span>
           {activeTab === 'saved' && (
             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-maroon-800 rounded-full" />
           )}
@@ -195,7 +195,7 @@ export const Profile: React.FC = () => {
       {isLoading ? (
         <div className="py-12 text-center">
           <div className="w-8 h-8 border-3 border-maroon-700 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-          <p className="font-devanagari-body text-xs text-muted">स्मृतियाँ लोड हो रही हैं...</p>
+          <p className="font-body text-xs text-muted">Loading memories...</p>
         </div>
       ) : activeTab === 'my' ? (
         myMemories.length > 0 ? (
@@ -216,7 +216,7 @@ export const Profile: React.FC = () => {
                   <span className="self-end text-[10px] bg-dark-900/80 px-1.5 py-0.5 rounded-full font-bold">
                     {memory.year}
                   </span>
-                  <p className="text-[11px] font-devanagari-body line-clamp-2 leading-tight">
+                  <p className="text-[11px] font-body line-clamp-2 leading-tight">
                     {memory.caption}
                   </p>
                 </div>
@@ -226,14 +226,14 @@ export const Profile: React.FC = () => {
         ) : (
           <div className="py-16 text-center bg-cream-100 rounded-3xl border border-cream-300 max-w-md mx-auto p-8">
             <Sparkles className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-            <h3 className="font-devanagari-heading font-bold text-dark-900 text-lg mb-1">
-              अभी तक कोई याद साझा नहीं की
+            <h3 className="font-heading font-bold text-dark-900 text-lg mb-1">
+              No Memories Shared Yet
             </h3>
-            <p className="font-devanagari-body text-xs text-muted mb-4">
-              कपूरिपुर दुर्गा पूजा के अपने पावन संस्मरण और तस्वीरें साझा करें।
+            <p className="font-body text-xs text-muted mb-4">
+              Share your sacred photographs and remembrances from Kapooripur Durga Puja.
             </p>
             <Link to="/share-memory">
-              <Button size="sm">पहली याद जोड़ें +</Button>
+              <Button size="sm">Add First Memory +</Button>
             </Link>
           </div>
         )
@@ -256,7 +256,7 @@ export const Profile: React.FC = () => {
                   <span className="self-end text-[10px] bg-dark-900/80 px-1.5 py-0.5 rounded-full font-bold">
                     {memory.year}
                   </span>
-                  <p className="text-[11px] font-devanagari-body line-clamp-2 leading-tight">
+                  <p className="text-[11px] font-body line-clamp-2 leading-tight">
                     {memory.caption}
                   </p>
                 </div>
@@ -266,14 +266,14 @@ export const Profile: React.FC = () => {
         ) : (
           <div className="py-16 text-center bg-cream-100 rounded-3xl border border-cream-300 max-w-md mx-auto p-8">
             <Bookmark className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-            <h3 className="font-devanagari-heading font-bold text-dark-900 text-lg mb-1">
-              कोई सहेजी गई याद नहीं
+            <h3 className="font-heading font-bold text-dark-900 text-lg mb-1">
+              No Saved Memories
             </h3>
-            <p className="font-devanagari-body text-xs text-muted mb-4">
-              स्मृति पर बुकमार्क आइकन (🔖) दबाकर अपनी पसंदीदा यादों को यहाँ सहेजें।
+            <p className="font-body text-xs text-muted mb-4">
+              Click the bookmark icon on any memory card to save your favorite memories here.
             </p>
             <Link to="/memories">
-              <Button variant="outline" size="sm">स्मृतियाँ देखें</Button>
+              <Button variant="outline" size="sm">Browse Memories</Button>
             </Link>
           </div>
         )

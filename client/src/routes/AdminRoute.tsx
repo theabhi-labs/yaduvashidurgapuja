@@ -11,7 +11,7 @@ export const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-maroon-700" />
-        <p className="text-sm font-devanagari-body text-muted">व्यवस्थापक अनुमति जांची जा रही है...</p>
+        <p className="text-sm font-body text-muted">Checking administrator permissions...</p>
       </div>
     );
   }

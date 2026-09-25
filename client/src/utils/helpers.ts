@@ -1,9 +1,9 @@
 export const formatDate = (dateString: string): string => {
   try {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('hi-IN', {
+    return new Intl.DateTimeFormat('en-US', {
       day: 'numeric',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
     }).format(date);
   } catch {
@@ -25,9 +25,9 @@ export const getImageUrl = (pathOrUrl: string): string => {
 
 export const generateShareText = (memoryId: string, caption?: string, year?: number): string => {
   const url = `${window.location.origin}/memories/${memoryId}`;
-  const yearText = year ? ` [वर्ष ${year}]` : '';
+  const yearText = year ? ` [Year ${year}]` : '';
   const snippet = caption ? `"${caption.slice(0, 100)}${caption.length > 100 ? '...' : ''}"\n\n` : '';
-  return `यादों में बसी दुर्गा पूजा ❤️\nकपूरिपुर की पावन दुर्गा पूजा स्मृति${yearText}:\n\n${snippet}देखिए इस खूबसूरत याद को:\n${url}`;
+  return `Sacred Memories of Durga Puja ❤️\nYaduvashi Durga Puja Kapooripur${yearText}:\n\n${snippet}View this memory here:\n${url}`;
 };
 
 export const formatImpressions = (count?: number): string => {

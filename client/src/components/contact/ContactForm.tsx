@@ -31,12 +31,12 @@ export const ContactForm: React.FC = () => {
     e.preventDefault();
 
     if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
-      setErrorMessage('कृपया सभी आवश्यक फ़ील्ड भरें');
+      setErrorMessage('Please fill in all required fields');
       return;
     }
 
     if (formData.message.trim().length < 10) {
-      setErrorMessage('संदेश कम से कम 10 अक्षरों का होना चाहिए');
+      setErrorMessage('Message must be at least 10 characters long');
       return;
     }
 
@@ -53,11 +53,11 @@ export const ContactForm: React.FC = () => {
 
       if (res.success) {
         setIsSuccess(true);
-        toast.success('आपका संदेश सफलतापूर्वक भेज दिया गया है!');
+        toast.success('Your message was sent successfully!');
         setFormData({ name: '', email: '', subject: '', message: '' });
       }
     } catch (err: any) {
-      const msg = err.message || 'संदेश भेजने में त्रुटि हुई। कृपया पुनः प्रयास करें।';
+      const msg = err.message || 'Error sending message. Please try again.';
       setErrorMessage(msg);
       toast.error(msg);
     } finally {
@@ -71,11 +71,11 @@ export const ContactForm: React.FC = () => {
         <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto border-2 border-emerald-300">
           <CheckCircle2 className="w-8 h-8" />
         </div>
-        <h3 className="text-2xl font-devanagari-heading font-bold text-dark-950">
-          संदेश प्राप्त हुआ! धन्यवाद।
+        <h3 className="text-2xl font-heading font-bold text-dark-950">
+          Message Received! Thank You.
         </h3>
-        <p className="text-sm font-devanagari-body text-muted max-w-md mx-auto leading-relaxed">
-          आपका संदेश यदुवंशी दुर्गा पूजा समिति को भेज दिया गया है। हम आपके संदेश की समीक्षा कर शीघ्र ही ईमेल द्वारा संपर्क करेंगे।
+        <p className="text-sm font-body text-muted max-w-md mx-auto leading-relaxed">
+          Your message has been received by the Yaduvashi Durga Puja Committee. We will review it and reply via email shortly.
         </p>
         <div className="pt-4">
           <Button
@@ -83,7 +83,7 @@ export const ContactForm: React.FC = () => {
             size="md"
             onClick={() => setIsSuccess(false)}
           >
-            एक और संदेश भेजें
+            Send Another Message
           </Button>
         </div>
       </div>
@@ -92,25 +92,25 @@ export const ContactForm: React.FC = () => {
 
   return (
     <div className="bg-cream-100 p-6 sm:p-10 rounded-3xl border border-cream-300 shadow-medium">
-      <h3 className="text-xl font-devanagari-heading font-bold text-maroon-950 mb-1">
-        संदेश भेजें (Send a Message)
+      <h3 className="text-xl font-heading font-bold text-maroon-950 mb-1">
+        Send a Message
       </h3>
-      <p className="text-xs sm:text-sm font-devanagari-body text-muted mb-6">
-        कृपया अपना विवरण और प्रश्न अथवा सुझाव नीचे दिए गए फॉर्म में भरें।
+      <p className="text-xs sm:text-sm font-body text-muted mb-6">
+        Please enter your contact details and message or inquiry below.
       </p>
 
       {errorMessage && (
-        <div className="mb-6 p-4 rounded-2xl bg-maroon-50 border border-maroon-200 text-maroon-950 flex items-start gap-3 text-xs sm:text-sm font-devanagari-body">
+        <div className="mb-6 p-4 rounded-2xl bg-maroon-50 border border-maroon-200 text-maroon-950 flex items-start gap-3 text-xs sm:text-sm font-body">
           <AlertCircle className="w-5 h-5 text-maroon-700 shrink-0 mt-0.5" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm font-devanagari-body">
+      <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm font-body">
         {/* Name */}
         <div>
           <label className="block font-semibold text-dark-900 mb-1.5">
-            आपका नाम (Name) *
+            Your Name *
           </label>
           <div className="relative">
             <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -120,7 +120,7 @@ export const ContactForm: React.FC = () => {
               required
               value={formData.name}
               onChange={handleChange}
-              placeholder="उदा. अभिषेक यादव"
+              placeholder="e.g. Abhishek Yadav"
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
           </div>
@@ -129,7 +129,7 @@ export const ContactForm: React.FC = () => {
         {/* Email */}
         <div>
           <label className="block font-semibold text-dark-900 mb-1.5">
-            ईमेल पता (Email) *
+            Email Address *
           </label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -139,7 +139,7 @@ export const ContactForm: React.FC = () => {
               required
               value={formData.email}
               onChange={handleChange}
-              placeholder="example@kapooripur.online"
+              placeholder="example@domain.com"
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
           </div>
@@ -148,7 +148,7 @@ export const ContactForm: React.FC = () => {
         {/* Subject */}
         <div>
           <label className="block font-semibold text-dark-900 mb-1.5">
-            विषय (Subject) *
+            Subject *
           </label>
           <div className="relative">
             <MessageSquare className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -158,7 +158,7 @@ export const ContactForm: React.FC = () => {
               required
               value={formData.subject}
               onChange={handleChange}
-              placeholder="उदा. पुरानी पूजा तस्वीर साझा करने हेतु / सुझाव"
+              placeholder="e.g. Archival Photo Submission / Seva Inquiry"
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
           </div>
@@ -168,7 +168,7 @@ export const ContactForm: React.FC = () => {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="font-semibold text-dark-900">
-              संदेश (Message) *
+              Message *
             </label>
             <span className="text-xs text-muted font-mono">
               {formData.message.length}/1500
@@ -181,7 +181,7 @@ export const ContactForm: React.FC = () => {
             maxLength={1500}
             value={formData.message}
             onChange={handleChange}
-            placeholder="अपना संदेश यहाँ विस्तार से लिखें..."
+            placeholder="Type your message in detail here..."
             className="w-full p-3.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600"
           />
         </div>
@@ -194,9 +194,9 @@ export const ContactForm: React.FC = () => {
             size="lg"
             isLoading={isLoading}
             leftIcon={<Send className="w-4 h-4" />}
-            className="w-full font-devanagari-body font-bold"
+            className="w-full font-body font-bold"
           >
-            संदेश भेजें
+            Send Message
           </Button>
         </div>
       </form>

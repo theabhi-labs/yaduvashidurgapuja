@@ -46,7 +46,7 @@ export const AdminCommittee: React.FC = () => {
         setMembers(res.data);
       }
     } catch (err: any) {
-      toast.error(err.message || 'समिति सदस्य लोड करने में त्रुटि');
+      toast.error(err.message || 'Failed to load committee members');
     } finally {
       setIsLoading(false);
     }
@@ -91,12 +91,12 @@ export const AdminCommittee: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !designation) {
-      toast.error('कृपया नाम और पद दर्ज करें');
+      toast.error('Please enter name and designation');
       return;
     }
 
     if (!editingMember && !photoFile) {
-      toast.error('कृपया सदस्य का फोटो अपलोड करें');
+      toast.error('Please upload member photo');
       return;
     }
 
@@ -114,16 +114,16 @@ export const AdminCommittee: React.FC = () => {
 
       if (editingMember) {
         await committeeService.updateMember(editingMember._id, formData);
-        toast.success('सदस्य विवरण अपडेट हो गया');
+        toast.success('Member details updated successfully');
       } else {
         await committeeService.createMember(formData);
-        toast.success('नया समिति सदस्य जोड़ा गया');
+        toast.success('New committee member added successfully');
       }
 
       setIsModalOpen(false);
       fetchMembers();
     } catch (err: any) {
-      toast.error(err.message || 'सहेजने में त्रुटि हुई');
+      toast.error(err.message || 'Failed to save member details');
     } finally {
       setIsSaving(false);
     }
@@ -134,11 +134,11 @@ export const AdminCommittee: React.FC = () => {
     setIsDeleting(true);
     try {
       await committeeService.deleteMember(deletingId);
-      toast.success('समिति सदस्य हटा दिया गया');
+      toast.success('Committee member removed');
       setMembers((prev) => prev.filter((m) => m._id !== deletingId));
       setDeletingId(null);
     } catch (err: any) {
-      toast.error(err.message || 'हटाने में समस्या आई');
+      toast.error(err.message || 'Failed to delete member');
     } finally {
       setIsDeleting(false);
     }
@@ -163,9 +163,9 @@ export const AdminCommittee: React.FC = () => {
 
     try {
       await committeeService.reorderMembers(orders);
-      toast.success('क्रम अद्यतित हुआ');
+      toast.success('Display order updated');
     } catch (err: any) {
-      toast.error('क्रम अद्यतित करने में त्रुटि');
+      toast.error('Failed to update order');
       fetchMembers();
     }
   };
@@ -175,11 +175,11 @@ export const AdminCommittee: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-devanagari-heading font-bold text-dark-950">
-            समिति कार्यकारिणी प्रबंधन (Committee Management)
+          <h1 className="text-2xl font-heading font-bold text-dark-950">
+            Committee Management
           </h1>
-          <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1">
-            पूजा समिति पदाधिकारियों की सूची, फोटो, पदनाम एवं प्रदर्शन क्रम निर्धारित करें।
+          <p className="text-xs sm:text-sm font-body text-muted mt-1">
+            Manage Puja Committee executive officers, designations, photos, and display sequence.
           </p>
         </div>
 
@@ -188,9 +188,9 @@ export const AdminCommittee: React.FC = () => {
           size="md"
           onClick={openAddModal}
           leftIcon={<Plus className="w-4 h-4" />}
-          className="font-devanagari-body font-bold"
+          className="font-body font-bold"
         >
-          नया सदस्य जोड़ें
+          Add New Member
         </Button>
       </div>
 
@@ -198,15 +198,15 @@ export const AdminCommittee: React.FC = () => {
       {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-maroon-700" />
-          <p className="text-xs font-devanagari-body text-muted">सदस्य लोड हो रहे हैं...</p>
+          <p className="text-xs font-body text-muted">Loading members...</p>
         </div>
       ) : members.length === 0 ? (
         <div className="text-center py-16 bg-cream-100 rounded-2xl border border-cream-300">
-          <p className="text-sm font-devanagari-body text-muted mb-4">
-            अभी कोई समिति सदस्य पंजीकृत नहीं है।
+          <p className="text-sm font-body text-muted mb-4">
+            No committee members registered yet.
           </p>
           <Button variant="primary" size="sm" onClick={openAddModal}>
-            पहला सदस्य जोड़ें
+            Add First Member
           </Button>
         </div>
       ) : (
@@ -214,16 +214,16 @@ export const AdminCommittee: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-cream-200/80 border-b border-cream-300 text-[11px] font-semibold text-muted uppercase font-devanagari-body tracking-wider">
-                  <th className="p-4 w-16">क्रम</th>
-                  <th className="p-4">फोटो</th>
-                  <th className="p-4">नाम व परिचय</th>
-                  <th className="p-4">पद (Designation)</th>
-                  <th className="p-4">स्थिति</th>
-                  <th className="p-4 text-right">कार्य (Actions)</th>
+                <tr className="bg-cream-200/80 border-b border-cream-300 text-[11px] font-semibold text-muted uppercase font-body tracking-wider">
+                  <th className="p-4 w-16">Order</th>
+                  <th className="p-4">Photo</th>
+                  <th className="p-4">Name & Bio</th>
+                  <th className="p-4">Designation</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-cream-300/80 text-xs font-devanagari-body">
+              <tbody className="divide-y divide-cream-300/80 text-xs font-body">
                 {members.map((member, index) => (
                   <tr key={member._id} className="hover:bg-cream-50 transition-colors">
                     <td className="p-4 font-mono font-bold text-maroon-900">
@@ -234,7 +234,7 @@ export const AdminCommittee: React.FC = () => {
                             onClick={() => handleMoveOrder(index, 'up')}
                             disabled={index === 0}
                             className="text-muted hover:text-dark-900 disabled:opacity-30 p-0.5"
-                            title="ऊपर ले जाएं"
+                            title="Move Up"
                           >
                             <ArrowUp className="w-3 h-3" />
                           </button>
@@ -242,7 +242,7 @@ export const AdminCommittee: React.FC = () => {
                             onClick={() => handleMoveOrder(index, 'down')}
                             disabled={index === members.length - 1}
                             className="text-muted hover:text-dark-900 disabled:opacity-30 p-0.5"
-                            title="नीचे ले जाएं"
+                            title="Move Down"
                           >
                             <ArrowDown className="w-3 h-3" />
                           </button>
@@ -272,11 +272,11 @@ export const AdminCommittee: React.FC = () => {
                     <td className="p-4">
                       {member.isActive ? (
                         <span className="inline-block text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                          सक्रिय
+                          Active
                         </span>
                       ) : (
                         <span className="inline-block text-[11px] font-bold px-2 py-0.5 rounded bg-cream-300 text-muted">
-                          निष्क्रिय
+                          Inactive
                         </span>
                       )}
                     </td>
@@ -285,14 +285,14 @@ export const AdminCommittee: React.FC = () => {
                         <button
                           onClick={() => openEditModal(member)}
                           className="p-1.5 rounded-lg text-muted hover:text-maroon-800 hover:bg-cream-200"
-                          title="संपादित करें"
+                          title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setDeletingId(member._id)}
                           className="p-1.5 rounded-lg text-red-700 hover:bg-red-50"
-                          title="हटाएं"
+                          title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -310,13 +310,13 @@ export const AdminCommittee: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingMember ? 'समिति सदस्य विवरण संपादित करें' : 'नया समिति सदस्य जोड़ें'}
+        title={editingMember ? 'Edit Committee Member' : 'Add New Committee Member'}
       >
-        <form onSubmit={handleSave} className="space-y-4 text-xs sm:text-sm font-devanagari-body">
+        <form onSubmit={handleSave} className="space-y-4 text-xs sm:text-sm font-body">
           {/* Photo */}
           <div>
             <label className="block font-bold text-dark-900 mb-1.5">
-              सदस्य का फोटो *
+              Member Photo *
             </label>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-cream-200 border border-gold-400 overflow-hidden flex items-center justify-center shrink-0">
@@ -337,41 +337,41 @@ export const AdminCommittee: React.FC = () => {
 
           <div>
             <label className="block font-bold text-dark-900 mb-1">
-              सदस्य का नाम *
+              Member Name *
             </label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="उदा. श्री रामेश्वर यादव"
+              placeholder="e.g., Shri Rameshwar Yadav"
               className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
           </div>
 
           <div>
             <label className="block font-bold text-dark-900 mb-1">
-              पद (Designation) *
+              Designation *
             </label>
             <input
               type="text"
               required
               value={designation}
               onChange={(e) => setDesignation(e.target.value)}
-              placeholder="उदा. अध्यक्ष (President) / सचिव"
+              placeholder="e.g., President / Secretary / General Coordinator"
               className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
           </div>
 
           <div>
             <label className="block font-bold text-dark-900 mb-1">
-              संक्षिप्त परिचय / दायित्व (Bio)
+              Brief Bio / Responsibilities
             </label>
             <textarea
               rows={3}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="पूजा व्यवस्था, सांस्कृतिक समन्वय आदि..."
+              placeholder="Puja arrangements, cultural coordination, youth leadership..."
               maxLength={400}
               className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
@@ -380,7 +380,7 @@ export const AdminCommittee: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div>
               <label className="block font-bold text-dark-900 mb-1">
-                प्रदर्शन क्रम (Display Order)
+                Display Order
               </label>
               <input
                 type="number"
@@ -398,7 +398,7 @@ export const AdminCommittee: React.FC = () => {
                   onChange={(e) => setIsActive(e.target.checked)}
                   className="rounded text-maroon-700 focus:ring-maroon-500 w-4 h-4"
                 />
-                <span className="font-bold text-dark-900">सक्रिय सदस्य</span>
+                <span className="font-bold text-dark-900">Active Member</span>
               </label>
             </div>
           </div>
@@ -410,7 +410,7 @@ export const AdminCommittee: React.FC = () => {
               size="md"
               onClick={() => setIsModalOpen(false)}
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -418,7 +418,7 @@ export const AdminCommittee: React.FC = () => {
               size="md"
               isLoading={isSaving}
             >
-              {editingMember ? 'अपडेट करें' : 'जोड़ें'}
+              {editingMember ? 'Update Member' : 'Save Member'}
             </Button>
           </div>
         </form>
@@ -428,15 +428,15 @@ export const AdminCommittee: React.FC = () => {
       <Modal
         isOpen={!!deletingId}
         onClose={() => setDeletingId(null)}
-        title="समिति सदस्य हटाने की पुष्टि"
+        title="Confirm Delete Member"
       >
         <div className="space-y-4">
-          <p className="text-sm font-devanagari-body text-dark-800 leading-relaxed">
-            क्या आप वाकई इस समिति सदस्य को हटाना चाहते हैं?
+          <p className="text-sm font-body text-dark-800 leading-relaxed">
+            Are you sure you want to remove this committee member?
           </p>
           <div className="flex justify-end gap-3 pt-4 border-t border-cream-300">
             <Button variant="outline" size="md" onClick={() => setDeletingId(null)}>
-              रद्द करें
+              Cancel
             </Button>
             <Button
               variant="danger"
@@ -444,7 +444,7 @@ export const AdminCommittee: React.FC = () => {
               onClick={handleDelete}
               isLoading={isDeleting}
             >
-              हाँ, हटा दें
+              Yes, Delete
             </Button>
           </div>
         </div>
@@ -452,3 +452,5 @@ export const AdminCommittee: React.FC = () => {
     </div>
   );
 };
+
+export default AdminCommittee;

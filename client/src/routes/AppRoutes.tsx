@@ -14,8 +14,8 @@ const PageLoadingFallback: React.FC = () => (
     <div className="w-12 h-12 rounded-2xl bg-maroon-800 text-gold-300 flex items-center justify-center font-bold text-xl shadow-lg border border-gold-500/40 animate-pulse">
       🕉️
     </div>
-    <p className="text-xs sm:text-sm font-devanagari-heading font-bold text-maroon-900 animate-pulse">
-      पेज लोड हो रहा है... कृपया प्रतीक्षा करें
+    <p className="text-xs sm:text-sm font-heading font-bold text-maroon-900 animate-pulse">
+      Loading page... Please wait
     </p>
   </div>
 );

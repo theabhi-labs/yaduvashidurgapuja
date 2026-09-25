@@ -41,7 +41,7 @@ export const AdminReports: React.FC = () => {
         }
       }
     } catch (err: any) {
-      toast.error(err.message || 'रिपोर्ट लोड करने में समस्या');
+      toast.error(err.message || 'Failed to load reports');
     } finally {
       setIsLoading(false);
     }
@@ -62,12 +62,12 @@ export const AdminReports: React.FC = () => {
         action: actionType,
       });
 
-      toast.success('रिपोर्ट पर कार्यवाही पूरी हुई');
+      toast.success('Report moderation action applied successfully');
       setSelectedReport(null);
       setAdminNotes('');
       fetchReports();
     } catch (err: any) {
-      toast.error(err.message || 'कार्यवाही विफल हुई');
+      toast.error(err.message || 'Failed to apply action');
     } finally {
       setIsSubmitting(false);
     }
@@ -77,21 +77,21 @@ export const AdminReports: React.FC = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-devanagari-heading font-bold text-dark-950">
-          सामग्री रिपोर्ट्स समीक्षा (Content Reports)
+        <h1 className="text-2xl font-heading font-bold text-dark-950">
+          Content Reports Moderation
         </h1>
-        <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1">
-          भक्तों द्वारा दर्ज की गई आपत्तियों की जाँच एवं त्वरित समाधान।
+        <p className="text-xs sm:text-sm font-body text-muted mt-1">
+          Review devotee-submitted flags, investigate objectionable content, and take moderation action.
         </p>
       </div>
 
       {/* Tabs */}
       <div className="flex items-center gap-2">
         {[
-          { label: 'लंबित समीक्षा (Pending)', value: 'pending' },
-          { label: 'स्वीकृत/कार्रवाई पूर्ण (Reviewed)', value: 'reviewed' },
-          { label: 'खारिज (Dismissed)', value: 'dismissed' },
-          { label: 'सभी (All)', value: '' },
+          { label: 'Pending Review', value: 'pending' },
+          { label: 'Reviewed / Actioned', value: 'reviewed' },
+          { label: 'Dismissed', value: 'dismissed' },
+          { label: 'All Reports', value: '' },
         ].map((tab) => (
           <button
             key={tab.value}
@@ -99,7 +99,7 @@ export const AdminReports: React.FC = () => {
               setStatusFilter(tab.value);
               setPage(1);
             }}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-devanagari-body font-medium transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-body font-medium transition-all ${
               statusFilter === tab.value
                 ? 'bg-maroon-700 text-white font-bold shadow-sm'
                 : 'bg-cream-100 text-dark-800 hover:bg-cream-300 border border-cream-300'
@@ -114,14 +114,14 @@ export const AdminReports: React.FC = () => {
       {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-maroon-700" />
-          <p className="text-xs font-devanagari-body text-muted">रिपोर्ट्स लोड हो रही हैं...</p>
+          <p className="text-xs font-body text-muted">Loading reports...</p>
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-16 bg-cream-100 rounded-2xl border border-cream-300">
-          <p className="text-sm font-devanagari-body text-muted">
+          <p className="text-sm font-body text-muted">
             {statusFilter === 'pending'
-              ? 'कोई लंबित रिपोर्ट नहीं है। सभी सामग्रियां स्वच्छ एवं सुरक्षित हैं।'
-              : 'इस श्रेणी में कोई रिपोर्ट उपलब्ध नहीं है।'}
+              ? 'No pending reports found. All community content is clean and safe.'
+              : 'No reports found in this category.'}
           </p>
         </div>
       ) : (
@@ -143,34 +143,34 @@ export const AdminReports: React.FC = () => {
                     />
                   ) : (
                     <div className="w-24 h-20 rounded-xl bg-cream-200 border flex items-center justify-center text-xs text-muted">
-                      हटा दिया गया
+                      Removed
                     </div>
                   )}
 
-                  <div className="space-y-1.5 text-xs font-devanagari-body">
+                  <div className="space-y-1.5 text-xs font-body">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-red-800 bg-red-100 px-2 py-0.5 rounded border border-red-200 uppercase tracking-wide text-[10px]">
-                        कारण: {rep.reason}
+                        Reason: {rep.reason}
                       </span>
                       <span className="text-muted">
-                        दर्ज तिथि: {formatDate(rep.createdAt)}
+                        Reported: {formatDate(rep.createdAt)}
                       </span>
                     </div>
 
                     <p className="text-sm text-dark-900 font-medium line-clamp-2">
-                      {memory?.caption || 'स्मृति का विवरण उपलब्ध नहीं है'}
+                      {memory?.caption || 'Memory caption not available'}
                     </p>
 
                     {rep.description && (
                       <p className="text-xs text-muted italic bg-cream-50 p-2 rounded-lg border border-cream-200">
-                        "रिपोर्टर विवरण: {rep.description}"
+                        "Reporter details: {rep.description}"
                       </p>
                     )}
 
                     <div className="text-muted text-[11px] pt-1">
-                      रिपोर्टकर्ता:{' '}
+                      Reporter:{' '}
                       <span className="font-semibold text-dark-800">
-                        {rep.reporterId?.name || 'अज्ञात'}
+                        {rep.reporterId?.name || 'Anonymous'}
                       </span>{' '}
                       ({rep.reporterId?.email})
                     </div>
@@ -189,10 +189,10 @@ export const AdminReports: React.FC = () => {
                     }`}
                   >
                     {rep.status === 'pending'
-                      ? 'लंबित'
+                      ? 'Pending'
                       : rep.status === 'reviewed'
-                      ? 'समीक्षा पूर्ण'
-                      : 'खारिज'}
+                      ? 'Reviewed'
+                      : 'Dismissed'}
                   </span>
 
                   {rep.status === 'pending' && (
@@ -205,7 +205,7 @@ export const AdminReports: React.FC = () => {
                           setActionType('hide_memory');
                         }}
                       >
-                        कार्यवाही करें
+                        Take Action
                       </Button>
                     </div>
                   )}
@@ -217,7 +217,7 @@ export const AdminReports: React.FC = () => {
           {pagination && pagination.totalPages > 1 && (
             <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 flex items-center justify-between">
               <span className="text-xs text-muted">
-                कुल {pagination.total} रिपोर्ट्स (पृष्ठ {pagination.page} / {pagination.totalPages})
+                Total {pagination.total} reports (Page {pagination.page} of {pagination.totalPages})
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -246,29 +246,29 @@ export const AdminReports: React.FC = () => {
       <Modal
         isOpen={!!selectedReport}
         onClose={() => setSelectedReport(null)}
-        title="रिपोर्ट पर मॉडरेशन कार्यवाही"
+        title="Report Moderation Action"
       >
-        <div className="space-y-4 font-devanagari-body text-xs sm:text-sm">
+        <div className="space-y-4 font-body text-xs sm:text-sm">
           <p className="text-dark-900 font-medium">
-            कृपया इस रिपोर्ट के निवारण हेतु उचित विकल्प चुनें:
+            Please choose the appropriate action to resolve this report:
           </p>
 
           <div className="space-y-2">
             {[
               {
                 id: 'hide_memory',
-                title: 'स्मृति को छिपाएं (Hide Memory)',
-                desc: 'स्मृति सार्वजनिक फ़ीड से हट जाएगी, केवल मालिक और व्यवस्थापक देख पाएंगे।',
+                title: 'Hide Memory',
+                desc: 'Memory will be hidden from public feed and only visible to the owner and admins.',
               },
               {
                 id: 'delete_memory',
-                title: 'स्मृति को स्थायी रूप से हटाएं (Delete Memory)',
-                desc: 'तस्वीर एवं रिकॉर्ड डेटाबेस से पूर्णतः नष्ट कर दिया जाएगा।',
+                title: 'Delete Memory Permanently',
+                desc: 'The memory image and records will be deleted completely from the database.',
               },
               {
                 id: 'dismiss',
-                title: 'रिपोर्ट को खारिज करें (Dismiss Report)',
-                desc: 'सामग्री नियमों के अनुकूल है, कोई बदलाव नहीं किया जाएगा।',
+                title: 'Dismiss Report',
+                desc: 'Content complies with community guidelines; no changes will be made.',
               },
             ].map((opt) => (
               <label
@@ -295,14 +295,14 @@ export const AdminReports: React.FC = () => {
 
           <div>
             <label className="block text-xs font-semibold text-dark-900 mb-1">
-              व्यवस्थापक टिप्पणी (वैकल्पिक):
+              Admin Notes (Optional):
             </label>
             <textarea
               rows={2}
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              placeholder="समीक्षा से संबंधित आंतरिक टिप्पणी..."
-              className="w-full px-3 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs font-devanagari-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
+              placeholder="Internal notes regarding this review..."
+              className="w-full px-3 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs font-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
             />
           </div>
 
@@ -312,7 +312,7 @@ export const AdminReports: React.FC = () => {
               size="md"
               onClick={() => setSelectedReport(null)}
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               variant="primary"
@@ -320,7 +320,7 @@ export const AdminReports: React.FC = () => {
               onClick={handleAction}
               isLoading={isSubmitting}
             >
-              कार्यवाही सुरक्षित करें
+              Apply Action
             </Button>
           </div>
         </div>

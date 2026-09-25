@@ -11,7 +11,7 @@ interface UseArtiChatOptions {
 
 export const useArtiChat = ({
   roomName,
-  defaultName = 'भक्त',
+  defaultName = 'Devotee',
   initialChatEnabled = true,
 }: UseArtiChatOptions) => {
   const [comments, setComments] = useState<ChatComment[]>([]);
@@ -66,7 +66,7 @@ export const useArtiChat = ({
     };
 
     const handleRateLimited = (data: { message: string }) => {
-      setRateLimitWarning(data?.message || 'कृपया धीरे-धीरे संदेश भेजें (2 सेकंड प्रतीक्षा करें)');
+      setRateLimitWarning(data?.message || 'Please slow down (wait 2 seconds between messages)');
       setTimeout(() => {
         setRateLimitWarning(null);
       }, 2500);
@@ -80,7 +80,7 @@ export const useArtiChat = ({
 
     const handleChatDisabled = (data: { message: string }) => {
       setIsChatEnabled(false);
-      setRateLimitWarning(data?.message || 'व्यवस्थापक द्वारा चैट बंद की गई है');
+      setRateLimitWarning(data?.message || 'Live chat is currently disabled by administrator');
       setTimeout(() => {
         setRateLimitWarning(null);
       }, 3500);
@@ -106,13 +106,13 @@ export const useArtiChat = ({
       if (!roomName || !message.trim()) return;
 
       if (!isChatEnabled) {
-        setRateLimitWarning('व्यवस्थापक द्वारा इस समय चैट बंद की गई है');
+        setRateLimitWarning('Live chat is currently disabled by administrator');
         setTimeout(() => setRateLimitWarning(null), 2500);
         return;
       }
 
       const socket = getSocket();
-      const senderName = customName?.trim() || defaultName || 'भक्त';
+      const senderName = customName?.trim() || defaultName || 'Devotee';
 
       socket.emit('send-comment', {
         roomName,

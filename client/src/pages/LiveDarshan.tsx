@@ -58,11 +58,11 @@ const LiveStreamPlayer: React.FC<{
           <div className="w-16 h-16 rounded-full bg-maroon-900/60 border border-gold-500/40 flex items-center justify-center mb-4 animate-pulse">
             <Radio className="w-8 h-8 text-gold-400" />
           </div>
-          <h3 className="text-lg font-devanagari-heading font-bold text-gold-200 mb-1">
-            {title ? `${title} — प्रसारण लोड हो रहा है...` : 'लाइव आरती प्रसारण लोड हो रहा है...'}
+          <h3 className="text-lg font-heading font-bold text-gold-200 mb-1">
+            {title ? `${title} — Connecting Stream...` : 'Loading Live Stream...'}
           </h3>
-          <p className="text-xs text-cream-300 font-devanagari-body max-w-sm">
-            कृपया प्रतीक्षा करें, पुजारी/व्यवस्थापक का लाइव कैमरा स्ट्रीम कनेक्ट हो रहा है।
+          <p className="text-xs text-cream-300 font-body max-w-sm">
+            Please wait while the camera broadcast connects from the puja mandap.
           </p>
         </div>
       )}
@@ -71,18 +71,18 @@ const LiveStreamPlayer: React.FC<{
       <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 z-20">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-maroon-700/90 text-white font-bold text-xs shadow-lg backdrop-blur-md border border-red-500/40 animate-pulse">
           <span className="w-2 h-2 rounded-full bg-red-400" />
-          लाइव आरती
+          LIVE AARTI
         </span>
 
         {/* Real-time viewer count badge on top of video player */}
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dark-950/80 text-emerald-300 font-semibold text-xs backdrop-blur-md border border-emerald-500/40 shadow-sm">
           <Users className="w-3.5 h-3.5 text-emerald-400" />
-          <span>{currentViewers} भक्त लाइव</span>
+          <span>{currentViewers} Viewers Live</span>
         </span>
 
         {hostName && (
           <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-dark-950/80 text-gold-300 font-medium text-xs backdrop-blur-md border border-gold-500/30">
-            पुजारी/व्यवस्थापक: {hostName}
+            Host: {hostName}
           </span>
         )}
       </div>
@@ -134,7 +134,7 @@ export const LiveDarshan: React.FC = () => {
         setLiveViewerCount(0);
       }
     } catch {
-      toast.error('लाइव सत्र सूची लोड करने में समस्या आई');
+      toast.error('Could not load live broadcast sessions');
     } finally {
       setIsLoading(false);
     }
@@ -190,7 +190,7 @@ export const LiveDarshan: React.FC = () => {
       setJoinData(res.data);
       setLiveViewerCount(res.data.currentViewers || 0);
     } catch (err: any) {
-      toast.error(err.message || 'लाइव दर्शन से जुड़ने में समस्या आई');
+      toast.error(err.message || 'Could not join live broadcast');
     }
   };
 
@@ -205,13 +205,13 @@ export const LiveDarshan: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-maroon-900/10 border border-gold-600/30 text-maroon-800 text-xs sm:text-sm font-bold mb-3"
           >
             <Radio className="w-4 h-4 text-maroon-700 animate-pulse" />
-            <span>माँ भगवती पावन दर्शन एवं महाआरती</span>
+            <span>Divine Darshan & Maha Aarti</span>
           </motion.div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-devanagari-heading font-black text-maroon-900 tracking-tight">
-            लाइव दर्शन — यदुवंशी दुर्गा पूजा
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-maroon-900 tracking-tight">
+            Live Darshan — Yaduvashi Durga Puja
           </h1>
-          <p className="text-sm sm:text-base text-muted font-devanagari-body mt-2 max-w-2xl mx-auto">
-            कपूरिपुर पूजा पंडाल से सीधे अपने घर पर माँ दुर्गा की दिव्य आरती, हवन एवं मंगल दर्शन का पुण्य लाभ प्राप्त करें।
+          <p className="text-sm sm:text-base text-muted font-body mt-2 max-w-2xl mx-auto">
+            Experience divine aarti, sacred darshan, and rituals directly from the Kapooripur Durga Puja mandap.
           </p>
         </div>
 
@@ -230,8 +230,8 @@ export const LiveDarshan: React.FC = () => {
           <div className="bg-cream-50 p-4 rounded-2xl border-2 border-gold-500/40 shadow-md">
             <div className="flex items-center gap-2 mb-3">
               <Layers className="w-4 h-4 text-maroon-700" />
-              <span className="text-xs sm:text-sm font-bold font-devanagari-heading text-maroon-950">
-                वर्तमान में {allLiveSessions.length} व्यवस्थापक / कैमरे लाइव प्रसारित हैं — प्रसारण चुनें:
+              <span className="text-xs sm:text-sm font-bold font-heading text-maroon-950">
+                {allLiveSessions.length} Active Broadcasts Available — Select Stream:
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -249,19 +249,19 @@ export const LiveDarshan: React.FC = () => {
                   >
                     <span className="w-3 h-3 rounded-full bg-red-500 animate-ping mt-1 shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs sm:text-sm font-bold font-devanagari-heading truncate">
-                        {session.title || 'माँ दुर्गा महाआरती'}
+                      <div className="text-xs sm:text-sm font-bold font-heading truncate">
+                        {session.title || 'Maa Durga Maha Aarti'}
                       </div>
                       <div
-                        className={`text-[11px] font-devanagari-body ${
+                        className={`text-[11px] font-body ${
                           isSelected ? 'text-gold-200' : 'text-muted'
                         }`}
                       >
-                        व्यवस्थापक: {session.hostName}
+                        Host: {session.hostName}
                       </div>
                       <div className="text-[10px] font-semibold text-emerald-400 mt-0.5 flex items-center gap-1">
                         <Users className="w-3 h-3" />
-                        <span>{session.currentViewers || 0} भक्त जुड़े हैं</span>
+                        <span>{session.currentViewers || 0} viewers</span>
                       </div>
                     </div>
                   </button>
@@ -305,14 +305,14 @@ export const LiveDarshan: React.FC = () => {
                       🕉️
                     </div>
                     <div>
-                      <h3 className="font-devanagari-heading font-bold text-lg sm:text-xl text-maroon-950 leading-snug">
-                        {activeSession.title || 'यदुवंशी दुर्गा पूजा कपूरिपुर — महाआरती'}
+                      <h3 className="font-heading font-bold text-lg sm:text-xl text-maroon-950 leading-snug">
+                        {activeSession.title || 'Yaduvashi Durga Puja Kapooripur — Maha Aarti'}
                       </h3>
-                      <p className="text-xs text-muted font-devanagari-body mt-0.5">
-                        प्रसारणकर्ता: <span className="font-semibold text-dark-900">{activeSession.hostName}</span> • कपूरिपुर, बिहार
+                      <p className="text-xs text-muted font-body mt-0.5">
+                        Broadcaster: <span className="font-semibold text-dark-900">{activeSession.hostName}</span> • Kapooripur, Bihar
                       </p>
                       {activeSession.description && (
-                        <p className="text-xs text-dark-700 font-devanagari-body mt-1 bg-cream-100 p-2 rounded-lg border border-cream-200">
+                        <p className="text-xs text-dark-700 font-body mt-1 bg-cream-100 p-2 rounded-lg border border-cream-200">
                           {activeSession.description}
                         </p>
                       )}
@@ -323,11 +323,11 @@ export const LiveDarshan: React.FC = () => {
                   <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 shadow-sm shrink-0">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                     <div>
-                      <span className="text-xs uppercase tracking-wider block font-devanagari-body text-emerald-800 font-bold">
-                        लाइव दर्शक संख्या
+                      <span className="text-xs uppercase tracking-wider block font-body text-emerald-800 font-bold">
+                        Live Viewers
                       </span>
-                      <span className="text-lg font-black font-devanagari-heading text-emerald-950">
-                        {liveViewerCount} भक्त
+                      <span className="text-lg font-black font-heading text-emerald-950">
+                        {liveViewerCount}
                       </span>
                     </div>
                   </div>
@@ -335,9 +335,9 @@ export const LiveDarshan: React.FC = () => {
 
                 {/* Donation and Actions Bar */}
                 <div className="pt-2 border-t border-cream-200 flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-xs text-muted font-devanagari-body flex items-center gap-1.5">
+                  <div className="text-xs text-muted font-body flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-gold-600" />
-                    <span>आरती के दौरान माँ के चरणों में श्रद्धा सुमन व दान समर्पित करें</span>
+                    <span>Contribute to puja seva during the sacred aarti</span>
                   </div>
 
                   {/* Conditional Donation Button based on Admin / SuperAdmin toggle */}
@@ -348,9 +348,9 @@ export const LiveDarshan: React.FC = () => {
                       className="w-full sm:w-auto"
                     />
                   ) : (
-                    <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cream-200 text-muted text-xs font-devanagari-body border border-cream-300">
+                    <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cream-200 text-muted text-xs font-body border border-cream-300">
                       <HeartHandshake className="w-4 h-4 text-muted" />
-                      <span>दान सेवा इस प्रसारण के लिए स्थगित है</span>
+                      <span>Donations are disabled for this broadcast</span>
                     </div>
                   )}
                 </div>
@@ -378,11 +378,11 @@ export const LiveDarshan: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-2xl sm:text-3xl font-devanagari-heading font-bold text-maroon-900">
-                अभी कोई आरती लाइव प्रसारित नहीं है
+              <h3 className="text-2xl sm:text-3xl font-heading font-bold text-maroon-900">
+                No Aarti Currently Streaming Live
               </h3>
-              <p className="text-sm sm:text-base text-muted font-devanagari-body max-w-lg mx-auto">
-                माँ भगवती की पावन आरती का प्रसारण समय अनुसार किया जाता है। कृपया आरती के समय पुनः पधारें या आगामी शेड्यूल देखें।
+              <p className="text-sm sm:text-base text-muted font-body max-w-lg mx-auto">
+                Live broadcasts stream during scheduled aarti and puja hours. Please check the timings below or re-visit during the aarti session.
               </p>
             </div>
 
@@ -390,17 +390,17 @@ export const LiveDarshan: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-2">
               <div className="p-4 rounded-xl bg-cream-100 border border-gold-500/20 text-center">
                 <Clock className="w-5 h-5 text-maroon-700 mx-auto mb-1" />
-                <span className="text-xs font-bold uppercase text-dark-700 block font-devanagari-body">
-                  प्रातः महाआरती
+                <span className="text-xs font-bold uppercase text-dark-700 block font-body">
+                  Morning Maha Aarti
                 </span>
-                <span className="text-sm font-extrabold text-maroon-900">सुबह 08:00 बजे</span>
+                <span className="text-sm font-extrabold text-maroon-900">08:00 AM</span>
               </div>
               <div className="p-4 rounded-xl bg-cream-100 border border-gold-500/20 text-center">
                 <Clock className="w-5 h-5 text-maroon-700 mx-auto mb-1" />
-                <span className="text-xs font-bold uppercase text-dark-700 block font-devanagari-body">
-                  संध्या आरती एवं वंदना
+                <span className="text-xs font-bold uppercase text-dark-700 block font-body">
+                  Evening Aarti & Vandana
                 </span>
-                <span className="text-sm font-extrabold text-maroon-900">शाम 07:30 बजे</span>
+                <span className="text-sm font-extrabold text-maroon-900">07:30 PM</span>
               </div>
             </div>
 
@@ -411,9 +411,9 @@ export const LiveDarshan: React.FC = () => {
                 className="flex items-center gap-2 border-maroon-800 text-maroon-900 hover:bg-maroon-50"
               >
                 <RefreshCw className="w-4 h-4" />
-                <span>पुनः जाँच करें</span>
+                <span>Refresh Status</span>
               </Button>
-              <DonateButton label="पूजा सेवा में दान सहयोग करें" />
+              <DonateButton label="Donate to Puja Seva" />
             </div>
           </motion.div>
         )}
@@ -425,18 +425,18 @@ export const LiveDarshan: React.FC = () => {
           <div className="flex items-center justify-between border-b border-cream-300 pb-3">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-maroon-800" />
-              <h2 className="text-xl sm:text-2xl font-devanagari-heading font-bold text-maroon-950">
-                आगामी लाइव प्रसारण व आरती कार्यक्रम (Live Schedule)
+              <h2 className="text-xl sm:text-2xl font-heading font-bold text-maroon-950">
+                Upcoming Live Broadcast Schedule
               </h2>
             </div>
-            <span className="text-xs font-devanagari-body text-muted bg-cream-100 px-3 py-1 rounded-full border border-cream-300">
-              {scheduledSessions.length} आगामी कार्यक्रम
+            <span className="text-xs font-body text-muted bg-cream-100 px-3 py-1 rounded-full border border-cream-300">
+              {scheduledSessions.length} Scheduled
             </span>
           </div>
 
           {scheduledSessions.length === 0 ? (
-            <div className="p-6 bg-cream-50 rounded-2xl border border-cream-300 text-center text-xs sm:text-sm font-devanagari-body text-muted">
-              फिलहाल कोई आगामी विशेष कार्यक्रम निर्धारित नहीं है। नियमित दैनिक आरती सुबह 08:00 बजे एवं शाम 07:30 बजे प्रसारित होगी।
+            <div className="p-6 bg-cream-50 rounded-2xl border border-cream-300 text-center text-xs sm:text-sm font-body text-muted">
+              No special live events scheduled right now. Daily recurring aartis stream at 08:00 AM and 07:30 PM.
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -448,12 +448,12 @@ export const LiveDarshan: React.FC = () => {
                     className="p-5 bg-cream-50 rounded-2xl border border-gold-500/30 shadow-soft hover:shadow-md transition-shadow space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] font-bold font-devanagari-body border border-amber-300">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-[11px] font-bold font-body border border-amber-300">
                         <Clock className="w-3 h-3" />
-                        शेड्यूल कार्यक्रम
+                        Scheduled
                       </span>
-                      <span className="text-[11px] font-devanagari-body text-muted">
-                        {schedDate.toLocaleDateString('hi-IN', {
+                      <span className="text-[11px] font-body text-muted">
+                        {schedDate.toLocaleDateString('en-US', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric',
@@ -462,22 +462,22 @@ export const LiveDarshan: React.FC = () => {
                     </div>
 
                     <div>
-                      <h4 className="font-devanagari-heading font-bold text-base text-maroon-950">
+                      <h4 className="font-heading font-bold text-base text-maroon-950">
                         {item.title}
                       </h4>
                       {item.description && (
-                        <p className="text-xs font-devanagari-body text-muted mt-1 line-clamp-2">
+                        <p className="text-xs font-body text-muted mt-1 line-clamp-2">
                           {item.description}
                         </p>
                       )}
                     </div>
 
-                    <div className="pt-2 border-t border-cream-200 flex items-center justify-between text-xs font-devanagari-body">
+                    <div className="pt-2 border-t border-cream-200 flex items-center justify-between text-xs font-body">
                       <span className="text-maroon-800 font-bold">
-                        ⏰ {schedDate.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit' })}
+                        ⏰ {schedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                       <span className="text-muted">
-                        द्वारा: {item.hostName}
+                        By: {item.hostName}
                       </span>
                     </div>
                   </div>

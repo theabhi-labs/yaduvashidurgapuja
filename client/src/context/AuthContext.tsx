@@ -51,10 +51,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('auth_token', res.data.token);
       }
       setUser(res.data.user);
-      toast.success(`जय माँ दुर्गे! स्वागत है ${res.data.user.name}`);
+      toast.success(`Welcome back, ${res.data.user.name}!`);
       return res.data.user;
     } catch (err: any) {
-      toast.error(err.message || 'लॉगिन विफल हुआ');
+      toast.error(err.message || 'Login failed. Please check your credentials.');
       throw err;
     } finally {
       setIsLoading(false);
@@ -69,10 +69,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('auth_token', res.data.token);
       }
       setUser(res.data.user);
-      toast.success(`पंजीकरण सफल! आपका स्वागत है ${res.data.user.name}`);
+      toast.success(`Registration successful! Welcome, ${res.data.user.name}`);
       return res.data.user;
     } catch (err: any) {
-      toast.error(err.message || 'पंजीकरण विफल हुआ');
+      toast.error(err.message || 'Registration failed.');
       throw err;
     } finally {
       setIsLoading(false);
@@ -84,11 +84,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await authService.logout();
       localStorage.removeItem('auth_token');
       setUser(null);
-      toast.info('सफलतापूर्वक लॉगआउट किया गया');
+      toast.info('Logged out successfully.');
     } catch (err: any) {
       localStorage.removeItem('auth_token');
       setUser(null);
-      toast.error(err.message || 'लॉगआउट में समस्या आई');
+      toast.error(err.message || 'Error during logout.');
     }
   };
 

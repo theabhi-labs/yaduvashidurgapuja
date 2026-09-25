@@ -55,7 +55,7 @@ export const AdminLiveBroadcast: React.FC = () => {
   const [isDonationEnabled, setIsDonationEnabled] = useState<boolean>(true);
 
   // Broadcaster Setup Form
-  const [broadcastTitle, setBroadcastTitle] = useState<string>('माँ दुर्गा पावन महाआरती');
+  const [broadcastTitle, setBroadcastTitle] = useState<string>('Maa Durga Maha Aarti Live');
   const [broadcastDesc, setBroadcastDesc] = useState<string>('');
 
   // Schedules State
@@ -146,10 +146,10 @@ export const AdminLiveBroadcast: React.FC = () => {
       setIsChatEnabled(res.data.isChatEnabled !== false);
       setIsDonationEnabled(res.data.isDonationEnabled !== false);
       setIsBroadcasting(true);
-      toast.success('माँ दुर्गा की आरती का लाइव प्रसारण शुरू हो गया है!');
+      toast.success('Live Aarti broadcast is now on air!');
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || 'लाइव प्रसारण शुरू करने में समस्या आई');
+      toast.error(err.message || 'Failed to start live broadcast');
     } finally {
       setIsLoading(false);
     }
@@ -164,10 +164,10 @@ export const AdminLiveBroadcast: React.FC = () => {
       setIsBroadcasting(false);
       setBroadcastData(null);
       setShowEndModal(false);
-      toast.success('लाइव आरती प्रसारण सफलतापूर्वक समाप्त कर दिया गया');
+      toast.success('Live broadcast ended successfully');
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || 'लाइव प्रसारण समाप्त करने में समस्या आई');
+      toast.error(err.message || 'Failed to end live broadcast');
     } finally {
       setIsLoading(false);
     }
@@ -180,9 +180,9 @@ export const AdminLiveBroadcast: React.FC = () => {
       const nextState = !isChatEnabled;
       await liveDarshanService.toggleChat(broadcastData.roomName, nextState);
       setIsChatEnabled(nextState);
-      toast.info(nextState ? 'लाइव चैट चालू कर दी गई' : 'लाइव चैट बंद कर दी गई');
+      toast.info(nextState ? 'Live chat enabled' : 'Live chat disabled');
     } catch (err: any) {
-      toast.error(err.message || 'चैट स्थिति बदलने में समस्या आई');
+      toast.error(err.message || 'Failed to update chat state');
     }
   };
 
@@ -193,9 +193,9 @@ export const AdminLiveBroadcast: React.FC = () => {
       const nextState = !isDonationEnabled;
       await liveDarshanService.toggleDonation(broadcastData.roomName, nextState);
       setIsDonationEnabled(nextState);
-      toast.info(nextState ? 'दान सेवा चालू कर दी गई' : 'दान सेवा बंद कर दी गई');
+      toast.info(nextState ? 'Donation service enabled' : 'Donation service disabled');
     } catch (err: any) {
-      toast.error(err.message || 'दान सेवा स्थिति बदलने में समस्या आई');
+      toast.error(err.message || 'Failed to update donation state');
     }
   };
 
@@ -203,7 +203,7 @@ export const AdminLiveBroadcast: React.FC = () => {
   const handleCreateSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!scheduleTitle.trim() || !scheduleTime) {
-      toast.error('कृपया शीर्षक एवं निर्धारित समय भरें');
+      toast.error('Please provide a title and scheduled time');
       return;
     }
 
@@ -214,14 +214,14 @@ export const AdminLiveBroadcast: React.FC = () => {
         description: scheduleDesc.trim() || undefined,
         scheduledAt: new Date(scheduleTime).toISOString(),
       });
-      toast.success('लाइव आरती कार्यक्रम सफलतापूर्वक शेड्यूल हुआ!');
+      toast.success('Live session scheduled successfully!');
       setIsScheduleModalOpen(false);
       setScheduleTitle('');
       setScheduleDesc('');
       setScheduleTime('');
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || 'शेड्यूल करने में समस्या आई');
+      toast.error(err.message || 'Failed to schedule session');
     } finally {
       setIsScheduling(false);
     }
@@ -229,13 +229,13 @@ export const AdminLiveBroadcast: React.FC = () => {
 
   // --- Delete Schedule ---
   const handleDeleteSchedule = async (id: string) => {
-    if (!window.confirm('क्या आप वाकई इस शेड्यूल कार्यक्रम को रद्द करना चाहते हैं?')) return;
+    if (!window.confirm('Are you sure you want to cancel this scheduled broadcast?')) return;
     try {
       await liveDarshanService.deleteScheduledSession(id);
-      toast.success('शेड्यूल कार्यक्रम रद्द कर दिया गया');
+      toast.success('Scheduled broadcast cancelled');
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || 'हटाने में समस्या आई');
+      toast.error(err.message || 'Failed to delete schedule');
     }
   };
 
@@ -248,9 +248,9 @@ export const AdminLiveBroadcast: React.FC = () => {
         [field]: value,
       });
       setGlobalSettings(res.data);
-      toast.success('मुख्य व्यवस्थापक: वैश्विक सेटिंग्स अपडेट हो गईं');
+      toast.success('Super Admin: Global settings updated');
     } catch (err: any) {
-      toast.error(err.message || 'सेटिंग्स अपडेट करने में समस्या आई');
+      toast.error(err.message || 'Failed to update global settings');
     } finally {
       setIsUpdatingSettings(false);
     }
@@ -265,12 +265,12 @@ export const AdminLiveBroadcast: React.FC = () => {
             <span className="p-1.5 rounded-lg bg-maroon-900/10 text-maroon-800">
               <Radio className="w-5 h-5" />
             </span>
-            <h1 className="text-2xl font-devanagari-heading font-bold text-maroon-950">
-              लाइव आरती नियंत्रण कक्ष (Live Broadcast Studio)
+            <h1 className="text-2xl font-heading font-bold text-maroon-950">
+              Live Broadcast Studio
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-muted font-devanagari-body">
-            आरती का लाइव प्रसारण प्रारंभ करें, कार्यक्रम शेड्यूल करें, चैट/दान टॉगल करें और दर्शक सांख्यिकी देखें।
+          <p className="text-xs sm:text-sm text-muted font-body">
+            Start live Aarti streams, schedule upcoming broadcasts, toggle live chat/donations, and monitor audience analytics.
           </p>
         </div>
 
@@ -283,7 +283,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               className="border-gold-600 text-maroon-900 hover:bg-gold-50 flex items-center gap-1.5 font-bold"
             >
               <Plus className="w-4 h-4 text-gold-600" />
-              <span>नया कार्यक्रम शेड्यूल करें</span>
+              <span>Schedule New Broadcast</span>
             </Button>
           )}
 
@@ -291,7 +291,7 @@ export const AdminLiveBroadcast: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs shadow-md animate-pulse">
                 <span className="w-2 h-2 rounded-full bg-white" />
-                लाइव ऑन-एयर
+                Live On-Air
               </span>
               <Button
                 variant="outline"
@@ -300,7 +300,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 className="border-red-600 text-red-600 hover:bg-red-50 flex items-center gap-1.5"
               >
                 <StopCircle className="w-4 h-4" />
-                <span>प्रसारण समाप्त करें</span>
+                <span>End Broadcast</span>
               </Button>
             </div>
           )}
@@ -325,11 +325,11 @@ export const AdminLiveBroadcast: React.FC = () => {
             <div className="flex items-center gap-4">
               <div className="w-3 h-3 rounded-full bg-red-500 animate-ping" />
               <div>
-                <h3 className="font-devanagari-heading font-bold text-base text-gold-300">
-                  {broadcastData.title || 'माँ दुर्गा पावन महाआरती'}
+                <h3 className="font-heading font-bold text-base text-gold-300">
+                  {broadcastData.title || 'Maa Durga Maha Aarti Live'}
                 </h3>
-                <p className="text-xs text-cream-300 font-devanagari-body">
-                  प्रसारक: {user?.name} (Admin) • रूम: {broadcastData.roomName}
+                <p className="text-xs text-cream-300 font-body">
+                  Broadcaster: {user?.name} (Admin) • Room: {broadcastData.roomName}
                 </p>
               </div>
             </div>
@@ -340,11 +340,11 @@ export const AdminLiveBroadcast: React.FC = () => {
               <div className="flex items-center gap-2 bg-dark-900/90 px-3.5 py-1.5 rounded-xl border border-gold-500/30">
                 <Users className="w-4 h-4 text-emerald-400" />
                 <span>
-                  वर्तमान दर्शक: <strong className="text-emerald-300 text-sm font-bold">{currentViewers}</strong>
+                  Current Viewers: <strong className="text-emerald-300 text-sm font-bold">{currentViewers}</strong>
                 </span>
                 <span className="text-muted">|</span>
                 <span>
-                  अधिकतम (Peak): <strong className="text-gold-300 text-sm font-bold">{peakViewers}</strong>
+                  Peak Viewers: <strong className="text-gold-300 text-sm font-bold">{peakViewers}</strong>
                 </span>
               </div>
 
@@ -359,7 +359,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 }`}
               >
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span>{isChatEnabled ? 'चैट: चालू' : 'चैट: बंद'}</span>
+                <span>{isChatEnabled ? 'Chat: ON' : 'Chat: OFF'}</span>
               </button>
 
               {/* Donation Toggle Button */}
@@ -373,7 +373,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 }`}
               >
                 <DollarSign className="w-3.5 h-3.5" />
-                <span>{isDonationEnabled ? 'दान: सक्रिय' : 'दान: बंद'}</span>
+                <span>{isDonationEnabled ? 'Donations: ON' : 'Donations: OFF'}</span>
               </button>
             </div>
           </div>
@@ -397,7 +397,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 <div className="bg-dark-900/90 border-t border-dark-800 p-2 flex items-center justify-between">
                   <ControlBar controls={{ chat: false, screenShare: false }} />
                   <div className="flex items-center gap-2 pr-4 text-xs text-gold-300 font-semibold">
-                    <span>नेटवर्क गुणवत्ता:</span>
+                    <span>Network Quality:</span>
                     <ConnectionQualityIndicator />
                   </div>
                 </div>
@@ -408,16 +408,16 @@ export const AdminLiveBroadcast: React.FC = () => {
             <div className="bg-cream-50 rounded-2xl p-4 border border-gold-500/30 shadow-md flex flex-col h-[480px]">
               <div className="flex items-center gap-2 pb-3 border-b border-cream-300">
                 <Heart className="w-4 h-4 text-maroon-700 fill-maroon-700" />
-                <h3 className="font-devanagari-heading font-bold text-sm text-maroon-900">
-                  लाइव आरती दान अर्पण
+                <h3 className="font-heading font-bold text-sm text-maroon-900">
+                  Live Aarti Offerings & Donations
                 </h3>
               </div>
 
               <div className="flex-1 overflow-y-auto py-3 space-y-2.5">
                 {donationQueue.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center p-4 text-muted text-xs font-devanagari-body">
+                  <div className="h-full flex flex-col items-center justify-center text-center p-4 text-muted text-xs font-body">
                     <Sparkles className="w-6 h-6 text-gold-500 mb-1" />
-                    <span>प्रसारण के दौरान भक्तों द्वारा किए गए दान यहाँ रीयल-टाइम में दिखेंगे।</span>
+                    <span>Devotee offerings made during the live stream will appear here in real time.</span>
                   </div>
                 ) : (
                   donationQueue.map((item, idx) => (
@@ -457,39 +457,39 @@ export const AdminLiveBroadcast: React.FC = () => {
                 <Video className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-xl font-devanagari-heading font-bold text-maroon-950">
-                  लाइव प्रसारण प्रारंभ करें (Go Live Now)
+                <h2 className="text-xl font-heading font-bold text-maroon-950">
+                  Start Live Broadcast (Go Live Now)
                 </h2>
-                <p className="text-xs text-muted font-devanagari-body">
-                  मल्टीपल एडमिन एक साथ अलग-अलग कैमरों (पंडाल, आरती, हवन) से लाइव हो सकते हैं।
+                <p className="text-xs text-muted font-body">
+                  Multiple admins can broadcast simultaneously from various angles (Pandal, Aarti, Hawan).
                 </p>
               </div>
             </div>
 
             <div className="space-y-4 pt-2">
               <div>
-                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-devanagari-body uppercase">
-                  आरती / कार्यक्रम का शीर्षक (Title/Topic)
+                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-body uppercase">
+                  Broadcast / Aarti Title *
                 </label>
                 <input
                   type="text"
                   value={broadcastTitle}
                   onChange={(e) => setBroadcastTitle(e.target.value)}
-                  placeholder="उदा. संध्या महाआरती, दुर्गा सप्तशती पाठ, हवन दर्शन..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-semibold font-devanagari-body"
+                  placeholder="e.g., Evening Maha Aarti, Durga Saptashati Recitation, Hawan Darshan..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-semibold font-body"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-devanagari-body uppercase">
-                  संक्षिप्त विवरण (वैकल्पिक)
+                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-body uppercase">
+                  Short Description (Optional)
                 </label>
                 <input
                   type="text"
                   value={broadcastDesc}
                   onChange={(e) => setBroadcastDesc(e.target.value)}
-                  placeholder="उदा. कपूरिपुर मुख्य पंडाल से सीधा दिव्य दर्शन..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-devanagari-body"
+                  placeholder="e.g., Sacred live darshan from Kapooripur main pandal..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-body"
                 />
               </div>
 
@@ -502,8 +502,8 @@ export const AdminLiveBroadcast: React.FC = () => {
                     onChange={(e) => setIsChatEnabled(e.target.checked)}
                     className="w-4 h-4 text-maroon-800 rounded"
                   />
-                  <label htmlFor="enableChat" className="text-xs font-semibold text-dark-800 cursor-pointer font-devanagari-body">
-                    लाइव चैट चालू रखें
+                  <label htmlFor="enableChat" className="text-xs font-semibold text-dark-800 cursor-pointer font-body">
+                    Enable Live Chat
                   </label>
                 </div>
 
@@ -515,8 +515,8 @@ export const AdminLiveBroadcast: React.FC = () => {
                     onChange={(e) => setIsDonationEnabled(e.target.checked)}
                     className="w-4 h-4 text-maroon-800 rounded"
                   />
-                  <label htmlFor="enableDonation" className="text-xs font-semibold text-dark-800 cursor-pointer font-devanagari-body">
-                    दान सेवा चालू रखें
+                  <label htmlFor="enableDonation" className="text-xs font-semibold text-dark-800 cursor-pointer font-body">
+                    Enable Devotee Donations
                   </label>
                 </div>
               </div>
@@ -529,7 +529,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 className="w-full py-3.5 bg-gradient-to-r from-maroon-800 to-maroon-950 text-gold-200 border border-gold-500/40 shadow-lg text-base font-bold flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5 fill-gold-400 text-gold-400" />
-                <span>तुरंत लाइव प्रसारण शुरू करें</span>
+                <span>Go Live Now</span>
               </Button>
             </div>
           </div>
@@ -542,21 +542,21 @@ export const AdminLiveBroadcast: React.FC = () => {
                 <div className="flex items-center gap-2.5 pb-2 border-b border-gold-500/30">
                   <Settings className="w-5 h-5 text-gold-400" />
                   <div>
-                    <h3 className="text-sm font-devanagari-heading font-bold text-gold-300">
-                      मुख्य व्यवस्थापक मास्टर नियंत्रण (Global Controls)
+                    <h3 className="text-sm font-heading font-bold text-gold-300">
+                      Super Admin Master Controls (Global Controls)
                     </h3>
-                    <p className="text-[11px] text-cream-300 font-devanagari-body">
-                      पूरी वेबसाइट हेतु ग्लोबल स्तर पर पेमेंट या चैट बंद/चालू करें
+                    <p className="text-[11px] text-cream-300 font-body">
+                      Toggle donation payments or live chat globally across all website streams
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-3 text-xs font-devanagari-body">
+                <div className="space-y-3 text-xs font-body">
                   {/* Global Payment Toggle */}
                   <div className="flex items-center justify-between p-3 rounded-xl bg-dark-900 border border-dark-700">
                     <div>
-                      <span className="font-bold text-cream-100 block">ग्लोबल दान / पेमेंट गेटवे</span>
-                      <span className="text-[11px] text-muted">Razorpay दान सेवा सक्रिय या निष्क्रिय करें</span>
+                      <span className="font-bold text-cream-100 block">Global Donation Gateway</span>
+                      <span className="text-[11px] text-muted">Enable or disable Razorpay devotee donation gateway</span>
                     </div>
                     <button
                       type="button"
@@ -568,15 +568,15 @@ export const AdminLiveBroadcast: React.FC = () => {
                           : 'bg-red-700 text-white'
                       }`}
                     >
-                      {globalSettings.isDonationEnabled ? 'सक्रिय (ON)' : 'बंद (OFF)'}
+                      {globalSettings.isDonationEnabled ? 'Enabled (ON)' : 'Disabled (OFF)'}
                     </button>
                   </div>
 
                   {/* Global Chat Toggle */}
                   <div className="flex items-center justify-between p-3 rounded-xl bg-dark-900 border border-dark-700">
                     <div>
-                      <span className="font-bold text-cream-100 block">ग्लोबल लाइव चैट संवाद</span>
-                      <span className="text-[11px] text-muted">सभी आरती स्ट्रीम्स में चैट ऑन या ऑफ करें</span>
+                      <span className="font-bold text-cream-100 block">Global Live Chat Feature</span>
+                      <span className="text-[11px] text-muted">Enable or disable live chat messaging across all streams</span>
                     </div>
                     <button
                       type="button"
@@ -588,7 +588,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                           : 'bg-red-700 text-white'
                       }`}
                     >
-                      {globalSettings.isLiveChatEnabled ? 'सक्रिय (ON)' : 'बंद (OFF)'}
+                      {globalSettings.isLiveChatEnabled ? 'Enabled (ON)' : 'Disabled (OFF)'}
                     </button>
                   </div>
                 </div>
@@ -600,34 +600,34 @@ export const AdminLiveBroadcast: React.FC = () => {
               <div className="flex items-center justify-between pb-2 border-b border-cream-200">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-maroon-700" />
-                  <h3 className="font-devanagari-heading font-bold text-sm text-maroon-950">
-                    आगामी शेड्यूल कार्यक्रम ({schedules.length})
+                  <h3 className="font-heading font-bold text-sm text-maroon-950">
+                    Upcoming Scheduled Broadcasts ({schedules.length})
                   </h3>
                 </div>
                 <button
                   onClick={() => setIsScheduleModalOpen(true)}
                   className="text-xs text-maroon-800 hover:underline font-bold"
                 >
-                  + नया जोड़ें
+                  + Add New
                 </button>
               </div>
 
               <div className="space-y-2.5 max-h-[300px] overflow-y-auto">
                 {schedules.length === 0 ? (
-                  <p className="text-xs text-muted text-center py-6 font-devanagari-body">
-                    अभी कोई कार्यक्रम शेड्यूल नहीं है।
+                  <p className="text-xs text-muted text-center py-6 font-body">
+                    No upcoming broadcasts scheduled.
                   </p>
                 ) : (
                   schedules.map((s) => (
                     <div
                       key={s._id}
-                      className="p-3 rounded-xl bg-cream-100 border border-cream-300 flex items-center justify-between gap-3 text-xs font-devanagari-body"
+                      className="p-3 rounded-xl bg-cream-100 border border-cream-300 flex items-center justify-between gap-3 text-xs font-body"
                     >
                       <div className="min-w-0">
                         <h4 className="font-bold text-maroon-900 truncate">{s.title}</h4>
                         <div className="flex items-center gap-1.5 text-[11px] text-muted mt-0.5">
                           <Clock className="w-3 h-3 text-gold-600" />
-                          <span>{new Date(s.scheduledAt).toLocaleString('hi-IN')}</span>
+                          <span>{new Date(s.scheduledAt).toLocaleString('en-US')}</span>
                         </div>
                       </div>
 
@@ -638,12 +638,12 @@ export const AdminLiveBroadcast: React.FC = () => {
                           onClick={() => handleStartBroadcast(s._id)}
                           className="py-1 px-2 text-[11px] bg-maroon-800 text-gold-300 font-bold"
                         >
-                          लाइव करें
+                          Go Live
                         </Button>
                         <button
                           onClick={() => handleDeleteSchedule(s._id)}
                           className="p-1.5 text-muted hover:text-red-700 hover:bg-red-50 rounded"
-                          title="रद्द करें"
+                          title="Cancel"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -665,17 +665,17 @@ export const AdminLiveBroadcast: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-maroon-800" />
-              <h3 className="font-devanagari-heading font-bold text-lg text-maroon-950">
-                लाइव प्रसारण इतिहास एवं दर्शक सांख्यिकी (Peak Viewers Overview)
+              <h3 className="font-heading font-bold text-lg text-maroon-950">
+                Broadcast History & Audience Analytics (Peak Viewers Overview)
               </h3>
             </div>
-            <p className="text-xs text-muted font-devanagari-body mt-0.5">
-              कब कितने लोग लाइव थे और किस दिन सबसे अधिक भक्तों ने दर्शन किए।
+            <p className="text-xs text-muted font-body mt-0.5">
+              Historical viewer counts and peak devotee participation records.
             </p>
           </div>
 
           <span className="text-xs font-bold text-maroon-900 bg-maroon-100 px-3 py-1 rounded-full border border-maroon-200">
-            कुल सत्र: {historyTotal}
+            Total Sessions: {historyTotal}
           </span>
         </div>
 
@@ -689,10 +689,10 @@ export const AdminLiveBroadcast: React.FC = () => {
               >
                 <span className="text-[10px] text-muted block font-mono">{stat._id}</span>
                 <span className="text-sm font-black text-maroon-900 block mt-0.5">
-                  {stat.dailyPeak} भक्त
+                  {stat.dailyPeak} Devotees
                 </span>
-                <span className="text-[10px] text-gold-700 font-devanagari-body">
-                  {stat.sessionCount} आरती सत्र
+                <span className="text-[10px] text-gold-700 font-body">
+                  {stat.sessionCount} Sessions
                 </span>
               </div>
             ))}
@@ -701,21 +701,21 @@ export const AdminLiveBroadcast: React.FC = () => {
 
         {/* History Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-devanagari-body">
+          <table className="w-full text-left text-xs font-body">
             <thead className="bg-cream-200/80 text-dark-800 font-bold uppercase tracking-wider border-b border-cream-300">
               <tr>
-                <th className="py-3 px-4">कार्यक्रम / शीर्षक</th>
-                <th className="py-3 px-4">प्रसारक एडमिन</th>
-                <th className="py-3 px-4">दिनांक एवं समय</th>
-                <th className="py-3 px-4">पीक दर्शक (Peak Viewers)</th>
-                <th className="py-3 px-4">स्थिति</th>
+                <th className="py-3 px-4">Program / Title</th>
+                <th className="py-3 px-4">Broadcaster Admin</th>
+                <th className="py-3 px-4">Date & Time</th>
+                <th className="py-3 px-4">Peak Viewers</th>
+                <th className="py-3 px-4">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-cream-200">
               {history.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-muted">
-                    अभी कोई पिछला लाइव प्रसारण रिकॉर्ड नहीं है।
+                    No previous broadcast records found.
                   </td>
                 </tr>
               ) : (
@@ -727,7 +727,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                       {formatDate(item.startedAt)}
                     </td>
                     <td className="py-3 px-4 font-black text-emerald-800">
-                      👥 {item.peakViewers || 0} भक्त
+                      👥 {item.peakViewers || 0} devotees
                     </td>
                     <td className="py-3 px-4">
                       <span
@@ -737,7 +737,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                             : 'bg-cream-300 text-dark-800'
                         }`}
                       >
-                        {item.status === 'live' ? 'लाइव' : 'समाप्त'}
+                        {item.status === 'live' ? 'Live' : 'Ended'}
                       </span>
                     </td>
                   </tr>
@@ -752,27 +752,27 @@ export const AdminLiveBroadcast: React.FC = () => {
       <Modal
         isOpen={isScheduleModalOpen}
         onClose={() => setIsScheduleModalOpen(false)}
-        title="नया लाइव आरती कार्यक्रम शेड्यूल करें"
+        title="Schedule Live Aarti Broadcast"
         maxWidth="md"
       >
         <form onSubmit={handleCreateSchedule} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-dark-900 mb-1.5 font-devanagari-body">
-              कार्यक्रम / आरती का नाम *
+            <label className="block text-xs font-semibold text-dark-900 mb-1.5 font-body">
+              Program / Aarti Title *
             </label>
             <input
               type="text"
               required
               value={scheduleTitle}
               onChange={(e) => setScheduleTitle(e.target.value)}
-              placeholder="उदा. प्रातः महाआरती, पुष्पांजलि एवं नवमी हवन..."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-devanagari-body font-semibold"
+              placeholder="e.g., Morning Maha Aarti, Pushpanjali & Navami Hawan..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-body font-semibold"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-dark-900 mb-1.5 font-devanagari-body">
-              निर्धारित दिनांक एवं समय (Date & Time) *
+            <label className="block text-xs font-semibold text-dark-900 mb-1.5 font-body">
+              Scheduled Date & Time *
             </label>
             <input
               type="datetime-local"
@@ -784,15 +784,15 @@ export const AdminLiveBroadcast: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-dark-900 mb-1.5 font-devanagari-body">
-              विवरण (वैकल्पिक)
+            <label className="block text-xs font-semibold text-dark-900 mb-1.5 font-body">
+              Description (Optional)
             </label>
             <textarea
               rows={3}
               value={scheduleDesc}
               onChange={(e) => setScheduleDesc(e.target.value)}
-              placeholder="कपूरिपुर पूजा पंडाल से सीधा पावन प्रसारण..."
-              className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-devanagari-body"
+              placeholder="Live sacred darshan directly from Kapooripur Pandal..."
+              className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-body"
             />
           </div>
 
@@ -802,7 +802,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               variant="outline"
               onClick={() => setIsScheduleModalOpen(false)}
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -810,7 +810,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               isLoading={isScheduling}
               className="bg-maroon-900 hover:bg-maroon-950 text-gold-200"
             >
-              कार्यक्रम सहेजें
+              Save Schedule
             </Button>
           </div>
         </form>
@@ -820,13 +820,13 @@ export const AdminLiveBroadcast: React.FC = () => {
       <Modal
         isOpen={showEndModal}
         onClose={() => setShowEndModal(false)}
-        title="लाइव आरती प्रसारण समाप्त करें?"
+        title="End Live Broadcast?"
         maxWidth="sm"
       >
         <div className="space-y-4 text-center">
           <AlertTriangle className="w-12 h-12 text-maroon-700 mx-auto" />
-          <p className="text-sm font-devanagari-body text-dark-800">
-            क्या आप निश्चित हैं कि आप इस लाइव आरती प्रसारण को समाप्त करना चाहते हैं? सभी जुड़े हुए भक्त डिस्कनेक्ट हो जाएँगे।
+          <p className="text-sm font-body text-dark-800">
+            Are you sure you want to end this live broadcast? All connected devotees will be disconnected.
           </p>
           <div className="flex items-center gap-3 pt-2">
             <Button
@@ -834,7 +834,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               onClick={() => setShowEndModal(false)}
               className="w-full"
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               variant="primary"
@@ -842,7 +842,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               isLoading={isLoading}
               className="w-full bg-red-700 hover:bg-red-800 text-white"
             >
-              हाँ, समाप्त करें
+              Yes, End Broadcast
             </Button>
           </div>
         </div>

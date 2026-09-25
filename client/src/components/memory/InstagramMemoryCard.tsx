@@ -38,7 +38,7 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const [isCaptionExpanded, setIsCaptionExpanded] = useState<boolean>(false);
   const [showBloom, setShowBloom] = useState<boolean>(false);
 
-  const uploaderName = memory.userId?.name || 'अज्ञात श्रद्धालु';
+  const uploaderName = memory.userId?.name || 'Devotee';
   const uploaderInitial = uploaderName.charAt(0).toUpperCase();
   const isOwner = user && memory.userId && user._id === memory.userId._id;
 
@@ -59,15 +59,15 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
       if (saved.includes(memory._id)) {
         updated = saved.filter((id) => id !== memory._id);
         setIsBookmarked(false);
-        toast.info('स्मृति बुकमार्क से हटाई गई');
+        toast.info('Memory removed from bookmarks');
       } else {
         updated = [...saved, memory._id];
         setIsBookmarked(true);
-        toast.success('स्मृति सहेज ली गई है (बुकमार्क)');
+        toast.success('Memory saved to bookmarks');
       }
       localStorage.setItem('saved_memories', JSON.stringify(updated));
     } catch {
-      toast.error('बुकमार्क सहेजने में समस्या आई');
+      toast.error('Could not update bookmark');
     }
   };
 
@@ -89,7 +89,7 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const handleCopyLink = () => {
     const url = `${window.location.origin}/memories/${memory._id}`;
     navigator.clipboard.writeText(url);
-    toast.success('स्मृति का लिंक कॉपी हो गया!');
+    toast.success('Memory link copied to clipboard!');
     setShowMenu(false);
   };
 
@@ -107,14 +107,14 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
             </div>
           </div>
           <div>
-            <h3 className="font-devanagari-heading font-bold text-dark-900 text-sm leading-tight">
+            <h3 className="font-heading font-bold text-dark-900 text-sm leading-tight">
               {uploaderName}
             </h3>
-            <div className="flex items-center gap-1.5 text-xs text-muted font-devanagari-body mt-0.5">
+            <div className="flex items-center gap-1.5 text-xs text-muted font-body mt-0.5">
               <MapPin className="w-3 h-3 text-maroon-700 shrink-0" />
-              <span>कपूरिपुर, दुर्गा पूजा</span>
+              <span>Kapooripur, Durga Puja</span>
               <span>•</span>
-              <span className="font-semibold text-maroon-800">वर्ष {memory.year}</span>
+              <span className="font-semibold text-maroon-800">Year {memory.year}</span>
             </div>
           </div>
         </div>
@@ -124,19 +124,19 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
           <button
             onClick={() => setShowMenu(!showMenu)}
             className="p-1.5 text-muted hover:text-dark-900 rounded-full hover:bg-cream-200 transition-colors"
-            aria-label="विकल्प"
+            aria-label="Options"
           >
             <MoreHorizontal className="w-5 h-5" />
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-1.5 z-30 font-devanagari-body text-xs">
+            <div className="absolute right-0 top-full mt-1 w-48 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-1.5 z-30 font-body text-xs">
               <button
                 onClick={handleCopyLink}
                 className="w-full px-3.5 py-2 text-left text-dark-800 hover:bg-cream-200 flex items-center gap-2"
               >
                 <Copy className="w-4 h-4 text-maroon-700" />
-                <span>लिंक कॉपी करें</span>
+                <span>Copy Link</span>
               </button>
 
               <button
@@ -147,20 +147,20 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
                 className="w-full px-3.5 py-2 text-left text-rose-700 hover:bg-rose-50 flex items-center gap-2"
               >
                 <Flag className="w-4 h-4 text-rose-600" />
-                <span>स्मृति की शिकायत करें</span>
+                <span>Report Memory</span>
               </button>
 
               {(isOwner || isAdmin) && onDelete && (
                 <button
                   onClick={() => {
                     setShowMenu(false);
-                    if (window.confirm('क्या आप वाकई इस स्मृति को हटाना चाहते हैं?')) {
+                    if (window.confirm('Are you sure you want to delete this memory?')) {
                       onDelete(memory._id);
                     }
                   }}
                   className="w-full px-3.5 py-2 text-left text-rose-700 hover:bg-rose-50 flex items-center gap-2 border-t border-cream-200"
                 >
-                  <span>स्मृति हटाएं</span>
+                  <span>Delete Memory</span>
                 </button>
               )}
             </div>
@@ -178,7 +178,7 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
       >
         <img
           src={getImageUrl(memory.imageUrl)}
-          alt={memory.caption || 'कपूरिपुर दुर्गा पूजा स्मृति'}
+          alt={memory.caption || 'Kapooripur Durga Puja Memory'}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.01]"
           loading="lazy"
         />
@@ -188,15 +188,15 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10 backdrop-blur-[1px] animate-fade-in">
             <div className="w-24 h-24 rounded-full bg-cream-50/90 text-amber-500 flex flex-col items-center justify-center shadow-2xl scale-125 animate-bounce">
               <Sparkles className="w-12 h-12 text-amber-500 animate-spin" />
-              <span className="text-[10px] font-devanagari-heading font-bold text-maroon-900 mt-1">
-                जय माँ दुर्गे
+              <span className="text-[10px] font-heading font-bold text-maroon-900 mt-1">
+                Jai Maa Durga
               </span>
             </div>
           </div>
         )}
 
         {/* Year Pill Tag */}
-        <div className="absolute top-3 right-3 bg-dark-950/70 backdrop-blur-md text-cream-100 text-xs font-devanagari-body font-semibold px-2.5 py-1 rounded-full border border-cream-100/20 flex items-center gap-1 shadow-sm">
+        <div className="absolute top-3 right-3 bg-dark-950/70 backdrop-blur-md text-cream-100 text-xs font-body font-semibold px-2.5 py-1 rounded-full border border-cream-100/20 flex items-center gap-1 shadow-sm">
           <Calendar className="w-3 h-3 text-amber-400" />
           <span>{memory.year}</span>
         </div>
@@ -211,10 +211,10 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-cream-50 text-xs font-devanagari-body font-semibold shadow-sm transition-all active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-cream-50 text-xs font-body font-semibold shadow-sm transition-all active:scale-95"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>WhatsApp शेयर</span>
+              <span>Share on WhatsApp</span>
             </a>
 
             {/* Modal Detail Share */}
@@ -228,7 +228,7 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
           {/* Bookmark Button */}
           <button
             onClick={toggleBookmark}
-            aria-label="स्मृति सहेजें"
+            aria-label="Bookmark Memory"
             className={`p-2 rounded-full transition-all active:scale-90 ${
               isBookmarked
                 ? 'text-amber-600 bg-amber-100/70'
@@ -244,16 +244,16 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
         </div>
 
         {/* Impression (Views/Darshan) Counter — No likes, No comments */}
-        <div className="mt-2.5 flex items-center gap-1.5 text-xs font-devanagari-body font-semibold text-maroon-900">
+        <div className="mt-2.5 flex items-center gap-1.5 text-xs font-body font-semibold text-maroon-900">
           <Eye className="w-3.5 h-3.5 text-maroon-700" />
-          <span>{formatImpressions(memory.impressions)} भक्तों द्वारा दर्शन</span>
+          <span>{formatImpressions(memory.impressions)} devotee views</span>
         </div>
 
         {/* 4. Caption & Details */}
-        <div className="mt-2 font-devanagari-body text-sm text-dark-900 leading-relaxed">
+        <div className="mt-2 font-body text-sm text-dark-900 leading-relaxed">
           <span className="font-bold text-maroon-900 mr-2">{uploaderName}</span>
           <span className={!isCaptionExpanded && memory.caption?.length > 120 ? 'line-clamp-2 inline' : 'inline'}>
-            {memory.caption || 'माँ जगदम्बा की पावन स्मृति'}
+            {memory.caption || 'Sacred memory of Durga Puja'}
           </span>
 
           {memory.caption && memory.caption.length > 120 && (
@@ -261,14 +261,14 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
               onClick={() => setIsCaptionExpanded(!isCaptionExpanded)}
               className="ml-1.5 text-xs text-maroon-700 font-bold hover:underline"
             >
-              {isCaptionExpanded ? 'कम देखें' : '...और देखें'}
+              {isCaptionExpanded ? 'Show less' : '...Read more'}
             </button>
           )}
         </div>
 
         {/* 5. Timestamp */}
-        <div className="mt-2 text-[11px] font-devanagari-body text-muted">
-          {formatDate(memory.createdAt)} • कपूरिपुर संचय
+        <div className="mt-2 text-[11px] font-body text-muted">
+          {formatDate(memory.createdAt)} • Kapooripur Archive
         </div>
       </div>
 

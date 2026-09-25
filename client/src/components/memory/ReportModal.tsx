@@ -24,7 +24,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, memor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.error('कृपया रिपोर्ट दर्ज करने के लिए लॉगिन करें');
+      toast.error('Please login to report content');
       return;
     }
 
@@ -35,40 +35,40 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, memor
         reason,
         description: description.trim(),
       });
-      toast.success('आपकी रिपोर्ट दर्ज कर ली गई है। समिति शीघ्र समीक्षा करेगी।');
+      toast.success('Your report has been submitted. The committee will review it promptly.');
       onClose();
       setDescription('');
     } catch (err: any) {
-      toast.error(err.message || 'रिपोर्ट दर्ज करने में त्रुटि हुई');
+      toast.error(err.message || 'Error submitting report');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="स्मृति की रिपोर्ट करें">
+    <Modal isOpen={isOpen} onClose={onClose} title="Report Memory">
       {!isAuthenticated ? (
         <div className="text-center py-4">
           <AlertTriangle className="w-12 h-12 text-gold-600 mx-auto mb-3" />
-          <p className="text-sm font-devanagari-body text-dark-800 mb-6">
-            सामग्री की समीक्षा हेतु रिपोर्ट करने के लिए कृपया पहले लॉगिन करें।
+          <p className="text-sm font-body text-dark-800 mb-6">
+            Please log in first to submit a report for content moderation.
           </p>
           <div className="flex justify-center gap-3">
             <Link to="/login">
               <Button variant="primary" size="md">
-                लॉगिन करें
+                Log In
               </Button>
             </Link>
             <Button variant="outline" size="md" onClick={onClose}>
-              रद्द करें
+              Cancel
             </Button>
           </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-devanagari-body font-semibold text-dark-900 mb-2">
-              रिपोर्ट का कारण चुनें:
+            <label className="block text-sm font-body font-semibold text-dark-900 mb-2">
+              Select Reason for Report:
             </label>
             <div className="space-y-2">
               {REPORT_REASONS.map((item) => (
@@ -88,7 +88,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, memor
                     onChange={(e) => setReason(e.target.value)}
                     className="mt-1 text-maroon-700 focus:ring-maroon-500"
                   />
-                  <span className="text-xs sm:text-sm font-devanagari-body leading-relaxed">
+                  <span className="text-xs sm:text-sm font-body leading-relaxed">
                     {item.label}
                   </span>
                 </label>
@@ -97,22 +97,22 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, memor
           </div>
 
           <div>
-            <label className="block text-sm font-devanagari-body font-semibold text-dark-900 mb-1.5">
-              अतिरिक्त विवरण (वैकल्पिक):
+            <label className="block text-sm font-body font-semibold text-dark-900 mb-1.5">
+              Additional Details (Optional):
             </label>
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="समिति के लिए कोई विशेष सूचना..."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon-600 text-sm font-devanagari-body"
+              placeholder="Provide specific notes or context for the committee..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon-600 text-sm font-body"
               maxLength={500}
             />
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-cream-300">
             <Button type="button" variant="outline" size="md" onClick={onClose}>
-              रद्द करें
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -120,7 +120,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, memor
               size="md"
               isLoading={isSubmitting}
             >
-              रिपोर्ट सबमिट करें
+              Submit Report
             </Button>
           </div>
         </form>

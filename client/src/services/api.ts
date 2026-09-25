@@ -26,7 +26,7 @@ api.interceptors.response.use(
     const message =
       error.response?.data?.message ||
       error.message ||
-      'सर्वर से संपर्क करने में त्रुटि हुई। कृपया पुनः प्रयास करें।';
+      'An error occurred while connecting to the server. Please try again.';
     
     return Promise.reject(new Error(message));
   }

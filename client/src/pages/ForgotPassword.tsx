@@ -18,10 +18,10 @@ export const ForgotPassword: React.FC = () => {
     setIsLoading(true);
     try {
       const res = await authService.forgotPassword(email);
-      toast.success(res.message || 'OTP आपके ईमेल पर भेज दिया गया है');
+      toast.success(res.message || 'OTP has been sent to your email.');
       navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
-      toast.error(err.message || 'OTP भेजने में समस्या आई');
+      toast.error(err.message || 'Failed to send OTP. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -34,18 +34,18 @@ export const ForgotPassword: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-maroon-900/10 text-maroon-800 flex items-center justify-center mx-auto mb-3 border border-gold-500/30">
             <KeyRound className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-devanagari-heading font-bold text-maroon-950">
-            पासवर्ड भूल गए?
+          <h1 className="text-2xl font-heading font-bold text-maroon-950">
+            Forgot Password?
           </h1>
-          <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1">
-            अपना पंजीकृत ईमेल पता दर्ज करें। हम आपको 6-अंकों का सत्यापन OTP भेजेंगे।
+          <p className="text-xs sm:text-sm font-body text-muted mt-1">
+            Enter your registered email address. We will send you a 6-digit verification OTP.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-dark-900 font-devanagari-body mb-1.5">
-              ईमेल पता
+            <label className="block text-xs font-semibold text-dark-900 font-body mb-1.5">
+              Email Address
             </label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
@@ -66,19 +66,19 @@ export const ForgotPassword: React.FC = () => {
             size="lg"
             isLoading={isLoading}
             leftIcon={<KeyRound className="w-4 h-4" />}
-            className="w-full font-devanagari-body font-bold"
+            className="w-full font-body font-bold"
           >
-            6-अंकों का OTP प्राप्त करें
+            Get 6-Digit OTP
           </Button>
         </form>
 
         <div className="mt-6 pt-6 border-t border-cream-300 text-center">
           <Link
             to="/login"
-            className="inline-flex items-center gap-1.5 text-xs font-devanagari-body font-semibold text-maroon-800 hover:underline"
+            className="inline-flex items-center gap-1.5 text-xs font-body font-semibold text-maroon-800 hover:underline"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>लॉगिन पृष्ठ पर लौटें</span>
+            <span>Back to Login</span>
           </Link>
         </div>
       </div>

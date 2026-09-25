@@ -58,7 +58,7 @@ export const MemoryDetail: React.FC = () => {
           setEditYear(res.data.year);
         }
       } catch (err: any) {
-        setError(err.message || 'स्मृति लोड करने में असमर्थ');
+        setError(err.message || 'Unable to load memory details.');
       } finally {
         setIsLoading(false);
       }
@@ -75,10 +75,10 @@ export const MemoryDetail: React.FC = () => {
     setIsDeleting(true);
     try {
       await memoryService.deleteMemory(memory._id);
-      toast.success('स्मृति हटा दी गई');
+      toast.success('Memory deleted successfully');
       navigate('/memories');
     } catch (err: any) {
-      toast.error(err.message || 'स्मृति हटाने में त्रुटि हुई');
+      toast.error(err.message || 'Error deleting memory');
       setIsDeleting(false);
     }
   };
@@ -94,11 +94,11 @@ export const MemoryDetail: React.FC = () => {
       });
       if (res.success) {
         setMemory(res.data);
-        toast.success('स्मृति विवरण अपडेट हो गया');
+        toast.success('Memory updated successfully');
         setIsEditModalOpen(false);
       }
     } catch (err: any) {
-      toast.error(err.message || 'अपडेट करने में त्रुटि हुई');
+      toast.error(err.message || 'Error updating memory');
     } finally {
       setIsUpdating(false);
     }
@@ -108,7 +108,7 @@ export const MemoryDetail: React.FC = () => {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-8 h-8 animate-spin text-maroon-700" />
-        <p className="text-sm font-devanagari-body text-muted">स्मृति लोड हो रही है...</p>
+        <p className="text-sm font-body text-muted">Loading memory details...</p>
       </div>
     );
   }
@@ -117,15 +117,15 @@ export const MemoryDetail: React.FC = () => {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6 max-w-md mx-auto">
         <AlertTriangle className="w-12 h-12 text-maroon-700 mb-3" />
-        <h3 className="text-xl font-devanagari-heading font-bold text-dark-900 mb-2">
-          स्मृति नहीं मिली
+        <h3 className="text-xl font-heading font-bold text-dark-900 mb-2">
+          Memory Not Found
         </h3>
-        <p className="text-sm font-devanagari-body text-muted mb-6">
-          {error || 'यह स्मृति उपलब्ध नहीं है या हटा दी गई है।'}
+        <p className="text-sm font-body text-muted mb-6">
+          {error || 'This memory is not available or has been removed.'}
         </p>
         <Link to="/memories">
           <Button variant="outline" size="md" leftIcon={<ArrowLeft className="w-4 h-4" />}>
-            स्मृति दीर्घा पर लौटें
+            Back to Memories Archive
           </Button>
         </Link>
       </div>
@@ -138,10 +138,10 @@ export const MemoryDetail: React.FC = () => {
       <div className="mb-6 flex items-center justify-between">
         <Link
           to="/memories"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-devanagari-body font-semibold text-maroon-800 hover:text-maroon-950 transition-colors"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-body font-semibold text-maroon-800 hover:text-maroon-950 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>← सभी स्मृतियों पर वापस जाएं</span>
+          <span>← Back to all memories</span>
         </Link>
 
         {canModify && (
@@ -152,7 +152,7 @@ export const MemoryDetail: React.FC = () => {
               onClick={() => setIsEditModalOpen(true)}
               leftIcon={<Edit className="w-3.5 h-3.5" />}
             >
-              संपादित करें
+              Edit
             </Button>
             <Button
               variant="danger"
@@ -160,7 +160,7 @@ export const MemoryDetail: React.FC = () => {
               onClick={() => setIsDeleteModalOpen(true)}
               leftIcon={<Trash2 className="w-3.5 h-3.5" />}
             >
-              हटाएं
+              Delete
             </Button>
           </div>
         )}
@@ -178,7 +178,7 @@ export const MemoryDetail: React.FC = () => {
 
           {/* Floating Year Tag */}
           <div className="absolute top-4 right-4 bg-dark-900/85 backdrop-blur-md text-gold-300 text-xs sm:text-sm font-semibold px-3 py-1 rounded-full border border-gold-500/30 shadow-md">
-            वर्ष {memory.year}
+            Year {memory.year}
           </div>
         </div>
 
@@ -201,18 +201,18 @@ export const MemoryDetail: React.FC = () => {
               </div>
 
               <div>
-                <h2 className="text-base sm:text-lg font-devanagari-body font-bold text-dark-950">
-                  {memory.userId?.name || 'श्रद्धालु भक्त'}
+                <h2 className="text-base sm:text-lg font-body font-bold text-dark-950">
+                  {memory.userId?.name || 'Devotee'}
                 </h2>
-                <div className="flex flex-wrap items-center gap-3 text-xs font-devanagari-body text-muted mt-0.5">
+                <div className="flex flex-wrap items-center gap-3 text-xs font-body text-muted mt-0.5">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-gold-600 shrink-0" />
-                    <span>साझा की गई तिथि: {formatDate(memory.createdAt)}</span>
+                    <span>Shared on: {formatDate(memory.createdAt)}</span>
                   </div>
                   <span className="text-cream-400">•</span>
                   <div className="flex items-center gap-1 text-maroon-900 font-semibold bg-maroon-900/10 px-2.5 py-0.5 rounded-full border border-maroon-900/20">
                     <Eye className="w-3.5 h-3.5 text-maroon-700" />
-                    <span>{formatImpressions(memory.impressions)} भक्तों द्वारा दर्शन</span>
+                    <span>{formatImpressions(memory.impressions)} devotee views</span>
                   </div>
                 </div>
               </div>
@@ -230,30 +230,30 @@ export const MemoryDetail: React.FC = () => {
 
               <button
                 onClick={() => setIsReportModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-devanagari-body text-muted hover:text-red-700 hover:bg-red-50 border border-cream-300 transition-colors"
-                title="अनुचित सामग्री की रिपोर्ट करें"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-body text-muted hover:text-red-700 hover:bg-red-50 border border-cream-300 transition-colors"
+                title="Report content"
               >
                 <Flag className="w-3.5 h-3.5" />
-                <span>रिपोर्ट करें</span>
+                <span>Report</span>
               </button>
             </div>
           </div>
 
           {/* Full Caption */}
           <div className="space-y-3">
-            <h3 className="text-xs uppercase tracking-wider font-semibold text-gold-800 font-devanagari-body">
-              स्मृति संस्मरण
+            <h3 className="text-xs uppercase tracking-wider font-semibold text-gold-800 font-body">
+              Memory Description
             </h3>
-            <p className="text-base sm:text-lg font-devanagari-body text-dark-900 leading-relaxed whitespace-pre-line">
+            <p className="text-base sm:text-lg font-body text-dark-900 leading-relaxed whitespace-pre-line">
               {memory.caption}
             </p>
           </div>
 
           {/* Archival Quality Badge */}
-          <div className="bg-cream-100 p-4 rounded-2xl border border-cream-300 flex items-center gap-3 text-xs font-devanagari-body text-muted">
+          <div className="bg-cream-100 p-4 rounded-2xl border border-cream-300 flex items-center gap-3 text-xs font-body text-muted">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <span>
-              यह तस्वीर यदुवंशी दुर्गा पूजा कपूरिपुर के स्थायी डिजिटल अभिलेखागार में मूल स्वरूप में सुरक्षित है।
+              This photograph is preserved in original quality in the digital archive of Yaduvashi Durga Puja Kapooripur.
             </span>
           </div>
         </div>
@@ -270,11 +270,11 @@ export const MemoryDetail: React.FC = () => {
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="स्मृति हटाने की पुष्टि"
+        title="Confirm Deletion"
       >
         <div className="space-y-4">
-          <p className="text-sm font-devanagari-body text-dark-800 leading-relaxed">
-            क्या आप वाकई इस स्मृति को हमेशा के लिए हटाना चाहते हैं? यह क्रिया वापस नहीं ली जा सकती।
+          <p className="text-sm font-body text-dark-800 leading-relaxed">
+            Are you sure you want to permanently delete this memory? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3 pt-4 border-t border-cream-300">
             <Button
@@ -282,7 +282,7 @@ export const MemoryDetail: React.FC = () => {
               size="md"
               onClick={() => setIsDeleteModalOpen(false)}
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               variant="danger"
@@ -290,7 +290,7 @@ export const MemoryDetail: React.FC = () => {
               onClick={handleDelete}
               isLoading={isDeleting}
             >
-              हाँ, हटा दें
+              Yes, Delete
             </Button>
           </div>
         </div>
@@ -300,12 +300,12 @@ export const MemoryDetail: React.FC = () => {
       <Modal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        title="स्मृति संपादित करें"
+        title="Edit Memory"
       >
         <form onSubmit={handleUpdate} className="space-y-4">
           <div>
-            <label className="block text-sm font-devanagari-body font-semibold text-dark-900 mb-1.5">
-              वर्ष चुनें:
+            <label className="block text-sm font-body font-semibold text-dark-900 mb-1.5">
+              Select Year:
             </label>
             <input
               type="number"
@@ -314,13 +314,13 @@ export const MemoryDetail: React.FC = () => {
               min={1970}
               max={new Date().getFullYear() + 1}
               required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600 text-sm font-devanagari-body"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600 text-sm font-body"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-devanagari-body font-semibold text-dark-900 mb-1.5">
-              संस्मरण / विवरण:
+            <label className="block text-sm font-body font-semibold text-dark-900 mb-1.5">
+              Caption / Description:
             </label>
             <textarea
               rows={4}
@@ -328,7 +328,7 @@ export const MemoryDetail: React.FC = () => {
               onChange={(e) => setEditCaption(e.target.value)}
               required
               maxLength={600}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600 text-sm font-devanagari-body"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 focus:outline-none focus:ring-2 focus:ring-maroon-600 text-sm font-body"
             />
           </div>
 
@@ -339,7 +339,7 @@ export const MemoryDetail: React.FC = () => {
               size="md"
               onClick={() => setIsEditModalOpen(false)}
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -347,7 +347,7 @@ export const MemoryDetail: React.FC = () => {
               size="md"
               isLoading={isUpdating}
             >
-              बदलाव सहेजें
+              Save Changes
             </Button>
           </div>
         </form>

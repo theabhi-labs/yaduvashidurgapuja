@@ -45,8 +45,8 @@ export const DonationCard: React.FC<DonationCardProps> = ({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <h4 className="text-xs sm:text-sm font-devanagari-heading font-bold text-gold-300 truncate">
-                  {donation.donorName || 'श्रद्धालु भक्त'}
+                <h4 className="text-xs sm:text-sm font-heading font-bold text-gold-300 truncate">
+                  {donation.donorName || 'Devotee'}
                 </h4>
                 <span className="inline-flex items-center gap-1 text-sm sm:text-base font-black text-gold-400 bg-gold-950/60 px-2.5 py-0.5 rounded-full border border-gold-500/40">
                   <Sparkles className="w-3.5 h-3.5 text-gold-400" />
@@ -54,8 +54,8 @@ export const DonationCard: React.FC<DonationCardProps> = ({
                 </span>
               </div>
 
-              <p className="text-[11px] sm:text-xs text-cream-200/90 font-devanagari-body truncate mt-0.5">
-                {donation.message ? `"${donation.message}"` : 'माँ दुर्गा पूजा सेवा में दान अर्पण किया 🙏'}
+              <p className="text-[11px] sm:text-xs text-cream-200/90 font-body truncate mt-0.5">
+                {donation.message ? `"${donation.message}"` : 'Contributed to Maa Durga Puja Seva 🙏'}
               </p>
             </div>
           </div>

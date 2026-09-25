@@ -33,20 +33,20 @@ export const YearStoriesBar: React.FC<YearStoriesBarProps> = ({
                 }`}
               />
               <span
-                className={`text-[10px] font-devanagari-heading font-bold mt-0.5 ${
+                className={`text-[10px] font-heading font-bold mt-0.5 ${
                   selectedYear === undefined ? 'text-maroon-900' : 'text-dark-700'
                 }`}
               >
-                सभी वर्ष
+                All Years
               </span>
             </div>
           </div>
           <span
-            className={`text-xs font-devanagari-body truncate max-w-[70px] ${
+            className={`text-xs font-body truncate max-w-[70px] ${
               selectedYear === undefined ? 'font-bold text-maroon-900' : 'text-dark-700/70 font-medium'
             }`}
           >
-            अभिलेख
+            Archive
           </span>
         </button>
 
@@ -73,23 +73,23 @@ export const YearStoriesBar: React.FC<YearStoriesBarProps> = ({
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-cream-50 flex flex-col items-center justify-center p-1 border-2 border-cream-100 transition-transform group-active:scale-95 relative overflow-hidden">
                   {isCurrentYear && (
                     <span className="absolute top-1 text-[8px] bg-amber-500 text-cream-50 font-bold px-1 rounded-full scale-90">
-                      पावन
+                      Live
                     </span>
                   )}
                   <span
-                    className={`font-devanagari-heading font-bold text-base sm:text-lg leading-tight ${
+                    className={`font-heading font-bold text-base sm:text-lg leading-tight ${
                       isSelected ? 'text-maroon-800' : 'text-dark-900'
                     }`}
                   >
                     {year}
                   </span>
-                  <span className="text-[9px] text-muted font-devanagari-body -mt-0.5">
-                    दुर्गा पूजा
+                  <span className="text-[9px] text-muted font-body -mt-0.5">
+                    Durga Puja
                   </span>
                 </div>
               </div>
               <span
-                className={`text-xs font-devanagari-body truncate max-w-[70px] ${
+                className={`text-xs font-body truncate max-w-[70px] ${
                   isSelected ? 'font-bold text-maroon-900' : 'text-dark-700/70 font-medium'
                 }`}
               >

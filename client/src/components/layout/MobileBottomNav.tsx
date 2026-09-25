@@ -47,8 +47,8 @@ export const MobileBottomNav: React.FC = () => {
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-maroon-700 rounded-full" />
                 )}
               </div>
-              <span className={`text-[10px] font-devanagari-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
-                गृह
+              <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
+                Home
               </span>
             </>
           )}
@@ -73,8 +73,8 @@ export const MobileBottomNav: React.FC = () => {
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-maroon-700 rounded-full" />
                 )}
               </div>
-              <span className={`text-[10px] font-devanagari-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
-                स्मृतियाँ
+              <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
+                Memories
               </span>
             </>
           )}
@@ -83,14 +83,14 @@ export const MobileBottomNav: React.FC = () => {
         {/* 3. Center Instagram-Style Create / Add Button */}
         <button
           onClick={handleAddClick}
-          aria-label="नई स्मृति जोड़ें"
+          aria-label="Add New Memory"
           className="flex flex-col items-center justify-center flex-1 py-1 group"
         >
           <div className="w-10 h-10 -mt-3 rounded-2xl bg-gradient-to-tr from-maroon-800 via-maroon-700 to-amber-600 text-cream-50 flex items-center justify-center shadow-md shadow-maroon-900/20 group-hover:scale-110 active:scale-95 transition-all border-2 border-cream-100">
             <PlusSquare className="w-5 h-5 stroke-[2.5px]" />
           </div>
-          <span className="text-[10px] font-devanagari-body mt-0.5 font-bold text-maroon-800">
-            जोड़ें
+          <span className="text-[10px] font-body mt-0.5 font-bold text-maroon-800">
+            Share
           </span>
         </button>
 
@@ -113,8 +113,8 @@ export const MobileBottomNav: React.FC = () => {
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-maroon-700 rounded-full" />
                 )}
               </div>
-              <span className={`text-[10px] font-devanagari-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
-                समिति
+              <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
+                Committee
               </span>
             </>
           )}
@@ -147,15 +147,15 @@ export const MobileBottomNav: React.FC = () => {
                 )}
 
                 {isAdmin && (
-                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border border-cream-100" title="व्यवस्थापक" />
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border border-cream-100" title="Admin" />
                 )}
 
                 {isActive && (
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-maroon-700 rounded-full" />
                 )}
               </div>
-              <span className={`text-[10px] font-devanagari-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
-                {isAuthenticated ? 'प्रोफाइल' : 'लॉगिन'}
+              <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
+                {isAuthenticated ? 'Profile' : 'Login'}
               </span>
             </>
           )}

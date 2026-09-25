@@ -9,8 +9,9 @@ export interface TocItem {
 }
 
 interface LegalPageLayoutProps {
-  titleHindi: string;
-  titleEnglish: string;
+  titleHindi?: string;
+  titleEnglish?: string;
+  title?: string;
   badge: string;
   description: string;
   tocItems: TocItem[];
@@ -20,11 +21,13 @@ interface LegalPageLayoutProps {
 export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
   titleHindi,
   titleEnglish,
+  title,
   badge,
   description,
   tocItems,
   children,
 }) => {
+  const displayTitle = title || titleEnglish || titleHindi || '';
   const [activeId, setActiveId] = useState<string>(tocItems[0]?.id || '');
   const [isMobileTocOpen, setIsMobileTocOpen] = useState<boolean>(false);
   const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
@@ -69,22 +72,19 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
       <div className="bg-gradient-to-r from-maroon-950 via-maroon-900 to-maroon-950 text-cream-50 rounded-3xl p-6 sm:p-10 mb-10 border-2 border-gold-500/40 shadow-medium relative overflow-hidden">
         <div className="relative z-10 max-w-3xl space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 border border-gold-400/40 font-devanagari-body">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gold-500/20 text-gold-300 border border-gold-400/40 font-body">
               {badge}
             </span>
-            <span className="text-xs font-devanagari-body text-cream-300">
-              अंतिम अद्यतन: {EFFECTIVE_DATE}
+            <span className="text-xs font-body text-cream-300">
+              Last Updated: {EFFECTIVE_DATE}
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-devanagari-heading font-black text-cream-50 leading-tight">
-            {titleHindi}
+          <h1 className="text-2xl sm:text-4xl font-heading font-black text-cream-50 leading-tight">
+            {displayTitle}
           </h1>
-          <p className="text-sm sm:text-base font-medium text-gold-300">
-            {titleEnglish}
-          </p>
 
-          <p className="text-xs sm:text-sm font-devanagari-body text-cream-200/90 leading-relaxed pt-1">
+          <p className="text-xs sm:text-sm font-body text-cream-200/90 leading-relaxed pt-1">
             {description}
           </p>
         </div>
@@ -94,9 +94,9 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
       <div className="lg:hidden mb-6">
         <button
           onClick={() => setIsMobileTocOpen(!isMobileTocOpen)}
-          className="w-full flex items-center justify-between p-4 bg-cream-100 rounded-2xl border border-cream-300 shadow-soft text-xs font-bold text-dark-900 font-devanagari-body"
+          className="w-full flex items-center justify-between p-4 bg-cream-100 rounded-2xl border border-cream-300 shadow-soft text-xs font-bold text-dark-900 font-body"
         >
-          <span>अनुक्रमणिका (Table of Contents)</span>
+          <span>Table of Contents</span>
           <ChevronDown
             className={`w-4 h-4 text-maroon-700 transition-transform ${
               isMobileTocOpen ? 'rotate-180' : ''
@@ -110,7 +110,7 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-devanagari-body transition-colors flex items-center gap-2 ${
+                className={`w-full text-left px-3 py-2 rounded-xl text-xs font-body transition-colors flex items-center gap-2 ${
                   activeId === item.id
                     ? 'bg-maroon-700 text-cream-50 font-bold'
                     : 'text-dark-800 hover:bg-cream-200'
@@ -129,9 +129,9 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
         {/* Desktop Sticky Sidebar TOC */}
         <aside className="hidden lg:block lg:col-span-4 sticky top-24">
           <div className="bg-cream-100 p-5 rounded-3xl border border-cream-300 shadow-soft space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-cream-300 font-devanagari-body text-xs font-bold uppercase tracking-wider text-gold-800">
+            <div className="flex items-center gap-2 pb-3 border-b border-cream-300 font-body text-xs font-bold uppercase tracking-wider text-gold-800">
               <ShieldCheck className="w-4 h-4 text-gold-600" />
-              <span>अनुक्रमणिका (Contents)</span>
+              <span>Table of Contents</span>
             </div>
 
             <nav className="space-y-1 max-h-[calc(100vh-250px)] overflow-y-auto pr-1">
@@ -139,7 +139,7 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-devanagari-body transition-all flex items-start gap-2 ${
+                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-body transition-all flex items-start gap-2 ${
                     activeId === item.id
                       ? 'bg-maroon-700 text-cream-50 font-bold shadow-sm'
                       : 'text-dark-800 hover:bg-cream-200/70'
@@ -156,9 +156,9 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
             <div className="pt-3 border-t border-cream-300 text-center">
               <Link
                 to="/contact"
-                className="text-[11px] font-devanagari-body font-semibold text-maroon-800 hover:underline"
+                className="text-[11px] font-body font-semibold text-maroon-800 hover:underline"
               >
-                कोई प्रश्न है? हमसे संपर्क करें →
+                Have questions? Contact the Committee →
               </Link>
             </div>
           </div>
@@ -175,7 +175,7 @@ export const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({
         <button
           onClick={scrollToTop}
           className="fixed bottom-6 right-6 z-40 p-3 rounded-full bg-maroon-700 text-cream-50 shadow-xl hover:bg-maroon-800 transition-all focus:outline-none focus:ring-2 focus:ring-gold-500"
-          title="शीर्ष पर जाएं"
+          title="Scroll to top"
           aria-label="Scroll to top"
         >
           <ArrowUp className="w-5 h-5" />

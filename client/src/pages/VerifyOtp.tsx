@@ -78,12 +78,12 @@ export const VerifyOtp: React.FC = () => {
     const fullOtp = otp.join('');
 
     if (fullOtp.length !== 6) {
-      toast.error('कृपया पूरा 6-अंकों का OTP दर्ज करें');
+      toast.error('Please enter the full 6-digit OTP.');
       return;
     }
 
     if (!email) {
-      toast.error('ईमेल पता अनुपलब्ध है, कृपया पुनः प्रयास करें');
+      toast.error('Email address is missing, please try again.');
       navigate('/forgot-password');
       return;
     }
@@ -91,13 +91,13 @@ export const VerifyOtp: React.FC = () => {
     setIsLoading(true);
     try {
       const res = await authService.verifyOtp({ email, otp: fullOtp });
-      toast.success('OTP सत्यापित हुआ! अब नया पासवर्ड दर्ज करें।');
+      toast.success('OTP verified successfully! Please enter your new password.');
       const resetToken = res.data.resetToken;
       navigate(`/reset-password?token=${encodeURIComponent(resetToken)}`, {
         state: { resetToken, email },
       });
     } catch (err: any) {
-      toast.error(err.message || 'अमान्य OTP, कृपया पुनः प्रयास करें');
+      toast.error(err.message || 'Invalid or expired OTP. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -109,12 +109,12 @@ export const VerifyOtp: React.FC = () => {
     setIsResending(true);
     try {
       await authService.forgotPassword(email);
-      toast.success('नया OTP आपके ईमेल पर भेज दिया गया है');
+      toast.success('A new OTP has been sent to your email.');
       setCountdown(60);
       setOtp(['', '', '', '', '', '']);
       inputsRef.current[0]?.focus();
     } catch (err: any) {
-      toast.error(err.message || 'OTP पुनः भेजने में समस्या आई');
+      toast.error(err.message || 'Failed to resend OTP.');
     } finally {
       setIsResending(false);
     }
@@ -127,11 +127,11 @@ export const VerifyOtp: React.FC = () => {
           <div className="w-14 h-14 rounded-2xl bg-gold-500/10 text-gold-700 flex items-center justify-center mx-auto mb-3 border border-gold-500/30">
             <ShieldCheck className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-devanagari-heading font-bold text-maroon-950">
-            OTP सत्यापन
+          <h1 className="text-2xl font-heading font-bold text-maroon-950">
+            OTP Verification
           </h1>
-          <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1">
-            हमने <span className="font-semibold text-maroon-900">{email || 'आपके ईमेल'}</span> पर 6-अंकों का OTP भेजा है।
+          <p className="text-xs sm:text-sm font-body text-muted mt-1">
+            We sent a 6-digit OTP code to <span className="font-semibold text-maroon-900">{email || 'your email'}</span>.
           </p>
         </div>
 
@@ -157,8 +157,8 @@ export const VerifyOtp: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-center text-xs font-devanagari-body text-muted">
-            OTP की वैधता: <span className="font-bold text-maroon-900">10 मिनट</span>
+          <div className="text-center text-xs font-body text-muted">
+            OTP Validity: <span className="font-bold text-maroon-900">10 minutes</span>
           </div>
 
           <Button
@@ -166,25 +166,25 @@ export const VerifyOtp: React.FC = () => {
             variant="primary"
             size="lg"
             isLoading={isLoading}
-            className="w-full font-devanagari-body font-bold"
+            className="w-full font-body font-bold"
           >
-            OTP सत्यापित करें
+            Verify OTP
           </Button>
         </form>
 
         {/* Resend OTP button & timer */}
-        <div className="mt-6 pt-6 border-t border-cream-300 flex items-center justify-between text-xs font-devanagari-body">
+        <div className="mt-6 pt-6 border-t border-cream-300 flex items-center justify-between text-xs font-body">
           <Link
             to="/forgot-password"
             className="inline-flex items-center gap-1 font-semibold text-maroon-800 hover:underline"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>ईमेल बदलें</span>
+            <span>Change Email</span>
           </Link>
 
           {countdown > 0 ? (
             <span className="text-muted font-medium">
-              पुनः भेजें ({countdown}s)
+              Resend in ({countdown}s)
             </span>
           ) : (
             <button
@@ -194,7 +194,7 @@ export const VerifyOtp: React.FC = () => {
               className="font-bold text-maroon-800 hover:text-maroon-950 hover:underline inline-flex items-center gap-1"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
-              <span>OTP पुनः भेजें</span>
+              <span>Resend OTP</span>
             </button>
           )}
         </div>

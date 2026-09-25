@@ -7,19 +7,19 @@ export const ContactInfo: React.FC = () => {
     <div className="space-y-6">
       <div className="bg-cream-100 p-6 sm:p-8 rounded-3xl border border-cream-300 shadow-soft space-y-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 text-gold-800 text-xs font-semibold font-devanagari-body mb-3 border border-gold-400/40">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/20 text-gold-800 text-xs font-semibold font-body mb-3 border border-gold-400/40">
             <Sparkles className="w-3.5 h-3.5 text-gold-600" />
-            <span>समिति संपर्क सूत्र</span>
+            <span>Committee Contact</span>
           </div>
-          <h2 className="text-xl font-devanagari-heading font-bold text-maroon-950">
-            यदुवंशी दुर्गा पूजा समिति, कपूरिपुर
+          <h2 className="text-xl font-heading font-bold text-maroon-950">
+            Yaduvashi Durga Puja Committee, Kapooripur
           </h2>
-          <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1 leading-relaxed">
-            दुर्गा पूजा स्मृति अभिलेखागार, पुरानी तस्वीरों के संकलन, सामग्री सुधार या अन्य किसी भी सुझाव हेतु आप हमसे संपर्क कर सकते हैं।
+          <p className="text-xs sm:text-sm font-body text-muted mt-1 leading-relaxed">
+            For archival queries, submitting old photographs, content adjustments, or general assistance, feel free to reach out to our seva team.
           </p>
         </div>
 
-        <div className="space-y-4 pt-2 border-t border-cream-300/80 text-xs sm:text-sm font-devanagari-body">
+        <div className="space-y-4 pt-2 border-t border-cream-300/80 text-xs sm:text-sm font-body">
           {/* Email */}
           <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-cream-50 border border-cream-200">
             <div className="w-9 h-9 rounded-xl bg-maroon-100 text-maroon-800 flex items-center justify-center shrink-0 mt-0.5">
@@ -27,7 +27,7 @@ export const ContactInfo: React.FC = () => {
             </div>
             <div>
               <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
-                आधिकारिक ईमेल (Email)
+                Official Email
               </span>
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
@@ -45,7 +45,7 @@ export const ContactInfo: React.FC = () => {
             </div>
             <div>
               <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
-                स्थान (Location)
+                Location
               </span>
               <span className="font-medium text-dark-950 block">
                 {LOCATION_TEXT}
@@ -60,7 +60,7 @@ export const ContactInfo: React.FC = () => {
             </div>
             <div>
               <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
-                वेबसाइट पोर्टल
+                Official Web Portal
               </span>
               <span className="font-mono text-xs font-semibold text-dark-900">
                 {SITE_DOMAIN}
@@ -71,13 +71,13 @@ export const ContactInfo: React.FC = () => {
       </div>
 
       {/* Guidelines Card */}
-      <div className="bg-cream-100/70 p-6 rounded-3xl border border-dashed border-cream-300 space-y-3 text-xs font-devanagari-body text-muted leading-relaxed">
+      <div className="bg-cream-100/70 p-6 rounded-3xl border border-dashed border-cream-300 space-y-3 text-xs font-body text-muted leading-relaxed">
         <div className="flex items-center gap-2 font-bold text-dark-950">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>सामग्री रिपोर्ट एवं गोपनीयता सहायता</span>
+          <span>Moderation & Privacy Support</span>
         </div>
         <p>
-          यदि आप किसी तस्वीर के संबंध में सुधार, नाम संशोधन, या गोपनीयता संबंधी अनुरोध करना चाहते हैं, तो कृपया संबंधित स्मृति का लिंक या विवरण अवश्य लिखें।
+          If you have requests regarding photo removal, attribution corrections, or privacy inquiries, please include the memory link or year for quick resolution.
         </p>
       </div>
     </div>

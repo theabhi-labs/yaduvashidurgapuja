@@ -6,153 +6,153 @@ import { CONTACT_EMAIL, LEGAL_ENTITY_NAME } from '../utils/constants';
 
 export const TermsConditions: React.FC = () => {
   const tocItems: TocItem[] = [
-    { id: 'acceptance', title: 'नियमों की स्वीकृति (Acceptance of Terms)' },
-    { id: 'platform', title: 'मंच का परिचय एवं स्वरूप (About the Platform)' },
-    { id: 'accounts', title: 'उपयोगकर्ता खाते (User Accounts)' },
-    { id: 'uploads', title: 'स्मृति अपलोड के नियम (Memory Upload Rules)' },
-    { id: 'ownership', title: 'स्वामित्व एवं सर्वाधिकार (Content Ownership)' },
-    { id: 'public-view', title: 'सार्वजनिक स्मृतियाँ (Public Memories)' },
-    { id: 'moderation', title: 'सामग्री मॉडरेशन एवं रिपोर्ट (Content Moderation)' },
-    { id: 'prohibited', title: 'प्रतिबंधित गतिविधियां (Prohibited Activities)' },
-    { id: 'availability', title: 'सेवा की निरंतरता (Service Availability)' },
-    { id: 'third-party', title: 'तृतीय-पक्ष सेवाएं (Third-Party Services)' },
-    { id: 'modifications', title: 'शर्तों में परिवर्तन (Changes to Terms)' },
-    { id: 'contact', title: 'संपर्क सूत्र (Contact Us)' },
+    { id: 'acceptance', title: '1. Acceptance of Terms' },
+    { id: 'platform', title: '2. About the Platform' },
+    { id: 'accounts', title: '3. User Accounts' },
+    { id: 'uploads', title: '4. Memory Upload Rules' },
+    { id: 'ownership', title: '5. Content Ownership & Rights' },
+    { id: 'public-view', title: '6. Public Memories' },
+    { id: 'moderation', title: '7. Content Moderation & Reporting' },
+    { id: 'prohibited', title: '8. Prohibited Activities' },
+    { id: 'availability', title: '9. Service Availability' },
+    { id: 'third-party', title: '10. Third-Party Services' },
+    { id: 'modifications', title: '11. Changes to Terms' },
+    { id: 'contact', title: '12. Contact Us' },
   ];
 
   return (
     <LegalPageLayout
-      badge="नियम एवं शर्तें"
-      titleHindi="नियम एवं शर्तें (Terms & Conditions)"
-      titleEnglish="Terms of use for Yaduvashi Durga Puja Kapoori Pur Memory Archive"
-      description="यदुवंशी दुर्गा पूजा कपूरिपुर के डिजिटल स्मृति संचय पोर्टल का उपयोग करने से पूर्व कृपया इन नियमों एवं शर्तों को ध्यानपूर्वक पढ़ें।"
+      badge="Terms & Governance"
+      titleHindi="Terms & Conditions"
+      titleEnglish="Terms of use for Yaduvanshi Durga Puja Kapooripur Memory Archive"
+      description="Please review these terms and conditions carefully before using or contributing photographs to the Yaduvanshi Durga Puja Kapooripur digital portal."
       tocItems={tocItems}
     >
       {/* 1. Acceptance */}
-      <LegalSection id="acceptance" number="1" title="नियमों की स्वीकृति (Acceptance of Terms)">
+      <LegalSection id="acceptance" number="1" title="Acceptance of Terms">
         <p>
-          इस वेबसाइट (<code>yaduvashidurgapujakapooripur.online</code>) का उपयोग अथवा इस पर किसी भी स्मृति/तस्वीर का प्रकाशन यह पुष्टि करता है कि आप इन नियमों एवं शर्तों तथा हमारी गोपनीयता नीति से पूर्णतः सहमत हैं।
+          By accessing or using this website (<code>yaduvashidurgapujakapooripur.online</code>) and contributing photographs or memories, you signify your agreement to these Terms & Conditions and our Privacy Policy.
         </p>
         <p>
-          यदि आप इनमें से किसी भी शर्त से असहमत हैं, तो कृपया पोर्टल का उपयोग अथवा सामग्री अपलोड न करें।
+          If you do not agree with any part of these terms, please discontinue your use of the platform.
         </p>
       </LegalSection>
 
       {/* 2. About Platform */}
-      <LegalSection id="platform" number="2" title="मंच का परिचय एवं स्वरूप (About the Platform)">
+      <LegalSection id="platform" number="2" title="About the Platform">
         <p>
-          यह पोर्टल {LEGAL_ENTITY_NAME} द्वारा संचालित एक सांस्कृतिक एवं गैर-व्यावसायिक डिजिटल स्मृति संचय (Digital Memory Archive) है।
+          This portal is a cultural, non-commercial digital memory archive operated by {LEGAL_ENTITY_NAME}.
         </p>
         <p>
-          इसका एकमात्र उद्देश्य कपूरिपुर में आयोजित होने वाली ऐतिहासिक दुर्गा पूजा की स्मृतियों, परंपराओं, मूर्तियों, पंडालों और भक्तों के पावन संस्मरणों को भविष्य की पीढ़ियों के लिए गरिमापूर्वक संरक्षित करना है। यह कोई सोशल मीडिया या व्यावसायिक मंच नहीं है।
+          Its sole purpose is to preserve and celebrate the rich heritage, traditions, idol craftsmanship, pandals, Maha Arti moments, and devotional experiences of the annual Kapooripur Durga Puja festival for future generations.
         </p>
       </LegalSection>
 
       {/* 3. User Accounts */}
-      <LegalSection id="accounts" number="3" title="उपयोगकर्ता खाते (User Accounts)">
-        <p>स्मृति साझा करने हेतु खाता निर्माण करते समय उपयोगकर्ता निम्नलिखित का पालन करने हेतु वचनबद्ध हैं:</p>
+      <LegalSection id="accounts" number="3" title="User Accounts">
+        <p>When creating an account to share memories, users agree to the following obligations:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>पंजीकरण के समय केवल सही एवं प्रामाणिक जानकारी (नाम एवं वैध ईमेल) दर्ज करें।</li>
-          <li>अपने खाते के पासवर्ड की गोपनीयता बनाए रखने के लिए आप स्वयं उत्तरदायी हैं।</li>
-          <li>किसी अन्य व्यक्ति अथवा संस्था के नाम का दुरुपयोग (Impersonation) करना पूर्णतः वर्जित है।</li>
-          <li>नियमों के गंभीर उल्लंघन की स्थिति में व्यवस्थापक खाते को निलंबित (Suspend) कर सकते हैं।</li>
+          <li>Provide authentic and accurate details (valid full name and active email address).</li>
+          <li>Maintain the confidentiality and security of your account credentials.</li>
+          <li>Impersonation of any individual, organization, or committee member is strictly forbidden.</li>
+          <li>The administration reserves the right to suspend accounts violating community standards.</li>
         </ul>
       </LegalSection>
 
       {/* 4. Memory Upload Rules */}
-      <LegalSection id="uploads" number="4" title="स्मृति अपलोड के नियम (Memory Upload Rules)">
+      <LegalSection id="uploads" number="4" title="Memory Upload Rules">
         <p>
-          भक्त केवल वही तस्वीरें व संस्मरण अपलोड कर सकते हैं जिनका संबंध <strong>यदुवंशी दुर्गा पूजा कपूरिपुर</strong> से हो और जिन्हें साझा करने का उचित अधिकार अथवा अनुमति उनके पास हो।
+          Devotees may upload photographs and remembrances solely related to <strong>Yaduvanshi Durga Puja Kapooripur</strong>, for which they possess legitimate rights or consent.
         </p>
-        <p className="font-semibold text-maroon-900">निम्नलिखित प्रकार की सामग्री अपलोड करना सख्त प्रतिबंधित है:</p>
+        <p className="font-semibold text-maroon-900">The following content is strictly prohibited:</p>
         <ul className="list-disc list-inside space-y-1 pl-2 text-red-950">
-          <li>धार्मिक, सामाजिक अथवा सामुदायिक सौहार्द बिगाड़ने वाली कोई भी अनुचित सामग्री।</li>
-          <li>अश्लील, अपमानजनक, हिंसक, धमकी भरी अथवा गैर-कानूनी तस्वीरें या टिप्पणियां।</li>
-          <li>व्यावसायिक विज्ञापन, स्पैम, प्रचार सामग्री अथवा अप्रासंगिक चित्र।</li>
-          <li>किसी तीसरे पक्ष के कॉपीराइट, ट्रेडमार्क अथवा निजता का उल्लंघन करने वाली सामग्री।</li>
-          <li>भ्रामक या असत्य ऐतिहासिक दावे।</li>
+          <li>Content that harms religious, communal, or social harmony.</li>
+          <li>Vulgar, defamatory, violent, threatening, or illegal photographs and text.</li>
+          <li>Commercial advertisements, spam, promotional campaigns, or unrelated media.</li>
+          <li>Media infringing on third-party copyrights, trademarks, or privacy rights.</li>
+          <li>Misleading, falsified, or abusive historical claims.</li>
         </ul>
       </LegalSection>
 
       {/* 5. Content Ownership */}
-      <LegalSection id="ownership" number="5" title="स्वामित्व एवं सर्वाधिकार (Content Ownership & Rights)">
+      <LegalSection id="ownership" number="5" title="Content Ownership & Rights">
         <div className="space-y-2">
           <p>
-            <strong>उपयोगकर्ता सामग्री:</strong> आपके द्वारा अपलोड की गई तस्वीरों और संस्मरणों का मूल स्वामित्व आपके पास ही रहता है। सामग्री अपलोड करके आप पोर्टल को उस सामग्री को केवल इस डिजिटल अभिलेखागार में प्रदर्शित एवं संरक्षित करने का एक गैर-विशिष्ट, निःशुल्क अधिकार प्रदान करते हैं।
+            <strong>User Submissions:</strong> You retain ownership of the photos and captions you upload. By submitting content, you grant {LEGAL_ENTITY_NAME} a non-exclusive, royalty-free license to display, optimize, and archive the media on this digital platform.
           </p>
           <p>
-            <strong>पोर्टल सामग्री:</strong> पोर्टल का डिज़ाइन, लेआउट, सॉफ्टवेयर कोड, लोगो, ब्रांडिंग और आधिकारिक पाठ्य सामग्री {LEGAL_ENTITY_NAME} के सर्वाधिकार में सुरक्षित है।
+            <strong>Platform IP:</strong> The portal's branding, layout, custom code, graphics, and official text content remain the intellectual property of {LEGAL_ENTITY_NAME}.
           </p>
         </div>
       </LegalSection>
 
       {/* 6. Public Memories */}
-      <LegalSection id="public-view" number="6" title="सार्वजनिक स्मृतियाँ (Public Memories)">
+      <LegalSection id="public-view" number="6" title="Public Memories">
         <p>
-          स्मृति प्रकाशित करते समय यह स्वीकार किया जाता है कि वह तस्वीर व संस्मरण सार्वजनिक मेमोरी गैलरी में प्रदर्शित होगी। कोई भी आगंतुक इसे देख सकता है तथा दिए गए शेयर बटनों (जैसे व्हाट्सएप अथवा लिंक शेयर) के माध्यम से अन्य भक्तों के साथ साझा कर सकता है।
+          Submitting a memory implies acknowledgement that the photo, caption, festival year, and contributor name will be publicly visible in the memory archive. Visitors may share these links to celebrate the festival spirit.
         </p>
       </LegalSection>
 
       {/* 7. Content Moderation */}
-      <LegalSection id="moderation" number="7" title="सामग्री मॉडरेशन एवं रिपोर्ट (Content Moderation & Reporting)">
+      <LegalSection id="moderation" number="7" title="Content Moderation & Reporting">
         <p>
-          अभिलेखागार की शुचिता एवं मर्यादा सुनिश्चित करने हेतु पूजा समिति एवं व्यवस्थापक किसी भी अपलोड की गई सामग्री की समीक्षा कर सकते हैं। समिति को निम्नलिखित पूर्ण अधिकार प्राप्त हैं:
+          To maintain the dignity and sacred character of the archive, the committee administration reviews submitted content and holds the absolute right to:
         </p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>नियमों का उल्लंघन करने वाली किसी भी तस्वीर को छिपाने (Hide) अथवा स्थायी रूप से हटाने (Delete) का अधिकार।</li>
-          <li>उपयोगकर्ताओं द्वारा दर्ज की गई रिपोर्टों की समीक्षा कर उचित कार्यवाही करने का अधिकार।</li>
-          <li>उल्लंघनकारी उपयोगकर्ताओं के अपलोड अधिकार सीमित अथवा निलंबित करने का अधिकार।</li>
+          <li>Hide or permanently delete any photograph or text violating community guidelines.</li>
+          <li>Investigate reports submitted by community members and take appropriate actions.</li>
+          <li>Restrict upload privileges for accounts repeatedly violating rules.</li>
         </ul>
       </LegalSection>
 
       {/* 8. Prohibited Activities */}
-      <LegalSection id="prohibited" number="8" title="प्रतिबंधित गतिविधियां (Prohibited Activities)">
-        <p>पोर्टल के उपयोगकर्ताओं को निम्नलिखित कार्यों में संलग्न होने की अनुमति नहीं है:</p>
+      <LegalSection id="prohibited" number="8" title="Prohibited Activities">
+        <p>Users shall not engage in any of the following malicious activities:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>सर्वर, डेटाबेस अथवा प्रमाणीकरण प्रणाली पर किसी प्रकार का साइबर हमला या अनधिकृत प्रवेश का प्रयास करना।</li>
-          <li>स्वचालित बॉट्स, स्क्रैपर्स अथवा स्क्रिप्ट्स द्वारा डेटा संकलन करना।</li>
-          <li>पोर्टल के सामान्य संचालन में किसी भी प्रकार का व्यवधान उत्पन्न करना।</li>
+          <li>Attempting unauthorized access to servers, databases, or API infrastructure.</li>
+          <li>Scraping content using automated bots, crawlers, or scripts.</li>
+          <li>Disrupting normal website operations, livestreams, or donation processes.</li>
         </ul>
       </LegalSection>
 
       {/* 9. Service Availability */}
-      <LegalSection id="availability" number="9" title="सेवा की निरंतरता (Service Availability)">
+      <LegalSection id="availability" number="9" title="Service Availability">
         <p>
-          हम पोर्टल को सुचारू रूप से संचालित रखने का हर संभव प्रयास करते हैं। तथापि, तकनीकी रखरखाव, सर्वर अपडेट अथवा अप्रत्याशित तकनीकी समस्याओं के कारण वेबसाइट अस्थायी रूप से अनुपलब्ध हो सकती है। इसके लिए समिति किसी भी प्रकार के हर्जाने हेतु उत्तरदायी नहीं होगी।
+          While we strive for high uptime and smooth operations, the platform may experience scheduled maintenance or occasional downtime. The committee bears no liability for temporary unavailability.
         </p>
       </LegalSection>
 
       {/* 10. Third-Party Services */}
-      <LegalSection id="third-party" number="10" title="तृतीय-पक्ष सेवाएं (Third-Party Services)">
+      <LegalSection id="third-party" number="10" title="Third-Party Services">
         <p>
-          पोर्टल की होस्टिंग, डेटाबेस अवसंरचना और इमेज स्टोरेज हेतु मानक क्लाउड प्रदाताओं की सेवाएं ली जाती हैं। उन सेवाओं के अपने स्वतंत्र नियम एवं सुरक्षा नीतियां लागू हो सकती हैं।
+          We employ cloud infrastructure providers (such as Cloudflare R2, MongoDB Atlas, and payment gateways) to operate the platform. These third-party services operate under their respective terms and privacy policies.
         </p>
       </LegalSection>
 
       {/* 11. Changes to Terms */}
-      <LegalSection id="modifications" number="11" title="शर्तों में परिवर्तन (Changes to Terms)">
+      <LegalSection id="modifications" number="11" title="Changes to Terms">
         <p>
-          समिति आवश्यकतानुसार इन नियमों एवं शर्तों को अद्यतित करने का अधिकार सुरक्षित रखती है। संशोधित शर्तें इस पृष्ठ पर प्रकाशित होते ही प्रभावी मानी जाएंगी।
+          The committee reserves the right to modify these Terms & Conditions whenever necessary. Updated terms will take effect immediately upon publication on this page.
         </p>
       </LegalSection>
 
       {/* 12. Contact Us */}
-      <LegalSection id="contact" number="12" title="संपर्क सूत्र (Contact Us)">
+      <LegalSection id="contact" number="12" title="Contact Us">
         <p>
-          यदि इन नियमों एवं शर्तों से संबंधित आपका कोई प्रश्न, आपत्ति अथवा सुझाव है, तो कृपया समिति से संपर्क करें:
+          If you have questions, inquiries, or feedback regarding these terms, please contact us:
         </p>
-        <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 space-y-1.5 text-xs font-devanagari-body">
+        <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 space-y-1.5 text-xs font-body">
           <p className="font-bold text-dark-950">{LEGAL_ENTITY_NAME}</p>
           <p>
-            ईमेल:{' '}
+            Email:{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-maroon-800 underline font-mono">
               {CONTACT_EMAIL}
             </a>
           </p>
           <p>
-            ऑनलाइन संपर्क फॉर्म:{' '}
+            Online Inquiry Form:{' '}
             <Link to="/contact" className="text-maroon-800 underline font-semibold">
-              यहाँ संदेश भेजें →
+              Send Message Here →
             </Link>
           </p>
         </div>

@@ -45,11 +45,11 @@ export const Navbar: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'मुख्य पृष्ठ (Home)', path: '/' },
-    { name: 'स्मृतियाँ (Memories)', path: '/memories' },
-    { name: 'समिति (Committee)', path: '/committee' },
-    { name: 'परिचय (About)', path: '/about' },
-    { name: 'संपर्क (Contact)', path: '/contact' },
+    { name: 'Home', path: '/' },
+    { name: 'Memories', path: '/memories' },
+    { name: 'Committee', path: '/committee' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   const handleLogout = async () => {
@@ -67,17 +67,17 @@ export const Navbar: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Brand Logo (Sacred Devotional Header) */}
+          {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-maroon-800 flex items-center justify-center text-amber-400 font-devanagari-heading font-bold text-lg sm:text-xl shadow-sm group-hover:scale-105 transition-transform border border-amber-500/40">
-              य
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-maroon-800 flex items-center justify-center text-amber-400 font-bold text-lg sm:text-xl shadow-sm group-hover:scale-105 transition-transform border border-amber-500/40">
+              Y
             </div>
             <div className="flex flex-col">
-              <span className="font-devanagari-heading font-bold text-sm sm:text-lg text-maroon-900 leading-tight group-hover:text-maroon-800">
-                यदुवंशी दुर्गा पूजा
+              <span className="font-bold text-sm sm:text-lg text-maroon-900 leading-tight group-hover:text-maroon-800 tracking-tight">
+                Yaduvashi Durga Puja
               </span>
-              <span className="text-[10px] sm:text-xs font-devanagari-body text-amber-800 font-semibold tracking-wide">
-                कपूरिपुर • डिजिटल संचय
+              <span className="text-[10px] sm:text-xs text-amber-800 font-semibold tracking-wide">
+                Kapooripur • Digital Archive
               </span>
             </div>
           </Link>
@@ -90,7 +90,7 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-3.5 py-2 rounded-xl text-sm font-devanagari-body font-medium transition-all ${
+                  className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
                     isActive
                       ? 'bg-maroon-700/10 text-maroon-900 font-semibold'
                       : 'text-dark-800 hover:text-maroon-900 hover:bg-cream-300/50'
@@ -108,11 +108,11 @@ export const Navbar: React.FC = () => {
             {!isInstalled && (
               <button
                 onClick={installApp}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-devanagari-body font-bold border border-amber-300 transition-all shadow-sm"
-                title="वेब ऐप इंस्टॉल करें"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold border border-amber-300 transition-all shadow-sm"
+                title="Install App"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>ऐप इंस्टॉल करें</span>
+                <span>Install App</span>
               </button>
             )}
 
@@ -122,9 +122,9 @@ export const Navbar: React.FC = () => {
                 variant="gold"
                 size="sm"
                 leftIcon={<PlusCircle className="w-4 h-4" />}
-                className="font-devanagari-body font-semibold"
+                className="font-semibold"
               >
-                अपनी याद साझा करें
+                Share Memory
               </Button>
             </Link>
 
@@ -154,7 +154,7 @@ export const Navbar: React.FC = () => {
 
                 {/* Dropdown Menu */}
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-2 z-50 animate-in fade-in zoom-in-95 font-devanagari-body">
+                  <div className="absolute right-0 mt-2 w-56 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-2 z-50 animate-in fade-in zoom-in-95">
                     <div className="px-4 py-2.5 border-b border-cream-200">
                       <p className="text-xs font-semibold text-dark-900 truncate">
                         {user.name}
@@ -162,11 +162,11 @@ export const Navbar: React.FC = () => {
                       <p className="text-[11px] text-muted truncate">{user.email}</p>
                       {isSuperAdmin ? (
                         <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
-                          सुपर व्यवस्थापक (SUPERADMIN)
+                          SUPER ADMIN
                         </span>
                       ) : isAdmin ? (
                         <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded bg-maroon-100 text-maroon-800 border border-maroon-200">
-                          व्यवस्थापक (ADMIN)
+                          ADMIN
                         </span>
                       ) : null}
                     </div>
@@ -177,7 +177,7 @@ export const Navbar: React.FC = () => {
                         className="flex items-center gap-2.5 px-4 py-2 text-xs text-dark-900 hover:bg-cream-200 transition-colors"
                       >
                         <UserIcon className="w-4 h-4 text-amber-600" />
-                        <span>मेरी प्रोफाइल</span>
+                        <span>My Profile</span>
                       </Link>
 
                       <Link
@@ -185,7 +185,7 @@ export const Navbar: React.FC = () => {
                         className="flex items-center gap-2.5 px-4 py-2 text-xs text-dark-900 hover:bg-cream-200 transition-colors"
                       >
                         <Bookmark className="w-4 h-4 text-maroon-700" />
-                        <span>मेरी यादें</span>
+                        <span>My Memories</span>
                       </Link>
 
                       {isAdmin && (
@@ -194,7 +194,7 @@ export const Navbar: React.FC = () => {
                           className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-maroon-800 hover:bg-maroon-50 transition-colors border-t border-cream-200"
                         >
                           <ShieldAlert className="w-4 h-4 text-maroon-700" />
-                          <span>व्यवस्थापक पैनल</span>
+                          <span>Admin Panel</span>
                         </Link>
                       )}
                     </div>
@@ -205,7 +205,7 @@ export const Navbar: React.FC = () => {
                         className="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-red-700 hover:bg-red-50 transition-colors text-left font-medium"
                       >
                         <LogOut className="w-4 h-4 text-red-600" />
-                        <span>लॉगआउट</span>
+                        <span>Logout</span>
                       </button>
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export const Navbar: React.FC = () => {
             ) : (
               <Link to="/login">
                 <Button variant="outline" size="sm">
-                  लॉगिन
+                  Login
                 </Button>
               </Link>
             )}
@@ -226,11 +226,11 @@ export const Navbar: React.FC = () => {
             {!isInstalled && (
               <button
                 onClick={installApp}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-dark-950 text-[11px] font-devanagari-body font-bold shadow-sm active:scale-95 transition-transform"
-                title="ऐप इंस्टॉल करें"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-dark-950 text-[11px] font-bold shadow-sm active:scale-95 transition-transform"
+                title="Install App"
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>ऐप इंस्टॉल</span>
+                <span>Install</span>
               </button>
             )}
 
@@ -238,7 +238,7 @@ export const Navbar: React.FC = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 rounded-xl text-dark-900 hover:bg-cream-300 focus:outline-none focus:ring-2 focus:ring-maroon-500"
-              aria-label="मेनू खोलें"
+              aria-label="Toggle Navigation Menu"
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6 text-maroon-800" />
@@ -249,9 +249,9 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Secondary Menu Drawer (Contains only Information & Admin links, NOT duplicate tabs) */}
+        {/* Mobile Secondary Menu Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden pt-3 pb-5 border-t border-cream-300/80 mt-2 space-y-3 font-devanagari-body animate-fade-in">
+          <div className="md:hidden pt-3 pb-5 border-t border-cream-300/80 mt-2 space-y-3 animate-fade-in">
             {/* Install App Banner inside drawer */}
             {!isInstalled && (
               <div 
@@ -260,15 +260,15 @@ export const Navbar: React.FC = () => {
               >
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-maroon-800 text-amber-400 flex items-center justify-center font-bold">
-                    य
+                    Y
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-dark-950">दुर्गा पूजा ऐप इंस्टॉल करें</h4>
-                    <p className="text-[10px] text-dark-700">होम स्क्रीन से 1-क्लिक में खोलें</p>
+                    <h4 className="text-xs font-bold text-dark-950">Install Durga Puja App</h4>
+                    <p className="text-[10px] text-dark-700">Add to home screen for 1-tap access</p>
                   </div>
                 </div>
                 <span className="text-[10px] bg-maroon-800 text-cream-50 font-bold px-2.5 py-1 rounded-full">
-                  इंस्टॉल
+                  Install
                 </span>
               </div>
             )}
@@ -280,7 +280,7 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <Info className="w-4 h-4 text-maroon-700" />
-                <span>परिचय एवं इतिहास (About)</span>
+                <span>About & History</span>
               </Link>
 
               <Link
@@ -288,7 +288,7 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <Phone className="w-4 h-4 text-maroon-700" />
-                <span>संपर्क एवं सहयोग (Contact)</span>
+                <span>Contact & Support</span>
               </Link>
 
               <Link
@@ -296,7 +296,7 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <Shield className="w-4 h-4 text-maroon-700" />
-                <span>गोपनीयता नीति (Privacy Policy)</span>
+                <span>Privacy Policy</span>
               </Link>
 
               <Link
@@ -304,7 +304,7 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <FileText className="w-4 h-4 text-maroon-700" />
-                <span>नियम एवं शर्तें (Terms & Conditions)</span>
+                <span>Terms & Conditions</span>
               </Link>
 
               {isAdmin && (
@@ -313,7 +313,7 @@ export const Navbar: React.FC = () => {
                   className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-maroon-900 hover:bg-maroon-50 rounded-xl transition-colors bg-maroon-50/50"
                 >
                   <ShieldAlert className="w-4 h-4 text-maroon-700" />
-                  <span>व्यवस्थापक डैशबोर्ड (Admin Portal)</span>
+                  <span>Admin Portal</span>
                 </Link>
               )}
             </div>
@@ -322,20 +322,20 @@ export const Navbar: React.FC = () => {
             {isAuthenticated && user ? (
               <div className="flex items-center justify-between px-2 pt-1">
                 <span className="text-xs text-muted truncate max-w-[180px]">
-                  लॉगिन: {user.name}
+                  Logged in as: {user.name}
                 </span>
                 <button
                   onClick={handleLogout}
                   className="text-xs text-rose-700 font-bold flex items-center gap-1 hover:underline"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span>लॉगआउट</span>
+                  <span>Logout</span>
                 </button>
               </div>
             ) : (
               <Link to="/login" className="block pt-1">
-                <Button variant="outline" size="sm" className="w-full font-devanagari-body">
-                  भक्त लॉगिन / साइन अप
+                <Button variant="outline" size="sm" className="w-full">
+                  Login / Register
                 </Button>
               </Link>
             )}

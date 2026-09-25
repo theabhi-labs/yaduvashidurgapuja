@@ -45,11 +45,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'यदुवंशी दुर्गा पूजा कपूरिपुर',
+          title: 'Yaduvashi Durga Puja Kapooripur',
           text: shareText,
           url: shareUrl,
         });
-        toast.success('स्मृति साझा की गई');
+        toast.success('Memory shared successfully');
       } catch (err: any) {
         if (err.name !== 'AbortError') {
           setIsOpen(true);
@@ -74,11 +74,11 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         document.body.removeChild(textarea);
       }
       setCopied(true);
-      toast.success('लिंक कॉपी हो गया!');
+      toast.success('Link copied to clipboard!');
       setTimeout(() => setCopied(false), 2500);
       setIsOpen(false);
     } catch {
-      toast.error('लिंक कॉपी करने में असमर्थ');
+      toast.error('Unable to copy link');
     }
   };
 
@@ -95,7 +95,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
         <button
           onClick={handleNativeShare}
           className="p-2 rounded-xl text-muted hover:text-maroon-800 hover:bg-cream-200/80 transition-all focus:outline-none focus:ring-2 focus:ring-maroon-500/30"
-          title="स्मृति साझा करें"
+          title="Share Memory"
           aria-label="Share memory"
         >
           <Share2 className={size === 'sm' ? 'w-4 h-4' : 'w-5 h-5'} />
@@ -106,7 +106,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-cream-200 hover:bg-cream-300 text-dark-900 border border-cream-400/60 transition-all focus:outline-none focus:ring-2 focus:ring-gold-500"
         >
           <Share2 className="w-4 h-4 text-maroon-700" />
-          <span>साझा करें</span>
+          <span>Share</span>
         </button>
       )}
 
@@ -114,7 +114,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
       {isOpen && (
         <div className="absolute right-0 bottom-full mb-2 w-52 bg-cream-50 rounded-xl shadow-xl border border-cream-300 py-1.5 z-30 animate-in fade-in zoom-in-95">
           <div className="px-3 py-1.5 border-b border-cream-200 text-xs font-semibold text-muted uppercase tracking-wider">
-            स्मृति साझा करें
+            Share Memory
           </div>
 
           <button
@@ -122,7 +122,7 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs sm:text-sm text-dark-900 hover:bg-cream-200 transition-colors text-left"
           >
             <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-devanagari-body">व्हाट्सएप पर भेजें</span>
+            <span className="font-body">Share on WhatsApp</span>
           </button>
 
           <button
@@ -134,8 +134,8 @@ export const ShareButton: React.FC<ShareButtonProps> = ({
             ) : (
               <LinkIcon className="w-4 h-4 text-gold-600 shrink-0" />
             )}
-            <span className="font-devanagari-body">
-              {copied ? 'लिंक कॉपी हुआ' : 'लिंक कॉपी करें'}
+            <span className="font-body">
+              {copied ? 'Link Copied' : 'Copy Link'}
             </span>
           </button>
         </div>

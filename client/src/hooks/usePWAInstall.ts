@@ -43,9 +43,9 @@ export const usePWAInstall = () => {
       // Fallback instructions if on iOS Safari
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
       if (isIOS) {
-        alert('Safari में नीचे "Share (शेयर)" बटन दबाएं और फिर "Add to Home Screen (होम स्क्रीन में जोड़ें)" चुनें।');
+        alert('On Safari, tap the Share button at the bottom and select "Add to Home Screen".');
       } else {
-        alert('ऐप इंस्टॉल करने के लिए अपने ब्राउज़र मेनू (⋮) में जाकर "Install App" या "Add to Home screen" चुनें।');
+        alert('To install the app, open your browser menu (⋮) and select "Install App" or "Add to Home screen".');
       }
       return false;
     }

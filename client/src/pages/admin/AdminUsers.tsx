@@ -42,6 +42,7 @@ export const AdminUsers: React.FC = () => {
 
   const debouncedSearch = useDebounce(searchTerm, 400);
 
+
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -59,7 +60,7 @@ export const AdminUsers: React.FC = () => {
         }
       }
     } catch (err: any) {
-      toast.error(err.message || 'उपयोगकर्ता लोड करने में त्रुटि');
+      toast.error(err.message || 'Failed to load users');
     } finally {
       setIsLoading(false);
     }
@@ -81,8 +82,8 @@ export const AdminUsers: React.FC = () => {
 
       toast.success(
         nextState
-          ? `खाता '${targetUser.name}' निलंबित कर दिया गया`
-          : `खाता '${targetUser.name}' बहाल कर दिया गया`
+          ? `Account '${targetUser.name}' has been suspended`
+          : `Account '${targetUser.name}' has been restored`
       );
 
       setUsers((prev) =>
@@ -95,7 +96,7 @@ export const AdminUsers: React.FC = () => {
       setTargetUser(null);
       setSuspensionReason('');
     } catch (err: any) {
-      toast.error(err.message || 'कार्यवाही विफल हुई');
+      toast.error(err.message || 'Operation failed');
     } finally {
       setIsProcessing(false);
     }
@@ -106,14 +107,14 @@ export const AdminUsers: React.FC = () => {
     setIsUpdatingRole(true);
     try {
       const res = await adminService.updateUserRole(roleModalUser._id, selectedNewRole);
-      toast.success(res.message || 'उपयोगकर्ता भूमिका सफलतापूर्वक अपडेट की गई');
+      toast.success(res.message || 'User role updated successfully');
 
       setUsers((prev) =>
         prev.map((u) => (u._id === roleModalUser._id ? { ...u, role: selectedNewRole } : u))
       );
       setRoleModalUser(null);
     } catch (err: any) {
-      toast.error(err.message || 'भूमिका परिवर्तन विफल हुआ');
+      toast.error(err.message || 'Failed to change role');
     } finally {
       setIsUpdatingRole(false);
     }
@@ -125,18 +126,18 @@ export const AdminUsers: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-devanagari-heading font-bold text-dark-950">
-              उपयोगकर्ता एवं भूमिका प्रबंधन (Users & Roles)
+            <h1 className="text-2xl font-heading font-bold text-dark-950">
+              Users & Roles Management
             </h1>
             {isSuperAdmin && (
               <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-gold-100 text-gold-900 border border-gold-300">
                 <Crown className="w-3 h-3 text-gold-600" />
-                सुपर कंट्रोल सक्रिय
+                Super Control Active
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1">
-            पंजीकृत भक्तों की सूची, सत्यापन स्थिति, व्यवस्थापक भूमिका आवंटन एवं खाता नियंत्रण।
+          <p className="text-xs sm:text-sm font-body text-muted mt-1">
+            Registered devotees list, verification status, administrator role assignments, and account controls.
           </p>
         </div>
       </div>
@@ -152,18 +153,18 @@ export const AdminUsers: React.FC = () => {
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            placeholder="नाम या ईमेल द्वारा खोजें..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs font-devanagari-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
+            placeholder="Search by name or email..."
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs font-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
           />
         </div>
 
         {/* Role Filter tabs */}
         <div className="flex items-center gap-1.5 w-full sm:w-auto">
           {[
-            { label: 'सभी', value: '' },
-            { label: 'भक्त (USER)', value: 'USER' },
-            { label: 'व्यवस्थापक (ADMIN)', value: 'ADMIN' },
-            { label: 'सुपर व्यवस्थापक', value: 'SUPERADMIN' },
+            { label: 'All', value: '' },
+            { label: 'Users (USER)', value: 'USER' },
+            { label: 'Admins (ADMIN)', value: 'ADMIN' },
+            { label: 'Super Admin', value: 'SUPERADMIN' },
           ].map((tab) => (
             <button
               key={tab.value}
@@ -171,7 +172,7 @@ export const AdminUsers: React.FC = () => {
                 setRoleFilter(tab.value);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-devanagari-body font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-body font-medium transition-all ${
                 roleFilter === tab.value
                   ? 'bg-maroon-700 text-cream-50 font-bold shadow-sm'
                   : 'bg-cream-200 text-dark-800 hover:bg-cream-300'
@@ -187,28 +188,28 @@ export const AdminUsers: React.FC = () => {
       {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-maroon-700" />
-          <p className="text-xs font-devanagari-body text-muted">उपयोगकर्ता लोड हो रहे हैं...</p>
+          <p className="text-xs font-body text-muted">Loading users...</p>
         </div>
       ) : users.length === 0 ? (
         <div className="text-center py-16 bg-cream-100 rounded-2xl border border-cream-300">
-          <p className="text-sm font-devanagari-body text-muted">कोई उपयोगकर्ता नहीं मिला</p>
+          <p className="text-sm font-body text-muted">No users found</p>
         </div>
       ) : (
         <div className="bg-cream-100 rounded-2xl border border-cream-300 shadow-soft overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-cream-200/80 border-b border-cream-300 text-[11px] font-semibold text-muted uppercase font-devanagari-body tracking-wider">
-                  <th className="p-4">नाम</th>
-                  <th className="p-4">ईमेल</th>
-                  <th className="p-4">भूमिका (Role)</th>
-                  <th className="p-4">सत्यापन</th>
-                  <th className="p-4">पंजीकरण तिथि</th>
-                  <th className="p-4">खाता स्थिति</th>
-                  <th className="p-4 text-right">कार्य (Actions)</th>
+                <tr className="bg-cream-200/80 border-b border-cream-300 text-[11px] font-semibold text-muted uppercase font-body tracking-wider">
+                  <th className="p-4">Name</th>
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Role</th>
+                  <th className="p-4">Verification</th>
+                  <th className="p-4">Joined Date</th>
+                  <th className="p-4">Account Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-cream-300/80 text-xs font-devanagari-body">
+              <tbody className="divide-y divide-cream-300/80 text-xs font-body">
                 {users.map((u) => {
                   const isSelf = u._id === currentUser?._id;
                   const isSuper = u.role === 'SUPERADMIN';
@@ -221,7 +222,7 @@ export const AdminUsers: React.FC = () => {
                           <span>{u.name}</span>
                           {isSelf && (
                             <span className="text-[10px] bg-gold-200 text-gold-900 px-1.5 py-0.5 rounded font-bold">
-                              आप
+                              You
                             </span>
                           )}
                         </div>
@@ -240,7 +241,7 @@ export const AdminUsers: React.FC = () => {
                           </span>
                         ) : (
                           <span className="inline-block text-[11px] font-medium px-2.5 py-1 rounded-full bg-cream-200 text-dark-800 border border-cream-300">
-                            USER (भक्त)
+                            USER
                           </span>
                         )}
                       </td>
@@ -248,10 +249,10 @@ export const AdminUsers: React.FC = () => {
                         {u.isEmailVerified ? (
                           <span className="text-emerald-700 font-semibold flex items-center gap-1">
                             <ShieldCheck className="w-3.5 h-3.5" />
-                            सत्यापित
+                            Verified
                           </span>
                         ) : (
-                          <span className="text-amber-700 font-medium">अपुष्ट</span>
+                          <span className="text-amber-700 font-medium">Unverified</span>
                         )}
                       </td>
                       <td className="p-4 text-muted whitespace-nowrap">
@@ -260,11 +261,11 @@ export const AdminUsers: React.FC = () => {
                       <td className="p-4">
                         {u.isSuspended ? (
                           <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-800 border border-red-200">
-                            निलंबित (Suspended)
+                            Suspended
                           </span>
                         ) : (
                           <span className="inline-block px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                            सक्रिय (Active)
+                            Active
                           </span>
                         )}
                       </td>
@@ -284,13 +285,13 @@ export const AdminUsers: React.FC = () => {
                               }`}
                               title={
                                 u.role === 'ADMIN'
-                                  ? 'भूमिका बदलकर सामान्य भक्त बनाएं'
-                                  : 'इस उपयोगकर्ता को व्यवस्थापक (Admin) बनाएं'
+                                  ? 'Demote to regular user'
+                                  : 'Promote to Admin'
                               }
                             >
                               <UserCog className="w-3.5 h-3.5 text-gold-700" />
                               <span>
-                                {u.role === 'ADMIN' ? 'भक्त बनाएं' : 'व्यवस्थापक बनाएं'}
+                                {u.role === 'ADMIN' ? 'Make User' : 'Make Admin'}
                               </span>
                             </button>
                           )}
@@ -308,12 +309,12 @@ export const AdminUsers: React.FC = () => {
                               {u.isSuspended ? (
                                 <>
                                   <UserCheck className="w-3.5 h-3.5" />
-                                  <span>बहाल करें</span>
+                                  <span>Restore</span>
                                 </>
                               ) : (
                                 <>
                                   <UserX className="w-3.5 h-3.5" />
-                                  <span>निलंबित</span>
+                                  <span>Suspend</span>
                                 </>
                               )}
                             </button>
@@ -330,7 +331,7 @@ export const AdminUsers: React.FC = () => {
           {pagination && pagination.totalPages > 1 && (
             <div className="p-4 border-t border-cream-300 flex items-center justify-between">
               <span className="text-xs text-muted">
-                कुल {pagination.total} उपयोगकर्ता (पृष्ठ {pagination.page} / {pagination.totalPages})
+                Total {pagination.total} users (Page {pagination.page} of {pagination.totalPages})
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -340,7 +341,7 @@ export const AdminUsers: React.FC = () => {
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   leftIcon={<ChevronLeft className="w-4 h-4" />}
                 >
-                  पिछला
+                  Previous
                 </Button>
                 <Button
                   variant="outline"
@@ -349,7 +350,7 @@ export const AdminUsers: React.FC = () => {
                   onClick={() => setPage((p) => p + 1)}
                   rightIcon={<ChevronRight className="w-4 h-4" />}
                 >
-                  अगला
+                  Next
                 </Button>
               </div>
             </div>
@@ -362,16 +363,16 @@ export const AdminUsers: React.FC = () => {
         <Modal
           isOpen={!!roleModalUser}
           onClose={() => setRoleModalUser(null)}
-          title="उपयोगकर्ता भूमिका परिवर्तन (Change User Role)"
+          title="Change User Role"
         >
           <div className="space-y-4">
-            <p className="text-xs sm:text-sm font-devanagari-body text-dark-800">
-              आप <strong>{roleModalUser.name}</strong> ({roleModalUser.email}) की भूमिका बदलना चाहते हैं:
+            <p className="text-xs sm:text-sm font-body text-dark-800">
+              You are changing the role for <strong>{roleModalUser.name}</strong> ({roleModalUser.email}):
             </p>
 
             <div className="space-y-2 pt-2">
-              <label className="block text-xs font-bold text-dark-900 font-devanagari-body">
-                नई भूमिका चुनें:
+              <label className="block text-xs font-bold text-dark-900 font-body">
+                Select New Role:
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -383,11 +384,11 @@ export const AdminUsers: React.FC = () => {
                       : 'bg-cream-50 border-cream-300 hover:bg-cream-100'
                   }`}
                 >
-                  <span className="text-xs font-bold font-devanagari-body text-dark-950">
-                    👤 सामान्य भक्त (USER)
+                  <span className="text-xs font-bold font-body text-dark-950">
+                    👤 Regular User (USER)
                   </span>
-                  <span className="text-[11px] text-muted font-devanagari-body">
-                    केवल यादें देख व साझा कर सकते हैं।
+                  <span className="text-[11px] text-muted font-body">
+                    Can view and share sacred memories.
                   </span>
                 </button>
 
@@ -400,11 +401,11 @@ export const AdminUsers: React.FC = () => {
                       : 'bg-cream-50 border-cream-300 hover:bg-cream-100'
                   }`}
                 >
-                  <span className="text-xs font-bold font-devanagari-body text-maroon-900">
-                    🛡️ व्यवस्थापक (ADMIN)
+                  <span className="text-xs font-bold font-body text-maroon-900">
+                    🛡️ Administrator (ADMIN)
                   </span>
-                  <span className="text-[11px] text-muted font-devanagari-body">
-                    स्मृतियाँ, रिपोर्ट्स व समिति मॉडरेट कर सकते हैं।
+                  <span className="text-[11px] text-muted font-body">
+                    Can moderate memories, reports, and committee.
                   </span>
                 </button>
               </div>
@@ -417,7 +418,7 @@ export const AdminUsers: React.FC = () => {
                 onClick={() => setRoleModalUser(null)}
                 disabled={isUpdatingRole}
               >
-                रद्द करें
+                Cancel
               </Button>
               <Button
                 variant="gold"
@@ -425,7 +426,7 @@ export const AdminUsers: React.FC = () => {
                 onClick={handleRoleChangeSubmit}
                 isLoading={isUpdatingRole}
               >
-                भूमिका लागू करें
+                Apply Role
               </Button>
             </div>
           </div>
@@ -437,25 +438,25 @@ export const AdminUsers: React.FC = () => {
         <Modal
           isOpen={!!targetUser}
           onClose={() => setTargetUser(null)}
-          title={targetUser.isSuspended ? 'खाता बहाल करें' : 'खाता निलंबित करें'}
+          title={targetUser.isSuspended ? 'Restore Account' : 'Suspend Account'}
         >
           <div className="space-y-4">
-            <p className="text-xs sm:text-sm font-devanagari-body text-dark-800">
-              क्या आप वास्तव में <strong>{targetUser.name}</strong> ({targetUser.email}) के खाते को{' '}
-              {targetUser.isSuspended ? 'बहाल' : 'निलंबित'} करना चाहते हैं?
+            <p className="text-xs sm:text-sm font-body text-dark-800">
+              Are you sure you want to {targetUser.isSuspended ? 'restore' : 'suspend'} the account of{' '}
+              <strong>{targetUser.name}</strong> ({targetUser.email})?
             </p>
 
             {!targetUser.isSuspended && (
               <div>
-                <label className="block text-xs font-semibold text-dark-900 font-devanagari-body mb-1">
-                  निलंबन का कारण (Reason):
+                <label className="block text-xs font-semibold text-dark-900 font-body mb-1">
+                  Suspension Reason:
                 </label>
                 <textarea
                   rows={3}
                   value={suspensionReason}
                   onChange={(e) => setSuspensionReason(e.target.value)}
-                  placeholder="उदा. अनुचित सामग्री या आपत्तिजनक गतिविधि..."
-                  className="w-full p-3 rounded-xl border border-cream-300 bg-cream-50 text-xs font-devanagari-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
+                  placeholder="e.g., Inappropriate content or objectionable activity..."
+                  className="w-full p-3 rounded-xl border border-cream-300 bg-cream-50 text-xs font-body focus:outline-none focus:ring-2 focus:ring-maroon-600"
                 />
               </div>
             )}
@@ -467,7 +468,7 @@ export const AdminUsers: React.FC = () => {
                 onClick={() => setTargetUser(null)}
                 disabled={isProcessing}
               >
-                रद्द करें
+                Cancel
               </Button>
               <Button
                 variant={targetUser.isSuspended ? 'gold' : 'danger'}
@@ -475,7 +476,7 @@ export const AdminUsers: React.FC = () => {
                 onClick={handleToggleSuspend}
                 isLoading={isProcessing}
               >
-                {targetUser.isSuspended ? 'खाता बहाल करें' : 'निलंबित करें'}
+                {targetUser.isSuspended ? 'Restore Account' : 'Suspend Account'}
               </Button>
             </div>
           </div>

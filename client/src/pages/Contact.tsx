@@ -7,9 +7,9 @@ export const Contact: React.FC = () => {
   return (
     <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[85vh]">
       <SectionHeading
-        badge="संपर्क एवं सहायता"
-        title="हमसे संपर्क करें"
-        subtitle="For questions, corrections, content concerns, or other enquiries, please get in touch with the committee."
+        badge="Contact & Support"
+        title="Get in Touch with Us"
+        subtitle="For questions, corrections, content concerns, or general inquiries, please get in touch with the committee."
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">

@@ -51,7 +51,7 @@ export const Memories: React.FC = () => {
         }
       }
     } catch (err: any) {
-      setError(err.message || 'स्मृतियाँ लोड करने में त्रुटि हुई');
+      setError(err.message || 'Failed to load memories. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -75,9 +75,9 @@ export const Memories: React.FC = () => {
   return (
     <div className="py-6 sm:py-12 px-3 sm:px-6 lg:px-8 max-w-5xl mx-auto min-h-[80vh]">
       <SectionHeading
-        badge="डिजिटल अभिलेखागार"
-        title="कपूरिपुर दुर्गा पूजा स्मृतियाँ"
-        subtitle="भक्तों और ग्रामवासियों द्वारा साझा किए गए पावन पलों, पूजा पंडालों, महाआरती और सांस्कृतिक आयोजनों की अनमोल धरोहर।"
+        badge="Digital Archive"
+        title="Kapooripur Durga Puja Memories"
+        subtitle="A sacred archive of photographs, Maha Aarti celebrations, pandal moments, and cultural events shared by devotees."
       />
 
       {/* 1. Instagram Stories-Style Year Reel Circles */}
@@ -95,8 +95,8 @@ export const Memories: React.FC = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="स्मृति खोजें (उदा. आरती, 2024)..."
-            className="w-full pl-10 pr-8 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs sm:text-sm font-devanagari-body text-dark-900 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon-600"
+            placeholder="Search memories (e.g. Aarti, 2024)..."
+            className="w-full pl-10 pr-8 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs sm:text-sm font-body text-dark-900 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon-600"
           />
           {searchTerm && (
             <button
@@ -111,36 +111,36 @@ export const Memories: React.FC = () => {
         {/* View Mode Switcher (Feed vs Grid) */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-2">
           {pagination && (
-            <span className="text-xs font-devanagari-body text-muted font-medium">
-              {pagination.total} स्मृतियाँ {selectedYear ? `(${selectedYear})` : ''}
+            <span className="text-xs font-body text-muted font-medium">
+              {pagination.total} Memories {selectedYear ? `(${selectedYear})` : ''}
             </span>
           )}
 
           <div className="flex items-center bg-cream-200 p-1 rounded-xl border border-cream-300">
             <button
               onClick={() => setViewMode('feed')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-devanagari-body font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-body font-semibold transition-all ${
                 viewMode === 'feed'
                   ? 'bg-maroon-800 text-cream-50 shadow-sm'
                   : 'text-dark-700 hover:text-dark-900'
               }`}
-              title="इंस्टाग्राम फीड व्यू"
+              title="Feed View"
             >
               <SquareSplitVertical className="w-4 h-4" />
-              <span>फीड</span>
+              <span>Feed</span>
             </button>
 
             <button
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-devanagari-body font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-body font-semibold transition-all ${
                 viewMode === 'grid'
                   ? 'bg-maroon-800 text-cream-50 shadow-sm'
                   : 'text-dark-700 hover:text-dark-900'
               }`}
-              title="3x3 ग्रिड व्यू"
+              title="Grid View"
             >
               <LayoutGrid className="w-4 h-4" />
-              <span>ग्रिड</span>
+              <span>Grid</span>
             </button>
           </div>
         </div>
@@ -150,16 +150,16 @@ export const Memories: React.FC = () => {
       {isLoading && (
         <div className="py-16 text-center">
           <div className="w-10 h-10 border-3 border-maroon-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="font-devanagari-body text-xs text-muted">माँ की पावन स्मृतियाँ लोड हो रही हैं...</p>
+          <p className="font-body text-xs text-muted">Loading sacred memories...</p>
         </div>
       )}
 
       {/* 4. Error State */}
       {!isLoading && error && (
         <div className="py-12 text-center bg-rose-50 rounded-2xl border border-rose-200 p-6 max-w-md mx-auto">
-          <p className="font-devanagari-body text-sm text-rose-700 mb-4">{error}</p>
+          <p className="font-body text-sm text-rose-700 mb-4">{error}</p>
           <Button size="sm" onClick={fetchMemories}>
-            पुनः प्रयास करें
+            Try Again
           </Button>
         </div>
       )}
@@ -168,17 +168,17 @@ export const Memories: React.FC = () => {
       {!isLoading && !error && memories.length === 0 && (
         <div className="py-16 text-center bg-cream-100 rounded-3xl border border-cream-300 max-w-md mx-auto p-8">
           <Sparkles className="w-12 h-12 text-amber-500 mx-auto mb-3 animate-pulse" />
-          <h3 className="font-devanagari-heading font-bold text-dark-900 text-lg mb-1">
-            कोई स्मृति नहीं मिली
+          <h3 className="font-heading font-bold text-dark-900 text-lg mb-1">
+            No Memories Found
           </h3>
-          <p className="font-devanagari-body text-xs text-muted mb-4">
+          <p className="font-body text-xs text-muted mb-4">
             {selectedYear 
-              ? `वर्ष ${selectedYear} के लिए अभी कोई स्मृति नहीं है।` 
-              : 'आपके द्वारा खोजे गए शब्दों के अनुसार कोई स्मृति नहीं मिली।'}
+              ? `No memories found for year ${selectedYear}.` 
+              : 'No memories matched your search criteria.'}
           </p>
           {(selectedYear !== undefined || searchTerm) && (
             <Button variant="outline" size="sm" onClick={handleResetFilters} leftIcon={<RotateCcw className="w-4 h-4" />}>
-              फ़िल्टर हटाएं
+              Clear Filters
             </Button>
           )}
         </div>
@@ -211,7 +211,7 @@ export const Memories: React.FC = () => {
                 >
                   <img
                     src={getImageUrl(memory.thumbnailUrl || memory.imageUrl)}
-                    alt={memory.caption || 'कपूरिपुर स्मृति'}
+                    alt={memory.caption || 'Kapooripur Memory'}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
@@ -220,8 +220,8 @@ export const Memories: React.FC = () => {
                     <span className="self-end text-[10px] bg-dark-900/80 px-1.5 py-0.5 rounded-full font-bold">
                       {memory.year}
                     </span>
-                    <p className="text-[11px] font-devanagari-body line-clamp-2 leading-tight">
-                      {memory.caption || 'माँ दुर्गा स्मृति'}
+                    <p className="text-[11px] font-body line-clamp-2 leading-tight">
+                      {memory.caption || 'Durga Puja Memory'}
                     </p>
                   </div>
                 </div>
@@ -244,10 +244,10 @@ export const Memories: React.FC = () => {
             }}
             leftIcon={<ChevronLeft className="w-4 h-4" />}
           >
-            पिछला
+            Previous
           </Button>
 
-          <span className="text-xs font-devanagari-body font-semibold px-4 py-2 rounded-xl bg-cream-100 border border-cream-300">
+          <span className="text-xs font-body font-semibold px-4 py-2 rounded-xl bg-cream-100 border border-cream-300">
             {pagination.page} / {pagination.totalPages}
           </span>
 
@@ -261,7 +261,7 @@ export const Memories: React.FC = () => {
             }}
             rightIcon={<ChevronRight className="w-4 h-4" />}
           >
-            अगला
+            Next
           </Button>
         </div>
       )}

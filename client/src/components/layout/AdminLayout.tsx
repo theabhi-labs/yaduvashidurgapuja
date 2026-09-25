@@ -32,18 +32,18 @@ export const AdminLayout: React.FC = () => {
   // Define nav items conditionally based on role
   const adminNavItems = isSuperAdmin
     ? [
-        { name: 'नियंत्रण कक्ष (Overview)', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
-        { name: 'लाइव दर्शन प्रसारण (Live)', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
-        { name: 'स्मृतियाँ (Memories)', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
-        { name: 'उपयोगकर्ता व भूमिकाएँ (Users)', path: '/admin/users', icon: <Users className="w-5 h-5" /> },
-        { name: 'रिपोर्ट्स (Reports)', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
-        { name: 'समिति (Committee)', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
+        { name: 'Overview', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
+        { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
+        { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
+        { name: 'Users & Roles', path: '/admin/users', icon: <Users className="w-5 h-5" /> },
+        { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
+        { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
       ]
     : [
-        { name: 'लाइव दर्शन प्रसारण (Live)', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
-        { name: 'स्मृतियाँ (Memories)', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
-        { name: 'रिपोर्ट्स (Reports)', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
-        { name: 'समिति (Committee)', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
+        { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
+        { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
+        { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
+        { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
       ];
 
   const handleLogout = async () => {
@@ -57,13 +57,13 @@ export const AdminLayout: React.FC = () => {
       <div className="md:hidden bg-maroon-900 text-cream-100 p-4 flex items-center justify-between border-b border-maroon-800">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-maroon-700 flex items-center justify-center text-gold-400 font-bold border border-gold-500/40">
-            य
+            Y
           </div>
           <div className="flex flex-col">
-            <span className="font-devanagari-heading font-bold text-sm">
-              {isSuperAdmin ? 'मुख्य व्यवस्थापक पैनल' : 'समिति मॉडरेटर पैनल'}
+            <span className="font-heading font-bold text-sm">
+              {isSuperAdmin ? 'Super Admin Panel' : 'Moderator Panel'}
             </span>
-            <span className="text-[10px] text-gold-400 font-devanagari-body">
+            <span className="text-[10px] text-gold-400 font-body">
               {isSuperAdmin ? 'Super Admin' : 'Admin'}
             </span>
           </div>
@@ -87,27 +87,27 @@ export const AdminLayout: React.FC = () => {
           {/* Brand header */}
           <div className="pb-6 mb-6 border-b border-dark-700">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-maroon-700 flex items-center justify-center text-gold-400 font-devanagari-heading font-bold text-xl border border-gold-500/40">
-                य
+              <div className="w-10 h-10 rounded-xl bg-maroon-700 flex items-center justify-center text-gold-400 font-heading font-bold text-xl border border-gold-500/40">
+                Y
               </div>
               <div className="flex flex-col">
-                <span className="font-devanagari-heading font-bold text-base text-cream-50 leading-tight">
-                  यदुवंशी दुर्गा पूजा
+                <span className="font-heading font-bold text-base text-cream-50 leading-tight">
+                  Yaduvanshi Durga Puja
                 </span>
                 <span
-                  className={`text-[11px] font-devanagari-body font-semibold flex items-center gap-1 ${
+                  className={`text-[11px] font-body font-semibold flex items-center gap-1 ${
                     isSuperAdmin ? 'text-gold-400' : 'text-emerald-400'
                   }`}
                 >
                   {isSuperAdmin ? (
                     <>
                       <Crown className="w-3.5 h-3.5 text-gold-400" />
-                      <span>मुख्य व्यवस्थापक (Super Admin)</span>
+                      <span>Super Admin</span>
                     </>
                   ) : (
                     <>
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>समिति व्यवस्थापक (Admin)</span>
+                      <span>Admin</span>
                     </>
                   )}
                 </span>
@@ -128,7 +128,7 @@ export const AdminLayout: React.FC = () => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-devanagari-body font-medium transition-all ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-body font-medium transition-all ${
                     isActive
                       ? 'bg-maroon-700 text-cream-50 font-semibold shadow-sm'
                       : 'text-cream-300 hover:text-white hover:bg-dark-800'
@@ -146,8 +146,8 @@ export const AdminLayout: React.FC = () => {
 
         {/* Footer Actions in Sidebar */}
         <div className="pt-6 border-t border-dark-700 space-y-2">
-          <div className="px-3.5 py-2 bg-dark-800/80 rounded-xl mb-2 text-xs font-devanagari-body">
-            <span className="text-muted block text-[10px]">लॉगिन खाता:</span>
+          <div className="px-3.5 py-2 bg-dark-800/80 rounded-xl mb-2 text-xs font-body">
+            <span className="text-muted block text-[10px]">Logged in as:</span>
             <span className="font-semibold text-cream-100 truncate block">{user?.name}</span>
             <span className="text-gold-400 text-[10px] uppercase tracking-wider font-mono block">
               {user?.role}
@@ -159,7 +159,7 @@ export const AdminLayout: React.FC = () => {
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs text-gold-400 hover:bg-dark-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>मुख्य वेबसाइट पर लौटें</span>
+            <span>Back to Main Website</span>
           </Link>
 
           <button
@@ -167,7 +167,7 @@ export const AdminLayout: React.FC = () => {
             className="w-full flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs text-red-400 hover:bg-red-950/40 transition-colors text-left"
           >
             <LogOut className="w-4 h-4" />
-            <span>व्यवस्थापक लॉगआउट</span>
+            <span>Logout</span>
           </button>
         </div>
       </aside>

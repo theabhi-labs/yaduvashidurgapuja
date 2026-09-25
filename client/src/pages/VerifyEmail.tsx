@@ -15,17 +15,17 @@ export const VerifyEmail: React.FC = () => {
     const verify = async () => {
       if (!token) {
         setStatus('error');
-        setMessage('सत्यापन टोकन नहीं मिला');
+        setMessage('Verification token not found in URL.');
         return;
       }
 
       try {
         const res = await authService.verifyEmail(token);
         setStatus('success');
-        setMessage(res.message || 'ईमेल सफलतापूर्वक सत्यापित हो गया है!');
+        setMessage(res.message || 'Email verified successfully!');
       } catch (err: any) {
         setStatus('error');
-        setMessage(err.message || 'सत्यापन विफल रहा');
+        setMessage(err.message || 'Email verification failed.');
       }
     };
 
@@ -38,8 +38,8 @@ export const VerifyEmail: React.FC = () => {
         {status === 'loading' && (
           <div className="space-y-4">
             <Loader2 className="w-12 h-12 animate-spin text-maroon-700 mx-auto" />
-            <h2 className="text-xl font-devanagari-heading font-bold text-dark-900">
-              ईमेल सत्यापित किया जा रहा है...
+            <h2 className="text-xl font-heading font-bold text-dark-900">
+              Verifying Email...
             </h2>
           </div>
         )}
@@ -47,14 +47,14 @@ export const VerifyEmail: React.FC = () => {
         {status === 'success' && (
           <div className="space-y-4">
             <CheckCircle2 className="w-14 h-14 text-emerald-600 mx-auto" />
-            <h2 className="text-xl font-devanagari-heading font-bold text-dark-950">
-              सत्यापन सफल!
+            <h2 className="text-xl font-heading font-bold text-dark-950">
+              Verification Successful!
             </h2>
-            <p className="text-sm font-devanagari-body text-muted">{message}</p>
+            <p className="text-sm font-body text-muted">{message}</p>
             <div className="pt-4">
               <Link to="/login">
                 <Button variant="primary" size="md">
-                  लॉगिन करें
+                  Log In
                 </Button>
               </Link>
             </div>
@@ -64,14 +64,14 @@ export const VerifyEmail: React.FC = () => {
         {status === 'error' && (
           <div className="space-y-4">
             <AlertCircle className="w-14 h-14 text-maroon-700 mx-auto" />
-            <h2 className="text-xl font-devanagari-heading font-bold text-dark-950">
-              सत्यापन विफल
+            <h2 className="text-xl font-heading font-bold text-dark-950">
+              Verification Failed
             </h2>
-            <p className="text-sm font-devanagari-body text-muted">{message}</p>
+            <p className="text-sm font-body text-muted">{message}</p>
             <div className="pt-4">
               <Link to="/">
                 <Button variant="outline" size="md">
-                  मुख्य पृष्ठ पर जाएं
+                  Go to Home
                 </Button>
               </Link>
             </div>

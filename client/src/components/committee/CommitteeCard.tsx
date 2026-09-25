@@ -29,17 +29,17 @@ export const CommitteeCard: React.FC<CommitteeCardProps> = ({ member }) => {
       </div>
 
       {/* Member Details */}
-      <h3 className="text-lg sm:text-xl font-devanagari-heading font-bold text-dark-950 mb-1">
+      <h3 className="text-lg sm:text-xl font-heading font-bold text-dark-950 mb-1">
         {member.name}
       </h3>
 
-      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-maroon-50 border border-maroon-200 text-maroon-800 text-xs font-semibold font-devanagari-body mb-3">
+      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-maroon-50 border border-maroon-200 text-maroon-800 text-xs font-semibold font-body mb-3">
         <Award className="w-3.5 h-3.5 text-maroon-700 shrink-0" />
         <span>{member.designation}</span>
       </div>
 
       {member.bio && (
-        <p className="text-xs sm:text-sm font-devanagari-body text-muted leading-relaxed line-clamp-3 mt-1">
+        <p className="text-xs sm:text-sm font-body text-muted leading-relaxed line-clamp-3 mt-1">
           {member.bio}
         </p>
       )}

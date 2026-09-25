@@ -8,9 +8,9 @@ export const Footer: React.FC = () => {
     <footer className="bg-dark-900 text-cream-100 border-t-4 border-gold-500 pt-14 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Sacred Top Banner */}
-        <div className="flex items-center justify-center gap-2 pb-8 mb-8 border-b border-dark-700/60 text-gold-400 text-xs sm:text-sm font-devanagari-heading font-bold text-center">
+        <div className="flex items-center justify-center gap-2 pb-8 mb-8 border-b border-dark-700/60 text-gold-400 text-xs sm:text-sm font-heading font-bold text-center">
           <Sparkles className="w-4 h-4 text-gold-400 shrink-0" />
-          <span>🙏 जय माँ दुर्गा • यादों में बसी दुर्गा पूजा • कपूरिपुर धाम 🙏</span>
+          <span>Jai Maa Durga • Preserving Sacred Memories • Kapooripur Dham</span>
           <Sparkles className="w-4 h-4 text-gold-400 shrink-0" />
         </div>
 
@@ -18,24 +18,24 @@ export const Footer: React.FC = () => {
           {/* Brand & Philosophy */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-maroon-700 flex items-center justify-center text-gold-400 font-devanagari-heading font-bold text-xl border border-gold-500/40 shadow-sm">
-                य
+              <div className="w-10 h-10 rounded-xl bg-maroon-700 flex items-center justify-center text-gold-400 font-heading font-bold text-xl border border-gold-500/40 shadow-sm">
+                Y
               </div>
               <div className="flex flex-col">
-                <span className="font-devanagari-heading font-bold text-lg text-cream-50 leading-tight">
-                  यदुवंशी दुर्गा पूजा
+                <span className="font-heading font-bold text-lg text-cream-50 leading-tight">
+                  Yaduvashi Durga Puja
                 </span>
-                <span className="text-xs font-devanagari-body text-gold-400">
-                  कपूरिपुर • डिजिटल स्मृति संचय
+                <span className="text-xs font-body text-gold-400">
+                  Kapooripur • Digital Archive
                 </span>
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm font-devanagari-body text-cream-300/80 leading-relaxed">
-              "यादें, लोकप्रियता नहीं" — कपूरिपुर की पावन दुर्गा पूजा की स्मृतियों, परंपराओं और भक्तों के समर्पण का एक गरिमामयी डिजिटल अभिलेखागार।
+            <p className="text-xs sm:text-sm font-body text-cream-300/80 leading-relaxed">
+              "Memories, Not Popularity" — A dignified digital archive preserving sacred memories, traditions, and devotional moments of Kapooripur Durga Puja.
             </p>
 
-            <div className="flex items-center gap-2 text-xs text-gold-400/90 font-devanagari-body pt-1">
+            <div className="flex items-center gap-2 text-xs text-gold-400/90 font-body pt-1">
               <MapPin className="w-4 h-4 text-gold-500 shrink-0" />
               <span>{LOCATION_TEXT}</span>
             </div>
@@ -43,38 +43,38 @@ export const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold-400 font-devanagari-body mb-4">
-              मुख्य अनुभाग
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold-400 font-body mb-4">
+              Quick Links
             </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm font-devanagari-body">
+            <ul className="space-y-2.5 text-xs sm:text-sm font-body">
               <li>
                 <Link to="/" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  मुख्य पृष्ठ (Home)
+                  Home
                 </Link>
               </li>
               <li>
                 <Link to="/memories" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  स्मृति दीर्घा (Memories Archive)
+                  Memories Archive
                 </Link>
               </li>
               <li>
                 <Link to="/committee" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  पूजा समिति सदस्य (Committee)
+                  Committee Members
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  परिचय एवं इतिहास (About Us)
+                  About & History
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  संपर्क सूत्र (Contact Us)
+                  Contact Us
                 </Link>
               </li>
               <li>
                 <Link to="/share-memory" className="text-gold-400 hover:text-gold-300 font-medium transition-colors block pt-1">
-                  अपनी याद साझा करें +
+                  Share a Memory +
                 </Link>
               </li>
             </ul>
@@ -82,29 +82,29 @@ export const Footer: React.FC = () => {
 
           {/* Legal & Archival Philosophy */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold-400 font-devanagari-body mb-4">
-              नीतियां एवं नियम
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold-400 font-body mb-4">
+              Policies & Terms
             </h4>
-            <ul className="space-y-2.5 text-xs sm:text-sm font-devanagari-body">
+            <ul className="space-y-2.5 text-xs sm:text-sm font-body">
               <li>
                 <Link to="/privacy" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  गोपनीयता नीति (Privacy Policy)
+                  Privacy Policy
                 </Link>
               </li>
               <li>
                 <Link to="/terms" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  नियम एवं शर्तें (Terms & Conditions)
+                  Terms & Conditions
                 </Link>
               </li>
               <li className="pt-2">
                 <div className="space-y-2 text-cream-300/70 text-xs">
                   <div className="flex items-center gap-1.5 text-emerald-400">
                     <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                    <span>कोई लाइक्स या सामाजिक रेटिंग नहीं</span>
+                    <span>No public vanity metrics</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-emerald-400">
                     <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                    <span>निजी ईमेल एवं डेटा पूर्णतः सुरक्षित</span>
+                    <span>Private & secure devotee data</span>
                   </div>
                 </div>
               </li>
@@ -113,8 +113,8 @@ export const Footer: React.FC = () => {
 
           {/* Official Domain & Contact */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold-400 font-devanagari-body mb-4">
-              आधिकारिक पोर्टल
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-gold-400 font-body mb-4">
+              Official Portal
             </h4>
             <div className="bg-dark-800/80 p-4 rounded-2xl border border-dark-700 space-y-3">
               <div className="flex items-center gap-2 text-xs text-cream-200">
@@ -130,18 +130,18 @@ export const Footer: React.FC = () => {
                   {CONTACT_EMAIL}
                 </a>
               </div>
-              <p className="text-[11px] font-devanagari-body text-cream-400/80 leading-relaxed pt-1">
-                किसी भी प्रश्न, सुझाव या पुरानी तस्वीरों के संग्रह हेतु समिति से संपर्क करें।
+              <p className="text-[11px] font-body text-cream-400/80 leading-relaxed pt-1">
+                For questions, archival photos, or seva inquiries, please reach out to the committee.
               </p>
             </div>
           </div>
         </div>
 
         {/* Bottom copyright line */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-devanagari-body text-cream-400/70">
-          <p>© {new Date().getFullYear()} यदुवंशी दुर्गा पूजा समिति, कपूरिपुर। सर्वाधिकार सुरक्षित।</p>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body text-cream-400/70">
+          <p>© {new Date().getFullYear()} Yaduvashi Durga Puja Committee, Kapooripur. All rights reserved.</p>
           <div className="flex items-center gap-1">
-            <span>माँ जगदम्बा की कृपा से निर्मित</span>
+            <span>Crafted with Devotion</span>
             <Heart className="w-3.5 h-3.5 text-maroon-500 fill-maroon-500 inline mx-0.5" />
           </div>
         </div>

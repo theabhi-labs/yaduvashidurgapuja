@@ -24,7 +24,7 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
         </Link>
         {/* Year Tag Badge */}
         <div className="absolute top-3 right-3 bg-dark-900/80 backdrop-blur-md text-gold-300 text-xs font-semibold px-2.5 py-1 rounded-full border border-gold-500/30 shadow-sm">
-          वर्ष {memory.year}
+          Year {memory.year}
         </div>
       </div>
 
@@ -46,17 +46,17 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-1">
-                <p className="text-xs sm:text-sm font-devanagari-body font-semibold text-dark-900 truncate">
-                  {memory.userId?.name || 'श्रद्धालु भक्त'}
+                <p className="text-xs sm:text-sm font-body font-semibold text-dark-900 truncate">
+                  {memory.userId?.name || 'Devotee'}
                 </p>
                 {/* Impressions Counter (No Likes, No Comments) */}
-                <span className="inline-flex items-center gap-1 text-[11px] font-devanagari-body text-maroon-800 bg-maroon-900/5 px-2 py-0.5 rounded-full border border-maroon-800/15 font-medium shrink-0">
+                <span className="inline-flex items-center gap-1 text-[11px] font-body text-maroon-800 bg-maroon-900/5 px-2 py-0.5 rounded-full border border-maroon-800/15 font-medium shrink-0">
                   <Eye className="w-3 h-3 text-maroon-700" />
-                  <span>{formatImpressions(memory.impressions)} दर्शन</span>
+                  <span>{formatImpressions(memory.impressions)} views</span>
                 </span>
               </div>
 
-              <div className="flex items-center gap-1 text-[11px] text-muted font-devanagari-body mt-0.5">
+              <div className="flex items-center gap-1 text-[11px] text-muted font-body mt-0.5">
                 <Calendar className="w-3 h-3 text-gold-600 shrink-0" />
                 <span>{formatDate(memory.createdAt)}</span>
               </div>
@@ -65,7 +65,7 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
 
           {/* Caption */}
           <Link to={`/memories/${memory._id}`}>
-            <p className="text-sm sm:text-base font-devanagari-body text-dark-800 line-clamp-3 leading-relaxed hover:text-maroon-800 transition-colors">
+            <p className="text-sm sm:text-base font-body text-dark-800 line-clamp-3 leading-relaxed hover:text-maroon-800 transition-colors">
               {memory.caption}
             </p>
           </Link>
@@ -75,9 +75,9 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
         <div className="pt-4 mt-3 border-t border-cream-200 flex items-center justify-between">
           <Link
             to={`/memories/${memory._id}`}
-            className="text-xs font-devanagari-body font-semibold text-maroon-700 hover:text-maroon-900 hover:underline"
+            className="text-xs font-body font-semibold text-maroon-700 hover:text-maroon-900 hover:underline"
           >
-            स्मृति देखें →
+            View Memory →
           </Link>
 
           <ShareButton

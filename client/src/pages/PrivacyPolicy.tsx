@@ -6,177 +6,177 @@ import { CONTACT_EMAIL, LEGAL_ENTITY_NAME } from '../utils/constants';
 
 export const PrivacyPolicy: React.FC = () => {
   const tocItems: TocItem[] = [
-    { id: 'intro', title: 'प्रस्तावना (Introduction)' },
-    { id: 'collection', title: 'एकत्र की जाने वाली जानकारी (Data We Collect)' },
-    { id: 'memories', title: 'अपलोड की गई स्मृतियाँ (Uploaded Memories)' },
-    { id: 'usage', title: 'जानकारी का उपयोग (How We Use Information)' },
-    { id: 'cookies', title: 'कुकीज़ एवं प्रमाणीकरण (Cookies & Auth)' },
-    { id: 'images', title: 'चित्र प्रसंस्करण एवं गोपनीयता (Image Processing)' },
-    { id: 'sharing', title: 'डेटा साझाकरण (Data Sharing)' },
-    { id: 'retention', title: 'डेटा संरक्षण अवधि (Data Retention)' },
-    { id: 'rights', title: 'भक्त अधिकार एवं प्रबंधन (User Rights)' },
-    { id: 'security', title: 'सुरक्षा मानक (Security Practices)' },
-    { id: 'children', title: 'बाल गोपनीयता (Children\'s Privacy)' },
-    { id: 'changes', title: 'नीति में संशोधन (Policy Updates)' },
-    { id: 'contact', title: 'संपर्क सूत्र (Contact Us)' },
+    { id: 'intro', title: '1. Introduction' },
+    { id: 'collection', title: '2. Information We Collect' },
+    { id: 'memories', title: '3. Uploaded Memories' },
+    { id: 'usage', title: '4. How We Use Information' },
+    { id: 'cookies', title: '5. Cookies & Authentication' },
+    { id: 'images', title: '6. Image Processing & Privacy' },
+    { id: 'sharing', title: '7. Data Sharing' },
+    { id: 'retention', title: '8. Data Retention' },
+    { id: 'rights', title: '9. User Rights' },
+    { id: 'security', title: '10. Security Practices' },
+    { id: 'children', title: '11. Children\'s Privacy' },
+    { id: 'changes', title: '12. Policy Updates' },
+    { id: 'contact', title: '13. Contact Us' },
   ];
 
   return (
     <LegalPageLayout
-      badge="गोपनीयता नीति"
-      titleHindi="गोपनीयता नीति (Privacy Policy)"
-      titleEnglish="How we protect and manage your data on Yaduvashi Durga Puja Archive"
-      description="यह गोपनीयता नीति स्पष्ट करती है कि यदुवंशी दुर्गा पूजा कपूरिपुर पोर्टल पर आपके व्यक्तिगत विवरण, तस्वीरें और संस्मरण किस प्रकार सुरक्षित, प्रबंधित एवं प्रदर्शित किए जाते हैं।"
+      badge="Privacy & Security"
+      titleHindi="Privacy Policy"
+      titleEnglish="How we protect and manage your data on Yaduvanshi Durga Puja Archive"
+      description="This Privacy Policy outlines how Yaduvanshi Durga Puja Kapooripur collects, protects, uses, and displays your account details and contributed photographs."
       tocItems={tocItems}
     >
       {/* 1. Introduction */}
-      <LegalSection id="intro" number="1" title="प्रस्तावना (Introduction)">
+      <LegalSection id="intro" number="1" title="Introduction">
         <p>
-          {LEGAL_ENTITY_NAME} ("हम", "हमारी समिति" अथवा "पोर्टल") द्वारा संचालित आधिकारिक वेबसाइट (<code>yaduvashidurgapujakapooripur.online</code>) पर आपका स्वागत है।
+          Welcome to the official digital portal (<code>yaduvashidurgapujakapooripur.online</code>) managed by {LEGAL_ENTITY_NAME} ("we", "our committee", or "portal").
         </p>
         <p>
-          हमारा पोर्टल एक पावन डिजिटल स्मृति संचय (Digital Memory Archive) है। हम अपने उपयोगकर्ताओं और श्रद्धालुओं की व्यक्तिगत गोपनीयता का पूर्ण सम्मान करते हैं और डेटा संरक्षण हेतु पारदर्शी नीतियां अपनाते हैं।
+          Our platform is a sacred digital memory archive. We fully respect the privacy and dignity of our devotees and visitors, adhering to transparent data protection practices.
         </p>
       </LegalSection>
 
       {/* 2. Information We Collect */}
-      <LegalSection id="collection" number="2" title="एकत्र की जाने वाली जानकारी (Information We Collect)">
-        <p>हम केवल वही जानकारी एकत्र करते हैं जो पोर्टल के संचालन एवं स्मृति संचय हेतु आवश्यक है:</p>
+      <LegalSection id="collection" number="2" title="Information We Collect">
+        <p>We collect only the minimum necessary information required to operate the portal and maintain the digital archive:</p>
         <ul className="list-disc list-inside space-y-1.5 pl-2">
           <li>
-            <strong>खाता पंजीकरण जानकारी:</strong> आपका पूरा नाम, ईमेल पता एवं सुरक्षित रूप से हैश (Bcrypt) किया गया पासवर्ड।
+            <strong>Account Registration Data:</strong> Your full name, email address, and securely hashed (Bcrypt) password.
           </li>
           <li>
-            <strong>स्मृति संचय सामग्री:</strong> आपके द्वारा स्वेच्छा से अपलोड की गई तस्वीरें, उनका विवरण (Caption) एवं संबंधित पूजा वर्ष (Year)।
+            <strong>Memory Submissions:</strong> Photographs voluntarily uploaded by you, accompanying captions, and festival years.
           </li>
           <li>
-            <strong>संपर्क एवं रिपोर्ट विवरण:</strong> संपर्क फॉर्म अथवा सामग्री रिपोर्ट करते समय आपके द्वारा दिया गया संदेश एवं कारण।
+            <strong>Contact & Report Inquiries:</strong> Messages, feedback, or content violation reports submitted through our forms.
           </li>
           <li>
-            <strong>तकनीकी लॉग:</strong> सर्वर सुरक्षा एवं दुरुपयोग रोकथाम हेतु आईपी पता, अनुरोध समय एवं ब्राउज़र का प्रकार।
+            <strong>Technical Logs:</strong> IP address, request timestamps, and browser user agent for security and rate-limiting.
           </li>
         </ul>
       </LegalSection>
 
       {/* 3. Uploaded Memories */}
-      <LegalSection id="memories" number="3" title="अपलोड की गई स्मृतियाँ (Uploaded Memories)">
+      <LegalSection id="memories" number="3" title="Uploaded Memories">
         <p>
-          यह पोर्टल एक सार्वजनिक अभिलेखागार है। जब कोई पंजीकृत भक्त अपनी तस्वीर व संस्मरण प्रकाशित करता है, तो वह तस्वीर, संस्मरण, वर्ष और अपलोडकर्ता का <strong>प्रदर्शित नाम (Display Name)</strong> वेबसाइट पर सार्वजनिक रूप से सभी आगंतुकों को दिखाई देता है।
+          This portal is a public community archive. When a registered devotee publishes a photograph and caption, the image, text description, festival year, and contributor's <strong>Display Name</strong> become visible to all website visitors.
         </p>
         <p className="p-3 bg-cream-100 rounded-xl border border-gold-400/40 text-gold-950">
-          <strong>महत्वपूर्ण:</strong> आपका निजी ईमेल पता, पासवर्ड अथवा आंतरिक खाता पहचान कभी भी सार्वजनिक मेमोरी कार्ड अथवा सार्वजनिक पृष्ठों पर प्रदर्शित नहीं की जाती है।
+          <strong>Important:</strong> Your private email address, encrypted password, and internal account IDs are never exposed on public memory cards or pages.
         </p>
       </LegalSection>
 
       {/* 4. How We Use Information */}
-      <LegalSection id="usage" number="4" title="जानकारी का उपयोग (How We Use Information)">
-        <p>एकत्रित जानकारी का उपयोग केवल निम्नलिखित वैधानिक व पावन उद्देश्यों के लिए किया जाता है:</p>
+      <LegalSection id="usage" number="4" title="How We Use Information">
+        <p>We utilize the collected information strictly for legitimate festival and archival purposes:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>उपयोगकर्ता खाता बनाने, लॉगिन कराने एवं प्रमाणीकरण (Authentication) हेतु।</li>
-          <li>दुर्गा पूजा की स्मृतियों को वर्षवार संकलित एवं प्रदर्शित करने हेतु।</li>
-          <li>पासवर्ड रीसेट एवं आवश्यक सेवा संबंधी सूचनाओं के प्रेषण हेतु।</li>
-          <li>सामग्री मॉडरेशन, स्पैम रोकथाम एवं अनुचित सामग्री की समीक्षा हेतु।</li>
-          <li>संपर्क फॉर्म द्वारा प्राप्त प्रश्नों के उत्तर देने हेतु।</li>
+          <li>User registration, authentication, and secure session management.</li>
+          <li>Cataloging and presenting annual Durga Puja festival memories chronologically.</li>
+          <li>Facilitating secure password resets and necessary service notifications.</li>
+          <li>Content moderation, spam prevention, and reviewing flagged submissions.</li>
+          <li>Responding promptly to user support inquiries and feedback.</li>
         </ul>
       </LegalSection>
 
       {/* 5. Cookies & Authentication */}
-      <LegalSection id="cookies" number="5" title="कुकीज़ एवं प्रमाणीकरण (Cookies & Authentication)">
+      <LegalSection id="cookies" number="5" title="Cookies & Authentication">
         <p>
-          हम उपयोगकर्ता सत्र (Session) को सुरक्षित रखने हेतु केवल आवश्यक <strong>सुरक्षित HTTP-Only कुकीज़ (Secure HTTP-Only Cookies)</strong> का उपयोग करते हैं:
+          We use <strong>Secure HTTP-Only Cookies</strong> strictly for user authentication:
         </p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>कुकीज़ में सुरक्षित JSON Web Token (JWT) संग्रहीत होता है।</li>
-          <li>यह कुकी जावास्क्रिप्ट द्वारा सीधे एक्सेस नहीं की जा सकती (XSS हमलों से सुरक्षा)।</li>
-          <li>हम प्रमाणीकरण टोकन को कभी भी ब्राउज़र के असुरक्षित <code>localStorage</code> में नहीं रखते।</li>
-          <li>हम किसी भी तृतीय-पक्ष विज्ञापन ट्रैकिंग कुकीज़ का उपयोग नहीं करते हैं।</li>
+          <li>Cookies store signed JSON Web Tokens (JWT) for authenticated sessions.</li>
+          <li>HTTP-Only flags prevent access via browser JavaScript, safeguarding against XSS vulnerabilities.</li>
+          <li>We never store authentication tokens in vulnerable browser <code>localStorage</code>.</li>
+          <li>We do not employ third-party advertising or commercial tracking cookies.</li>
         </ul>
       </LegalSection>
 
       {/* 6. Image Processing & Privacy */}
-      <LegalSection id="images" number="6" title="चित्र प्रसंस्करण एवं मेटाडेटा निष्कासन (Image Processing)">
+      <LegalSection id="images" number="6" title="Image Processing & EXIF Sanitization">
         <p>
-          आपकी गोपनीयता और डिवाइस सुरक्षा हेतु, हमारी प्रणाली में <strong>Sharp इमेज प्रोसेसिंग पाइपलाइन</strong> कार्यरत है:
+          For your privacy and device security, our server utilizes an automated <strong>Sharp image processing pipeline</strong>:
         </p>
         <ul className="list-disc list-inside space-y-1.5 pl-2">
           <li>
-            <strong>EXIF / GPS मेटाडेटा निष्कासन:</strong> अपलोड होते ही तस्वीर में से कैमरा मॉडल, स्थान (GPS Geolocation), और अन्य संवेदनशील मेटाडेटा पूर्णतः हटा दिया जाता है।
+            <strong>EXIF / GPS Stripping:</strong> Camera metadata, GPS geolocation tags, and device identifiers are stripped immediately upon upload.
           </li>
           <li>
-            <strong>WebP रूपांतरण:</strong> तीव्र लोडिंग एवं सुरक्षा हेतु तस्वीरों को अनुकूलित आधुनिक WebP प्रारूप में सहेजा जाता है।
+            <strong>WebP Optimization:</strong> Images are converted and compressed into modern WebP format for fast loading and reduced bandwidth consumption.
           </li>
           <li>
-            <strong>फ़ाइल प्रकार सत्यापन:</strong> केवल वैध JPG, PNG और WebP चित्र ही स्वीकार किए जाते हैं; किसी भी गैर-चित्र फ़ाइल को सर्वर पर अस्वीकृत कर दिया जाता है।
+            <strong>File Type Validation:</strong> Only validated JPG, PNG, and WebP images are permitted; arbitrary or executable files are rejected automatically.
           </li>
         </ul>
       </LegalSection>
 
       {/* 7. Data Sharing */}
-      <LegalSection id="sharing" number="7" title="डेटा साझाकरण (Data Sharing)">
+      <LegalSection id="sharing" number="7" title="Data Sharing">
         <p>
-          हम आपके व्यक्तिगत डेटा अथवा ईमेल को किसी भी विज्ञापनदाता, डेटा ब्रोकर अथवा तीसरे पक्ष को न तो बेचते हैं और न ही किराए पर देते हैं। डेटा केवल वेबसाइट को होस्ट करने वाले विश्वसनीय सर्वर अवसंरचना (Hosting Infrastructure) व डेटाबेस प्रदाताओं तक ही सीमित रहता है।
+          We do not sell, rent, or trade your personal information or email addresses to any advertisers or third-party brokers. Data is processed exclusively by our trusted infrastructure providers (Cloudflare R2, MongoDB Atlas, and hosting servers) solely to deliver this service.
         </p>
       </LegalSection>
 
       {/* 8. Data Retention */}
-      <LegalSection id="retention" number="8" title="डेटा संरक्षण अवधि (Data Retention)">
+      <LegalSection id="retention" number="8" title="Data Retention">
         <p>
-          स्मृति अभिलेखागार का उद्देश्य दीर्घकालिक ऐतिहासिक संरक्षण है। प्रकाशित स्मृतियाँ तब तक सुरक्षित रखी जाती हैं जब तक उपयोगकर्ता अथवा व्यवस्थापक द्वारा उन्हें हटाया नहीं जाता। यदि कोई उपयोगकर्ता अपनी स्मृति हटाता है, तो संबंधित तस्वीर एवं रिकॉर्ड को हटा दिया जाता है।
+          The archival goal is long-term historical preservation. Published memories remain preserved until deleted by the author or removed by the committee administration. When you delete a memory, its associated image and records are purged.
         </p>
       </LegalSection>
 
       {/* 9. User Rights */}
-      <LegalSection id="rights" number="9" title="भक्त अधिकार एवं प्रबंधन (User Rights)">
-        <p>प्रत्येक पंजीकृत उपयोगकर्ता को निम्नलिखित अधिकार प्राप्त हैं:</p>
+      <LegalSection id="rights" number="9" title="User Rights & Controls">
+        <p>Every registered devotee has full control over their contributed content:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>'मेरी यादें' (My Memories) पृष्ठ पर जाकर अपनी साझा की गई स्मृतियों को देखने, संपादित करने या हटाने का अधिकार।</li>
-          <li>किसी भी अनुचित या अनधिकृत स्मृति के विरुद्ध 'रिपोर्ट' दर्ज करने का अधिकार।</li>
-          <li>समिति से संपर्क कर अपने खाते अथवा सामग्री में संशोधन का अनुरोध करने का अधिकार।</li>
+          <li>Access the 'My Memories' section to review, manage, or delete your submissions at any time.</li>
+          <li>Submit report flags against inappropriate or unauthorized content.</li>
+          <li>Contact the committee administration to request account assistance or data updates.</li>
         </ul>
       </LegalSection>
 
       {/* 10. Security Practices */}
-      <LegalSection id="security" number="10" title="सुरक्षा मानक (Security Practices)">
-        <p>हम उद्योग-मानक सुरक्षा उपाय लागू करते हैं:</p>
+      <LegalSection id="security" number="10" title="Security Practices">
+        <p>We implement industry-standard protective measures:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>संपूर्ण डेटा ट्रांसमिशन HTTPS एन्क्रिप्शन के माध्यम से सुरक्षित है।</li>
-          <li>पासवर्ड को क्रिप्टोग्राफ़िक साल्ट के साथ Bcrypt द्वारा हैश किया जाता है।</li>
-          <li>अति-अनुरोधों (Brute-force) से बचाव हेतु Rate Limiting सक्रिय है।</li>
-          <li>सुरक्षा हेडर (Helmet) एवं सख्त इनपुट सैनिटाइजेशन (Zod) लागू है।</li>
+          <li>Full end-to-end SSL/TLS encryption across all communications (HTTPS).</li>
+          <li>Cryptographic password hashing using Bcrypt with salt rounds.</li>
+          <li>Automated rate-limiting on authentication and sensitive endpoints to thwart brute-force attacks.</li>
+          <li>Robust security headers (Helmet) and strict input validation (Zod schemas).</li>
         </ul>
       </LegalSection>
 
       {/* 11. Children's Privacy */}
-      <LegalSection id="children" number="11" title="बाल गोपनीयता (Children's Privacy)">
+      <LegalSection id="children" number="11" title="Children's Privacy">
         <p>
-          यह वेबसाइट आम पारिवारिक व भक्तिमय समुदाय हेतु बनाई गई है। हम जानबूझकर नाबालिगों से कोई अनुचित या व्यक्तिगत डेटा एकत्र नहीं करते हैं। पूजा प्रांगण की पारिवारिक तस्वीरों में बच्चों की छवियां माता-पिता अथवा अभिभावकों की सहमति से ही साझा की जानी चाहिए।
+          This website serves a family-friendly devotional community. We do not intentionally collect personal information from minors. Family photos containing children must be uploaded with parental or guardian knowledge and consent.
         </p>
       </LegalSection>
 
       {/* 12. Policy Updates */}
-      <LegalSection id="changes" number="12" title="नीति में संशोधन (Policy Updates)">
+      <LegalSection id="changes" number="12" title="Policy Updates">
         <p>
-          तकनीकी अथवा संगठनात्मक सुधारों के अनुसार इस नीति में समय-समय पर संशोधन किया जा सकता है। किसी भी बदलाव की स्थिति में इस पृष्ठ पर अद्यतित तिथि के साथ सूचना प्रकाशित की जाएगी।
+          We may revise this Privacy Policy periodically to reflect technological updates or legal requirements. Updated versions will be published directly on this page with the revised effective date.
         </p>
       </LegalSection>
 
       {/* 13. Contact Us */}
-      <LegalSection id="contact" number="13" title="संपर्क सूत्र (Contact Us)">
+      <LegalSection id="contact" number="13" title="Contact Us">
         <p>
-          यदि आपके पास इस गोपनीयता नीति, अपनी तस्वीर अथवा व्यक्तिगत डेटा के संबंध में कोई प्रश्न है, तो कृपया हमसे संपर्क करें:
+          If you have questions regarding this Privacy Policy, your uploaded photos, or account data, please reach out:
         </p>
-        <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 space-y-1.5 text-xs font-devanagari-body">
+        <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 space-y-1.5 text-xs font-body">
           <p className="font-bold text-dark-950">{LEGAL_ENTITY_NAME}</p>
           <p>
-            ईमेल:{' '}
+            Email:{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-maroon-800 underline font-mono">
               {CONTACT_EMAIL}
             </a>
           </p>
           <p>
-            ऑनलाइन संपर्क फॉर्म:{' '}
+            Online Contact Form:{' '}
             <Link to="/contact" className="text-maroon-800 underline font-semibold">
-              यहाँ क्लिक करें →
+              Click Here →
             </Link>
           </p>
         </div>

@@ -34,7 +34,7 @@ export const MyMemories: React.FC = () => {
         setMemories(res.data);
       }
     } catch (err: any) {
-      toast.error(err.message || 'आपकी स्मृतियाँ लोड करने में त्रुटि हुई');
+      toast.error(err.message || 'Failed to load your memories.');
     } finally {
       setIsLoading(false);
     }
@@ -49,11 +49,11 @@ export const MyMemories: React.FC = () => {
     setIsDeleting(true);
     try {
       await memoryService.deleteMemory(deletingId);
-      toast.success('स्मृति हटा दी गई');
+      toast.success('Memory deleted successfully.');
       setMemories((prev) => prev.filter((m) => m._id !== deletingId));
       setDeletingId(null);
     } catch (err: any) {
-      toast.error(err.message || 'हटाने में त्रुटि हुई');
+      toast.error(err.message || 'Failed to delete memory.');
     } finally {
       setIsDeleting(false);
     }
@@ -63,11 +63,11 @@ export const MyMemories: React.FC = () => {
     <div className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-[85vh]">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-devanagari-heading font-bold text-maroon-900">
-            मेरी साझा की गई स्मृतियाँ
+          <h1 className="text-2xl sm:text-3xl font-heading font-bold text-maroon-900">
+            My Shared Memories
           </h1>
-          <p className="text-xs sm:text-sm font-devanagari-body text-muted mt-1">
-            आपके द्वारा यदुवंशी दुर्गा पूजा कपूरिपुर अभिलेखागार में जोड़ी गई सभी तस्वीरें।
+          <p className="text-xs sm:text-sm font-body text-muted mt-1">
+            All photographs and moments you have contributed to the Yaduvanshi Durga Puja archive.
           </p>
         </div>
 
@@ -76,9 +76,9 @@ export const MyMemories: React.FC = () => {
             variant="gold"
             size="md"
             leftIcon={<PlusCircle className="w-4 h-4" />}
-            className="font-devanagari-body font-bold"
+            className="font-body font-bold"
           >
-            नई याद साझा करें
+            Share New Memory
           </Button>
         </Link>
       </div>
@@ -92,9 +92,9 @@ export const MyMemories: React.FC = () => {
       ) : memories.length === 0 ? (
         <EmptyState
           icon={<ImageOff className="w-8 h-8 text-gold-600" />}
-          title="आपने अभी तक कोई स्मृति साझा नहीं की है"
-          description="कपूरिपुर दुर्गा पूजा के पावन उत्सव की अपनी पहली तस्वीर और संस्मरण अभी साझा करें।"
-          actionText="अपनी पहली याद साझा करें"
+          title="You haven't shared any memories yet"
+          description="Contribute your first photograph and celebration moments from Kapooripur Durga Puja."
+          actionText="Share Your First Memory"
           onAction={() => {
             window.location.href = '/share-memory';
           }}
@@ -115,7 +115,7 @@ export const MyMemories: React.FC = () => {
                   />
                 </Link>
                 <div className="absolute top-3 left-3 bg-dark-900/80 backdrop-blur-md text-gold-300 text-xs font-semibold px-2.5 py-1 rounded-full">
-                  वर्ष {mem.year}
+                  Year {mem.year}
                 </div>
                 <div
                   className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm ${
@@ -124,17 +124,17 @@ export const MyMemories: React.FC = () => {
                       : 'bg-amber-700 text-amber-50'
                   }`}
                 >
-                  {mem.status === 'published' ? 'प्रकाशित' : 'समीक्षाधीन'}
+                  {mem.status === 'published' ? 'Published' : 'Under Review'}
                 </div>
               </div>
 
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-1.5 text-xs text-muted font-devanagari-body mb-2">
+                  <div className="flex items-center gap-1.5 text-xs text-muted font-body mb-2">
                     <Calendar className="w-3.5 h-3.5 text-gold-600" />
                     <span>{formatDate(mem.createdAt)}</span>
                   </div>
-                  <p className="text-sm font-devanagari-body text-dark-900 line-clamp-3 leading-relaxed mb-4">
+                  <p className="text-sm font-body text-dark-900 line-clamp-3 leading-relaxed mb-4">
                     {mem.caption}
                   </p>
                 </div>
@@ -144,14 +144,14 @@ export const MyMemories: React.FC = () => {
                     <Link
                       to={`/memories/${mem._id}`}
                       className="p-1.5 rounded-lg text-muted hover:text-dark-900 hover:bg-cream-200 transition-colors"
-                      title="देखें"
+                      title="View"
                     >
                       <Eye className="w-4 h-4" />
                     </Link>
                     <button
                       onClick={() => setDeletingId(mem._id)}
                       className="p-1.5 rounded-lg text-muted hover:text-red-700 hover:bg-red-50 transition-colors"
-                      title="हटाएं"
+                      title="Delete"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -174,11 +174,11 @@ export const MyMemories: React.FC = () => {
       <Modal
         isOpen={!!deletingId}
         onClose={() => setDeletingId(null)}
-        title="स्मृति हटाने की पुष्टि"
+        title="Confirm Delete Memory"
       >
         <div className="space-y-4">
-          <p className="text-sm font-devanagari-body text-dark-800 leading-relaxed">
-            क्या आप वाकई इस स्मृति को हटाना चाहते हैं?
+          <p className="text-sm font-body text-dark-800 leading-relaxed">
+            Are you sure you want to permanently delete this memory? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3 pt-4 border-t border-cream-300">
             <Button
@@ -186,7 +186,7 @@ export const MyMemories: React.FC = () => {
               size="md"
               onClick={() => setDeletingId(null)}
             >
-              रद्द करें
+              Cancel
             </Button>
             <Button
               variant="danger"
@@ -194,7 +194,7 @@ export const MyMemories: React.FC = () => {
               onClick={handleDelete}
               isLoading={isDeleting}
             >
-              हाँ, हटा दें
+              Yes, Delete
             </Button>
           </div>
         </div>
