@@ -18,6 +18,7 @@ import {
   Megaphone,
   Sparkles,
   Bell,
+  HeartHandshake,
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -43,6 +44,7 @@ export const AdminLayout: React.FC = () => {
   const adminNavItems = isSuperAdmin
     ? [
         { name: 'Overview', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
+        { name: 'Donations & Seva', path: '/admin/donations', icon: <HeartHandshake className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'Aarti Timings', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
         { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
@@ -53,6 +55,7 @@ export const AdminLayout: React.FC = () => {
         { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
       ]
     : [
+        { name: 'Donations & Seva', path: '/admin/donations', icon: <HeartHandshake className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'Aarti Timings', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
         { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },

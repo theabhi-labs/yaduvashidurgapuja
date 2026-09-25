@@ -41,6 +41,9 @@ const PageLoadingFallback: React.FC = () => (
 const LiveDarshan = React.lazy(() =>
   import('../pages/LiveDarshan').then((m) => ({ default: m.LiveDarshan }))
 );
+const Donation = React.lazy(() =>
+  import('../pages/Donation').then((m) => ({ default: m.Donation }))
+);
 const Memories = React.lazy(() =>
   import('../pages/Memories').then((m) => ({ default: m.Memories }))
 );
@@ -99,6 +102,9 @@ const Profile = React.lazy(() =>
 const AdminDashboard = React.lazy(() =>
   import('../pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
 );
+const AdminDonations = React.lazy(() =>
+  import('../pages/admin/AdminDonations').then((m) => ({ default: m.AdminDonations }))
+);
 const AdminLiveBroadcast = React.lazy(() =>
   import('../pages/admin/AdminLiveBroadcast').then((m) => ({ default: m.AdminLiveBroadcast }))
 );
@@ -132,6 +138,8 @@ export const AppRoutes: React.FC = () => {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/live-darshan" element={<LiveDarshan />} />
+          <Route path="/donate" element={<Donation />} />
+          <Route path="/donation" element={<Donation />} />
           <Route path="/memories" element={<Memories />} />
           <Route path="/memories/:id" element={<MemoryDetail />} />
           <Route path="/committee" element={<Committee />} />
@@ -193,6 +201,7 @@ export const AppRoutes: React.FC = () => {
               </SuperAdminRoute>
             }
           />
+          <Route path="donations" element={<AdminDonations />} />
           <Route path="live-darshan" element={<AdminLiveBroadcast />} />
           <Route path="aarti-timings" element={<AdminPujaSchedules />} />
           <Route path="banners" element={<AdminHeroBanners />} />

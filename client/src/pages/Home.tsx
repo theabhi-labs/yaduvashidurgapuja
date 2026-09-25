@@ -272,9 +272,48 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 4. MEMORIES FEED PREVIEW                                                  */}
+      {/* 4. PUJA SEVA & DONATION CALLOUT (Mobile & Desktop)                         */}
       {/* ========================================================================= */}
-      <section className="py-16 sm:py-24 bg-cream-50 border-t border-cream-300/80">
+      <section className="py-10 sm:py-16 bg-gradient-to-r from-maroon-950 via-maroon-900 to-maroon-950 text-cream-50 border-y-2 border-amber-500/40">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold font-body border border-amber-400/40">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>माँ दुर्गा पूजा सेवा एवं महाप्रसाद</span>
+          </div>
+          <h2 className="text-xl sm:text-3xl font-heading font-bold text-cream-50">
+            पूजा, महाप्रसाद एवं व्यवस्था में अपना श्रद्धा सुमन अर्पित करें
+          </h2>
+          <p className="text-xs sm:text-sm font-body text-cream-200/90 max-w-2xl mx-auto leading-relaxed">
+            कपूरिपुर दुर्गा पूजा के पावन अनुष्ठानों, महाआरती, प्रसाद वितरण और भव्य आयोजन में सभी भक्त ऑनलाइन दान देकर पुण्य के भागीदार बन सकते हैं।
+          </p>
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/donate">
+              <Button
+                variant="gold"
+                size="md"
+                leftIcon={<HeartHandshake className="w-4 h-4 text-dark-950" />}
+                className="font-bold shadow-gold-glow"
+              >
+                दान सेवा में सहयोग करें (Donate)
+              </Button>
+            </Link>
+            <Link to="/about">
+              <Button
+                variant="outline"
+                size="md"
+                className="text-cream-100 border-amber-400/50 hover:bg-maroon-800/80"
+              >
+                व्यवस्था एवं विवरण
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. MEMORIES FEED PREVIEW (Desktop Only — Hidden on Mobile for fast focus)   */}
+      {/* ========================================================================= */}
+      <section className="hidden md:block py-16 sm:py-24 bg-cream-50 border-t border-cream-300/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10">
             <div>
@@ -302,7 +341,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. COMMITTEE PREVIEW                                                      */}
+      {/* 6. COMMITTEE PREVIEW                                                      */}
       {/* ========================================================================= */}
       <CommitteePreview members={committee} isLoading={loadingCommittee} />
     </div>
