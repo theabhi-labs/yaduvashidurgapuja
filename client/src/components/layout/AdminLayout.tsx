@@ -23,9 +23,15 @@ export const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // If standard ADMIN attempts to open /admin (Overview), redirect them to /admin/memories
+  // If standard ADMIN attempts to open /admin (Overview), /admin/ads, or /admin/users, redirect them to /admin/memories
   useEffect(() => {
-    if (user && !isSuperAdmin && location.pathname === '/admin') {
+    if (
+      user &&
+      !isSuperAdmin &&
+      (location.pathname === '/admin' ||
+        location.pathname === '/admin/ads' ||
+        location.pathname === '/admin/users')
+    ) {
       navigate('/admin/memories', { replace: true });
     }
   }, [user, isSuperAdmin, location.pathname, navigate]);
@@ -44,7 +50,6 @@ export const AdminLayout: React.FC = () => {
     : [
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
-        { name: 'In-Feed Ads', path: '/admin/ads', icon: <Megaphone className="w-5 h-5" /> },
         { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
         { name: 'Committee', path: '/admin/committee', icon: <Award className="w-5 h-5" /> },
       ];

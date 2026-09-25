@@ -4,6 +4,7 @@ import { MainLayout } from '../layouts/MainLayout';
 import { AdminLayout } from '../components/layout/AdminLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { AdminRoute } from './AdminRoute';
+import { SuperAdminRoute } from './SuperAdminRoute';
 
 // Core Landing Page (static for instantaneous First Contentful Paint)
 import { Home } from '../pages/Home';
@@ -162,11 +163,32 @@ export const AppRoutes: React.FC = () => {
             </AdminRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
+          <Route
+            index
+            element={
+              <SuperAdminRoute>
+                <AdminDashboard />
+              </SuperAdminRoute>
+            }
+          />
           <Route path="live-darshan" element={<AdminLiveBroadcast />} />
           <Route path="memories" element={<AdminMemories />} />
-          <Route path="ads" element={<AdminAds />} />
-          <Route path="users" element={<AdminUsers />} />
+          <Route
+            path="ads"
+            element={
+              <SuperAdminRoute>
+                <AdminAds />
+              </SuperAdminRoute>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <SuperAdminRoute>
+                <AdminUsers />
+              </SuperAdminRoute>
+            }
+          />
           <Route path="reports" element={<AdminReports />} />
           <Route path="committee" element={<AdminCommittee />} />
         </Route>

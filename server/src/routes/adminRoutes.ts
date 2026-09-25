@@ -34,20 +34,22 @@ router.patch(
   AdminController.handleReport
 );
 
-// Native In-Feed Ads management
-router.get('/ads', AdController.getAllAds);
+// Native In-Feed Ads management - SUPERADMIN only
+router.get('/ads', requireSuperAdmin, AdController.getAllAds);
 router.post(
   '/ads',
+  requireSuperAdmin,
   upload.single('image'),
   validateRequest(createAdSchema),
   AdController.createAd
 );
 router.patch(
   '/ads/:id',
+  requireSuperAdmin,
   upload.single('image'),
   validateRequest(updateAdSchema),
   AdController.updateAd
 );
-router.delete('/ads/:id', AdController.deleteAd);
+router.delete('/ads/:id', requireSuperAdmin, AdController.deleteAd);
 
 export default router;

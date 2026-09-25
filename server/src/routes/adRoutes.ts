@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { AdController } from '../controllers/adController';
 import { authenticate } from '../middleware/authMiddleware';
-import { requireAdmin } from '../middleware/adminMiddleware';
+import { requireSuperAdmin } from '../middleware/adminMiddleware';
 import { upload } from '../middleware/uploadMiddleware';
 import { validateRequest } from '../middleware/validateRequest';
 import { createAdSchema, updateAdSchema } from '../validators/adValidators';
@@ -13,12 +13,12 @@ router.get('/active', AdController.getActiveAds);
 router.post('/:id/click', AdController.recordClick);
 router.post('/:id/impression', AdController.recordImpression);
 
-// Admin ad management endpoints (also mapped under /api/admin/ads)
-router.get('/', authenticate, requireAdmin, AdController.getAllAds);
+// Super Admin ad management endpoints (also mapped under /api/admin/ads)
+router.get('/', authenticate, requireSuperAdmin, AdController.getAllAds);
 router.post(
   '/',
   authenticate,
-  requireAdmin,
+  requireSuperAdmin,
   upload.single('image'),
   validateRequest(createAdSchema),
   AdController.createAd
@@ -26,11 +26,11 @@ router.post(
 router.patch(
   '/:id',
   authenticate,
-  requireAdmin,
+  requireSuperAdmin,
   upload.single('image'),
   validateRequest(updateAdSchema),
   AdController.updateAd
 );
-router.delete('/:id', authenticate, requireAdmin, AdController.deleteAd);
+router.delete('/:id', authenticate, requireSuperAdmin, AdController.deleteAd);
 
 export default router;

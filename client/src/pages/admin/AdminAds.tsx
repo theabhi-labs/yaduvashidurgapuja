@@ -5,6 +5,8 @@ import { useToast } from '../../context/ToastContext';
 import { Button } from '../../components/common/Button';
 import { Modal } from '../../components/common/Modal';
 import { getImageUrl } from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import {
   Plus,
   Edit,
@@ -23,10 +25,18 @@ import {
 } from 'lucide-react';
 
 export const AdminAds: React.FC = () => {
+  const { isSuperAdmin } = useAuth();
+  const navigate = useNavigate();
   const [ads, setAds] = useState<Ad[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const toast = useToast();
+
+  useEffect(() => {
+    if (!isSuperAdmin) {
+      navigate('/admin/memories', { replace: true });
+    }
+  }, [isSuperAdmin, navigate]);
 
   // Create / Edit Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
