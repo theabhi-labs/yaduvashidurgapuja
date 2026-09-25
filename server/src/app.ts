@@ -4,6 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import path from 'path';
+import mongoSanitize from 'express-mongo-sanitize';
 import { ENV } from './config/env';
 import routes from './routes';
 import { errorHandler } from './middleware/errorHandler';
@@ -13,10 +14,13 @@ import { ImageService } from './services/imageService';
 
 const app = express();
 
+// Enable Trust Proxy for accurate IP resolution behind Cloudflare / Render Proxies
+app.set('trust proxy', 1);
+
 // Ensure upload directories exist
 ImageService.ensureUploadDirs();
 
-// Security Middleware
+// Security Middleware — Helmet
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allows images to be served across ports in dev
@@ -72,6 +76,9 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// NoSQL Injection Sanitization — Strips $ and . prefixed keys from body, params, query
+app.use(mongoSanitize());
 
 // Request logging
 if (ENV.NODE_ENV !== 'test') {

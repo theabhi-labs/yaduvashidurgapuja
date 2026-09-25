@@ -3,6 +3,7 @@ import { Memory, IMemory } from '../models/Memory';
 import { ApiError, sendResponse } from '../utils/apiResponse';
 import { ImageService } from '../services/imageService';
 import { logger } from '../utils/logger';
+import escapeRegExp from 'lodash.escaperegexp';
 
 export class MemoryController {
   /**
@@ -25,9 +26,9 @@ export class MemoryController {
         }
       }
 
-      // Optional search by caption
+      // Optional search by caption (ReDoS-safe via escapeRegExp)
       if (req.query.search && typeof req.query.search === 'string') {
-        const searchStr = req.query.search.trim();
+        const searchStr = escapeRegExp(req.query.search.trim());
         if (searchStr.length > 0) {
           query.caption = { $regex: searchStr, $options: 'i' };
         }

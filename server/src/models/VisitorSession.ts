@@ -38,7 +38,6 @@ const visitorSessionSchema = new Schema<IVisitorSession>(
     lastActive: {
       type: Date,
       default: Date.now,
-      index: true,
     },
     firstSeen: {
       type: Date,
@@ -63,5 +62,12 @@ const visitorSessionSchema = new Schema<IVisitorSession>(
 // Compound index to ensure 1 unique session record per visitor per day
 visitorSessionSchema.index({ visitorId: 1, date: 1 }, { unique: true });
 
+// TTL Index: Automatically expire & delete visitor analytics records after 60 days (prevents MongoDB Atlas 512MB storage exhaustion)
+visitorSessionSchema.index(
+  { lastActive: 1 },
+  { expireAfterSeconds: 60 * 60 * 24 * 60 } // 60 days (5,184,000 seconds)
+);
+
 export const VisitorSession = mongoose.model<IVisitorSession>('VisitorSession', visitorSessionSchema);
+
 

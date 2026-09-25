@@ -6,6 +6,7 @@ import { Donation } from '../models/Donation';
 import { emitDonation } from '../socket';
 import { ApiError, sendResponse, PaginationMeta } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
+import escapeRegExp from 'lodash.escaperegexp';
 
 // ---- PUBLIC: Create a Razorpay donation order ----
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
@@ -143,12 +144,15 @@ export const getDonations = async (req: Request, res: Response, next: NextFuncti
     if (liveSessionRoomName) {
       filter.liveSessionRoomName = liveSessionRoomName;
     }
-    if (search) {
-      filter.$or = [
-        { donorName: { $regex: String(search), $options: 'i' } },
-        { razorpayOrderId: { $regex: String(search), $options: 'i' } },
-        { razorpayPaymentId: { $regex: String(search), $options: 'i' } },
-      ];
+    if (search && typeof search === 'string') {
+      const sanitizedSearch = escapeRegExp(search.trim());
+      if (sanitizedSearch.length > 0) {
+        filter.$or = [
+          { donorName: { $regex: sanitizedSearch, $options: 'i' } },
+          { razorpayOrderId: { $regex: sanitizedSearch, $options: 'i' } },
+          { razorpayPaymentId: { $regex: sanitizedSearch, $options: 'i' } },
+        ];
+      }
     }
 
     const [donations, total, stats] = await Promise.all([

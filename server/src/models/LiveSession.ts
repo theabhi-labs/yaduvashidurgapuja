@@ -44,5 +44,11 @@ const liveSessionSchema = new Schema<ILiveSession>(
   { timestamps: true }
 );
 
+// Compound indexes for optimal queries & broadcast scheduling
+liveSessionSchema.index({ status: 1, scheduledAt: 1 });
+liveSessionSchema.index({ status: 1, startedAt: -1 });
+liveSessionSchema.index({ status: 1, createdAt: -1 });
+
 export const LiveSession = model<ILiveSession>('LiveSession', liveSessionSchema);
 export default LiveSession;
+

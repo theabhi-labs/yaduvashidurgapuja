@@ -7,6 +7,7 @@ import { ApiError, sendResponse } from '../utils/apiResponse';
 import { ImageService } from '../services/imageService';
 import { AnalyticsService } from '../services/analyticsService';
 import { logger } from '../utils/logger';
+import escapeRegExp from 'lodash.escaperegexp';
 
 export class AdminController {
   /**
@@ -84,12 +85,14 @@ export class AdminController {
       const skip = (page - 1) * limit;
 
       const query: any = {};
-      if (req.query.search) {
-        const search = req.query.search as string;
-        query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-        ];
+      if (req.query.search && typeof req.query.search === 'string') {
+        const sanitizedSearch = escapeRegExp(req.query.search.trim());
+        if (sanitizedSearch.length > 0) {
+          query.$or = [
+            { name: { $regex: sanitizedSearch, $options: 'i' } },
+            { email: { $regex: sanitizedSearch, $options: 'i' } },
+          ];
+        }
       }
 
       if (req.query.role) {
@@ -221,8 +224,11 @@ export class AdminController {
       if (req.query.year) {
         query.year = parseInt(req.query.year as string);
       }
-      if (req.query.search) {
-        query.caption = { $regex: req.query.search as string, $options: 'i' };
+      if (req.query.search && typeof req.query.search === 'string') {
+        const sanitizedSearch = escapeRegExp(req.query.search.trim());
+        if (sanitizedSearch.length > 0) {
+          query.caption = { $regex: sanitizedSearch, $options: 'i' };
+        }
       }
 
       const [memories, total] = await Promise.all([
