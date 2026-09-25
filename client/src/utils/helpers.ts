@@ -16,7 +16,10 @@ export const getImageUrl = (pathOrUrl: string): string => {
   if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
     return pathOrUrl;
   }
-  // In development Vite proxy handles /uploads, or fallback to absolute
+  const backendBase = import.meta.env.VITE_SERVER_URL || '';
+  if (backendBase && pathOrUrl.startsWith('/')) {
+    return `${backendBase}${pathOrUrl}`;
+  }
   return pathOrUrl;
 };
 
