@@ -46,3 +46,25 @@ export const memoryService = {
   },
 };
 
+const viewedInSession = new Set<string>();
+
+export const trackMemoryView = async (
+  id: string,
+  onUpdated?: (newCount: number) => void
+) => {
+  if (!id || viewedInSession.has(id)) return;
+  viewedInSession.add(id);
+
+  try {
+    const res = await memoryService.recordImpression(id);
+    if (res && res.success && res.data && typeof res.data.impressions === 'number') {
+      if (onUpdated) {
+        onUpdated(res.data.impressions);
+      }
+    }
+  } catch {
+    // silently fail
+  }
+};
+
+

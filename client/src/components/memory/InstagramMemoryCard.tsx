@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Memory } from '../../types';
 import { formatDate, getImageUrl, generateShareText, formatImpressions } from '../../utils/helpers';
+import { trackMemoryView } from '../../services/memoryService';
 import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
 import { useAuth } from '../../context/AuthContext';
@@ -32,6 +33,8 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const { user, isAdmin } = useAuth();
   const toast = useToast();
 
+  const cardRef = useRef<HTMLElement | null>(null);
+  const [impressionsCount, setImpressionsCount] = useState<number>(memory.impressions || 0);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [showReportModal, setShowReportModal] = useState<boolean>(false);
@@ -41,6 +44,37 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const uploaderName = memory.userId?.name || 'Devotee';
   const uploaderInitial = uploaderName.charAt(0).toUpperCase();
   const isOwner = user && memory.userId && user._id === memory.userId._id;
+
+  // Sync initial impressions if memory prop changes
+  useEffect(() => {
+    setImpressionsCount(memory.impressions || 0);
+  }, [memory.impressions]);
+
+  // Track view when card enters viewport
+  useEffect(() => {
+    const currentCard = cardRef.current;
+    if (!currentCard) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            trackMemoryView(memory._id, (newCount) => {
+              setImpressionsCount(newCount);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(currentCard);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [memory._id]);
 
   // Check if bookmarked in localStorage
   useEffect(() => {
@@ -97,7 +131,10 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
 
   return (
-    <article className="bg-cream-100 rounded-3xl border border-cream-300/80 shadow-soft overflow-hidden mb-6 max-w-lg mx-auto transition-all hover:border-cream-400">
+    <article
+      ref={cardRef as any}
+      className="bg-cream-100 rounded-3xl border border-cream-300/80 shadow-soft overflow-hidden mb-6 max-w-lg mx-auto transition-all hover:border-cream-400"
+    >
       {/* 1. Header: User Avatar, Name, Location, Options */}
       <div className="flex items-center justify-between p-3.5 sm:p-4">
         <div className="flex items-center gap-3">
@@ -246,7 +283,7 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
         {/* Impression (Views/Darshan) Counter — No likes, No comments */}
         <div className="mt-2.5 flex items-center gap-1.5 text-xs font-body font-semibold text-maroon-900">
           <Eye className="w-3.5 h-3.5 text-maroon-700" />
-          <span>{formatImpressions(memory.impressions)} devotee views</span>
+          <span>{formatImpressions(impressionsCount)} devotee views</span>
         </div>
 
         {/* 4. Caption & Details */}

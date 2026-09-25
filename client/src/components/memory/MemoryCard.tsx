@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Memory } from '../../types';
 import { formatDate, getImageUrl, formatImpressions } from '../../utils/helpers';
+import { trackMemoryView } from '../../services/memoryService';
 import { ShareButton } from './ShareButton';
 import { Calendar, User as UserIcon, Eye } from 'lucide-react';
 
@@ -10,8 +11,43 @@ interface MemoryCardProps {
 }
 
 export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
+  const cardRef = useRef<HTMLElement | null>(null);
+  const [impressionsCount, setImpressionsCount] = useState<number>(memory.impressions || 0);
+
+  useEffect(() => {
+    setImpressionsCount(memory.impressions || 0);
+  }, [memory.impressions]);
+
+  useEffect(() => {
+    const currentCard = cardRef.current;
+    if (!currentCard) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            trackMemoryView(memory._id, (newCount) => {
+              setImpressionsCount(newCount);
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(currentCard);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [memory._id]);
+
   return (
-    <article className="group bg-cream-50 rounded-2xl overflow-hidden border border-cream-300/80 shadow-soft hover:shadow-medium hover:border-gold-400/50 transition-all duration-300 flex flex-col justify-between">
+    <article
+      ref={cardRef as any}
+      className="group bg-cream-50 rounded-2xl overflow-hidden border border-cream-300/80 shadow-soft hover:shadow-medium hover:border-gold-400/50 transition-all duration-300 flex flex-col justify-between"
+    >
       {/* Photo Container */}
       <div className="relative aspect-[4/3] overflow-hidden bg-cream-200">
         <Link to={`/memories/${memory._id}`} className="block w-full h-full">
@@ -52,7 +88,7 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
                 {/* Impressions Counter (No Likes, No Comments) */}
                 <span className="inline-flex items-center gap-1 text-[11px] font-body text-maroon-800 bg-maroon-900/5 px-2 py-0.5 rounded-full border border-maroon-800/15 font-medium shrink-0">
                   <Eye className="w-3 h-3 text-maroon-700" />
-                  <span>{formatImpressions(memory.impressions)} views</span>
+                  <span>{formatImpressions(impressionsCount)} views</span>
                 </span>
               </div>
 
