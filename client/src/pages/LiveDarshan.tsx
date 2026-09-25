@@ -309,7 +309,7 @@ export const LiveDarshan: React.FC = () => {
                         {activeSession.title || 'Yaduvashi Durga Puja Kapooripur — Maha Aarti'}
                       </h3>
                       <p className="text-xs text-muted font-body mt-0.5">
-                        Broadcaster: <span className="font-semibold text-dark-900">{activeSession.hostName}</span> • Kapooripur, Bihar
+                        Broadcaster: <span className="font-semibold text-dark-900">{activeSession.hostName}</span> • Kapooripur, Suriyanwa, Bhadohi
                       </p>
                       {activeSession.description && (
                         <p className="text-xs text-dark-700 font-body mt-1 bg-cream-100 p-2 rounded-lg border border-cream-200">

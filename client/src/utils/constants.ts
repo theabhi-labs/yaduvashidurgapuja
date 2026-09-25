@@ -6,7 +6,7 @@ export const CANONICAL_BASE_URL = 'https://yaduvashidurgapujakapooripur.online';
 export const CONTACT_EMAIL = 'contact@yaduvashidurgapujakapooripur.online';
 export const LEGAL_ENTITY_NAME = 'Yaduvashi Durga Puja Committee, Kapooripur';
 export const EFFECTIVE_DATE = 'September 2026';
-export const LOCATION_TEXT = 'Kapooripur, Durga Puja Ground, Bihar';
+export const LOCATION_TEXT = 'Kapooripur, Durga Puja Ground, Suriyanwa, Bhadohi';
 
 export const CURRENT_YEAR = new Date().getFullYear();
 export const AVAILABLE_YEARS = Array.from(
