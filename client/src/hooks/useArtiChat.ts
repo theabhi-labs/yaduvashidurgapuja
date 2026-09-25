@@ -6,12 +6,23 @@ import { ChatComment } from '../types';
 interface UseArtiChatOptions {
   roomName?: string;
   defaultName?: string;
+  initialChatEnabled?: boolean;
 }
 
-export const useArtiChat = ({ roomName, defaultName = 'भक्त' }: UseArtiChatOptions) => {
+export const useArtiChat = ({
+  roomName,
+  defaultName = 'भक्त',
+  initialChatEnabled = true,
+}: UseArtiChatOptions) => {
   const [comments, setComments] = useState<ChatComment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isChatEnabled, setIsChatEnabled] = useState<boolean>(initialChatEnabled);
   const [rateLimitWarning, setRateLimitWarning] = useState<string | null>(null);
+
+  // Sync initialChatEnabled when prop updates
+  useEffect(() => {
+    setIsChatEnabled(initialChatEnabled);
+  }, [initialChatEnabled]);
 
   // Fetch recent ephemeral comments from Redis on initial load
   const loadInitialComments = useCallback(async (room: string) => {
@@ -61,13 +72,31 @@ export const useArtiChat = ({ roomName, defaultName = 'भक्त' }: UseArtiC
       }, 2500);
     };
 
+    const handleChatStatusChanged = (data: { roomName: string; isChatEnabled: boolean }) => {
+      if (data?.roomName === roomName) {
+        setIsChatEnabled(Boolean(data.isChatEnabled));
+      }
+    };
+
+    const handleChatDisabled = (data: { message: string }) => {
+      setIsChatEnabled(false);
+      setRateLimitWarning(data?.message || 'व्यवस्थापक द्वारा चैट बंद की गई है');
+      setTimeout(() => {
+        setRateLimitWarning(null);
+      }, 3500);
+    };
+
     socket.on('new-comment', handleNewComment);
     socket.on('chat-rate-limited', handleRateLimited);
+    socket.on('chat-status-changed', handleChatStatusChanged);
+    socket.on('chat-disabled', handleChatDisabled);
 
     return () => {
       socket.emit('leave-arti-room', { roomName });
       socket.off('new-comment', handleNewComment);
       socket.off('chat-rate-limited', handleRateLimited);
+      socket.off('chat-status-changed', handleChatStatusChanged);
+      socket.off('chat-disabled', handleChatDisabled);
     };
   }, [roomName, loadInitialComments]);
 
@@ -75,6 +104,12 @@ export const useArtiChat = ({ roomName, defaultName = 'भक्त' }: UseArtiC
   const sendComment = useCallback(
     (message: string, customName?: string) => {
       if (!roomName || !message.trim()) return;
+
+      if (!isChatEnabled) {
+        setRateLimitWarning('व्यवस्थापक द्वारा इस समय चैट बंद की गई है');
+        setTimeout(() => setRateLimitWarning(null), 2500);
+        return;
+      }
 
       const socket = getSocket();
       const senderName = customName?.trim() || defaultName || 'भक्त';
@@ -85,12 +120,13 @@ export const useArtiChat = ({ roomName, defaultName = 'भक्त' }: UseArtiC
         name: senderName,
       });
     },
-    [roomName, defaultName]
+    [roomName, defaultName, isChatEnabled]
   );
 
   return {
     comments,
     isLoading,
+    isChatEnabled,
     rateLimitWarning,
     sendComment,
   };

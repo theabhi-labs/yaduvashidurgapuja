@@ -74,26 +74,86 @@ export interface Report {
 
 export interface LiveSessionInfo {
   _id?: string;
+  title: string;
+  description?: string;
   roomName: string;
   hostName: string;
   startedAt: string;
+  currentViewers?: number;
   peakViewers?: number;
+  isChatEnabled?: boolean;
+  isDonationEnabled?: boolean;
+}
+
+export interface ScheduledSession {
+  _id: string;
+  title: string;
+  description?: string;
+  roomName: string;
+  hostName: string;
+  scheduledAt: string;
+  status: 'scheduled' | 'live' | 'ended';
+  createdAt: string;
+}
+
+export interface GlobalSystemSettings {
+  _id?: string;
+  key: string;
+  isDonationEnabled: boolean;
+  isLiveChatEnabled: boolean;
+  announcement?: string;
+  updatedBy?: string;
+  updatedAt?: string;
+}
+
+export interface BroadcastHistoryItem {
+  _id: string;
+  title: string;
+  description?: string;
+  roomName: string;
+  hostName: string;
+  hostAdmin?: {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  status: 'live' | 'ended';
+  startedAt: string;
+  endedAt?: string;
+  peakViewers: number;
+}
+
+export interface DailyBroadcastStat {
+  _id: string; // Date YYYY-MM-DD
+  dailyPeak: number;
+  sessionCount: number;
 }
 
 export interface LiveSessionJoinResponse {
   roomName: string;
+  title?: string;
+  description?: string;
   token: string;
   wsUrl: string;
   hostName?: string;
   startedAt?: string;
+  currentViewers?: number;
+  peakViewers?: number;
+  isChatEnabled?: boolean;
+  isDonationEnabled?: boolean;
 }
 
 export interface LiveSessionStartResponse {
   sessionId: string;
   roomName: string;
+  title?: string;
   token: string;
   wsUrl: string;
+  isChatEnabled?: boolean;
+  isDonationEnabled?: boolean;
 }
+
 
 export type DonationStatus = 'created' | 'paid' | 'failed';
 

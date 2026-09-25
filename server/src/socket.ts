@@ -2,12 +2,40 @@ import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { ENV } from './config/env';
 import { pushCommentToRedis, ChatComment } from './config/redis';
+import { LiveSession } from './models/LiveSession';
+import { SystemSetting } from './models/SystemSetting';
 import { logger } from './utils/logger';
 
 let io: SocketIOServer | null = null;
 
 // Per-socket timestamp tracking for rate limiting (1 message / 2 seconds)
 const lastCommentTimestamp = new Map<string, number>();
+
+// Track connected socket IDs per live stream room for real-time viewer counting
+const roomViewers = new Map<string, Set<string>>();
+// Track which rooms each socket is currently in
+const socketRooms = new Map<string, Set<string>>();
+
+const updateRoomViewerCount = async (roomName: string) => {
+  if (!io || !roomName) return;
+  const viewers = roomViewers.get(roomName)?.size || 0;
+
+  // Broadcast real-time viewer count to all clients watching this broadcast
+  io.to(roomName).emit('viewer-count-update', { roomName, count: viewers });
+
+  // Update DB peak viewers and current viewers in background
+  try {
+    await LiveSession.findOneAndUpdate(
+      { roomName, status: 'live' },
+      {
+        currentViewers: viewers,
+        $max: { peakViewers: viewers },
+      }
+    );
+  } catch (err: any) {
+    logger.warn(`[Socket.io] Error updating DB viewer count: ${err.message}`);
+  }
+};
 
 export const initSocket = (httpServer: HttpServer): SocketIOServer => {
   io = new SocketIOServer(httpServer, {
@@ -25,38 +53,55 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
 
   io.on('connection', (socket: Socket) => {
     logger.info(`[Socket.io] Client connected: ${socket.id}`);
+    socketRooms.set(socket.id, new Set<string>());
 
-    // --- 1. LIVE ARTI CHAT ROOM JOIN / LEAVE ---
+    // --- 1. LIVE ARTI CHAT & VIEWER TRACKING JOIN / LEAVE ---
+    const handleJoin = (roomName: string) => {
+      if (!roomName) return;
+
+      socket.join(roomName);
+
+      // Add to room viewers set
+      if (!roomViewers.has(roomName)) {
+        roomViewers.set(roomName, new Set<string>());
+      }
+      roomViewers.get(roomName)!.add(socket.id);
+      socketRooms.get(socket.id)?.add(roomName);
+
+      logger.info(`[Socket.io] Socket ${socket.id} joined room: ${roomName} (Total: ${roomViewers.get(roomName)!.size})`);
+      updateRoomViewerCount(roomName);
+    };
+
+    const handleLeave = (roomName: string) => {
+      if (!roomName) return;
+
+      socket.leave(roomName);
+      roomViewers.get(roomName)?.delete(socket.id);
+      socketRooms.get(socket.id)?.delete(roomName);
+
+      logger.info(`[Socket.io] Socket ${socket.id} left room: ${roomName}`);
+      updateRoomViewerCount(roomName);
+    };
+
     socket.on('join-arti-room', (data: { roomName: string } | string) => {
       const roomName = typeof data === 'string' ? data : data?.roomName;
-      if (roomName) {
-        socket.join(roomName);
-        logger.info(`[Socket.io] Socket ${socket.id} joined arti chat room: ${roomName}`);
-      }
+      handleJoin(roomName);
     });
 
     socket.on('leave-arti-room', (data: { roomName: string } | string) => {
       const roomName = typeof data === 'string' ? data : data?.roomName;
-      if (roomName) {
-        socket.leave(roomName);
-        logger.info(`[Socket.io] Socket ${socket.id} left arti chat room: ${roomName}`);
-      }
+      handleLeave(roomName);
     });
 
-    // Backwards compatibility for donation listeners
     socket.on('join_room', (roomName: string) => {
-      if (roomName) {
-        socket.join(roomName);
-      }
+      handleJoin(roomName);
     });
 
     socket.on('leave_room', (roomName: string) => {
-      if (roomName) {
-        socket.leave(roomName);
-      }
+      handleLeave(roomName);
     });
 
-    // --- 2. LIVE ARTI COMMENTS (Ephemeral Redis Storage, 1-hr TTL, Never MongoDB) ---
+    // --- 2. LIVE ARTI COMMENTS (Ephemeral Redis Storage with Admin/SuperAdmin Toggle Checks) ---
     socket.on(
       'send-comment',
       async (data: { roomName: string; message: string; name?: string }) => {
@@ -72,7 +117,27 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
             return;
           }
 
-          // 2.1 Enforce Rate Limiting (1 message per 2000ms per socket)
+          // 2.1 Check Global and Session Chat Status
+          const [globalSetting, session] = await Promise.all([
+            SystemSetting.findOne({ key: 'global_config' }),
+            LiveSession.findOne({ roomName }),
+          ]);
+
+          if (globalSetting && globalSetting.isLiveChatEnabled === false) {
+            socket.emit('chat-disabled', {
+              message: 'मुख्य व्यवस्थापक द्वारा चैट सेवा अस्थायी रूप से बंद कर दी गई है।',
+            });
+            return;
+          }
+
+          if (session && session.isChatEnabled === false) {
+            socket.emit('chat-disabled', {
+              message: 'पुजारी/व्यवस्थापक द्वारा इस लाइव आरती के लिए चैट बंद की गई है।',
+            });
+            return;
+          }
+
+          // 2.2 Enforce Rate Limiting (1 message per 2000ms per socket)
           const now = Date.now();
           const lastSent = lastCommentTimestamp.get(socket.id) || 0;
           if (now - lastSent < 2000) {
@@ -83,7 +148,7 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
           }
           lastCommentTimestamp.set(socket.id, now);
 
-          // 2.2 Sanitization & Length check (Max 200 chars)
+          // 2.3 Sanitization & Length check (Max 200 chars)
           const cleanMessage = rawMessage.slice(0, 200);
           const cleanName = data.name && data.name.trim().length > 0
             ? data.name.trim().slice(0, 50)
@@ -96,10 +161,10 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
             timestamp: new Date().toISOString(),
           };
 
-          // 2.3 Push to Redis List with EXPIRE 3600 & LTRIM 0 199
+          // 2.4 Push to Redis List with EXPIRE 3600 & LTRIM 0 199
           await pushCommentToRedis(roomName, comment);
 
-          // 2.4 Broadcast to all viewers in the live room
+          // 2.5 Broadcast to all viewers in the live room
           io?.to(roomName).emit('new-comment', comment);
         } catch (err: any) {
           logger.error(`[Socket.io] Error handling send-comment: ${err.message}`);
@@ -107,8 +172,17 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
       }
     );
 
+    // --- 3. DISCONNECT CLEANUP ---
     socket.on('disconnect', () => {
       lastCommentTimestamp.delete(socket.id);
+      const rooms = socketRooms.get(socket.id);
+      if (rooms) {
+        for (const r of rooms) {
+          roomViewers.get(r)?.delete(socket.id);
+          updateRoomViewerCount(r);
+        }
+      }
+      socketRooms.delete(socket.id);
       logger.info(`[Socket.io] Client disconnected: ${socket.id}`);
     });
   });
@@ -143,4 +217,22 @@ export const emitDonation = (payload: DonationBroadcastPayload) => {
   // Also broadcast globally so homepage or other viewers can see devotion feeds
   io.emit('donation_global', payload);
   logger.info(`[Socket.io] Emitted donation event: ₹${payload.amount} from ${payload.donorName}`);
+};
+
+/**
+ * Emits real-time chat status change to room viewers
+ */
+export const emitChatStatusUpdate = (roomName: string, isChatEnabled: boolean) => {
+  if (io && roomName) {
+    io.to(roomName).emit('chat-status-changed', { roomName, isChatEnabled });
+  }
+};
+
+/**
+ * Emits real-time donation status change
+ */
+export const emitDonationStatusUpdate = (roomName: string, isDonationEnabled: boolean) => {
+  if (io && roomName) {
+    io.to(roomName).emit('donation-status-changed', { roomName, isDonationEnabled });
+  }
 };

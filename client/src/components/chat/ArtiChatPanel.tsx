@@ -9,6 +9,7 @@ import {
   User as UserIcon,
   Flame,
   AlertCircle,
+  Lock,
 } from 'lucide-react';
 import { useArtiChat } from '../../hooks/useArtiChat';
 import { useAuth } from '../../context/AuthContext';
@@ -17,6 +18,7 @@ interface ArtiChatPanelProps {
   roomName: string;
   className?: string;
   defaultExpanded?: boolean;
+  initialChatEnabled?: boolean;
 }
 
 const QUICK_DEVOTIONS = [
@@ -31,6 +33,7 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
   roomName,
   className = '',
   defaultExpanded = true,
+  initialChatEnabled = true,
 }) => {
   const { user, isAuthenticated } = useAuth();
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
@@ -40,9 +43,10 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
 
   const effectiveName = isAuthenticated && user?.name ? user.name : (guestName.trim() || 'भक्त');
 
-  const { comments, isLoading, rateLimitWarning, sendComment } = useArtiChat({
+  const { comments, isLoading, isChatEnabled, rateLimitWarning, sendComment } = useArtiChat({
     roomName,
     defaultName: effectiveName,
+    initialChatEnabled,
   });
 
   const chatEndRef = useRef<HTMLDivElement | null>(null);
@@ -56,13 +60,14 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || !isChatEnabled) return;
 
     sendComment(message, effectiveName);
     setMessage('');
   };
 
   const handleQuickDevotion = (quickText: string) => {
+    if (!isChatEnabled) return;
     sendComment(quickText, effectiveName);
   };
 
@@ -100,7 +105,11 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
         </div>
 
         <div className="flex items-center gap-2 text-gold-300">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span
+            className={`w-2 h-2 rounded-full ${
+              isChatEnabled ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'
+            }`}
+          />
           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </button>
@@ -114,6 +123,14 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
             exit={{ opacity: 0, height: 0 }}
             className="flex flex-col h-[400px] sm:h-[460px]"
           >
+            {/* Chat Disabled Info Banner */}
+            {!isChatEnabled && (
+              <div className="bg-red-900/10 border-b border-red-500/30 px-3 py-2 text-xs text-red-900 flex items-center gap-1.5 font-devanagari-body font-semibold">
+                <Lock className="w-3.5 h-3.5 text-red-700 shrink-0" />
+                <span>व्यवस्थापक द्वारा संवाद (Chat) अस्थायी रूप से बंद किया गया है।</span>
+              </div>
+            )}
+
             {/* Rate Limit Warning Banner */}
             {rateLimitWarning && (
               <div className="bg-amber-100 border-b border-amber-300 px-3 py-1.5 text-xs text-amber-900 flex items-center gap-1.5 font-devanagari-body animate-shake">
@@ -174,8 +191,9 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
                 <button
                   key={idx}
                   type="button"
+                  disabled={!isChatEnabled}
                   onClick={() => handleQuickDevotion(phrase)}
-                  className="shrink-0 px-2.5 py-1 rounded-full bg-cream-50 hover:bg-gold-500/15 text-maroon-900 text-[11px] font-semibold border border-cream-300 hover:border-gold-500/40 transition-colors font-devanagari-body"
+                  className="shrink-0 px-2.5 py-1 rounded-full bg-cream-50 hover:bg-gold-500/15 text-maroon-900 text-[11px] font-semibold border border-cream-300 hover:border-gold-500/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-devanagari-body"
                 >
                   {phrase}
                 </button>
@@ -185,7 +203,7 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
             {/* Message Input Footer */}
             <div className="p-3 bg-cream-100 border-t border-cream-300 space-y-2">
               {/* Optional Guest Name Toggle for non-logged in users */}
-              {!isAuthenticated && (
+              {!isAuthenticated && isChatEnabled && (
                 <div className="flex items-center justify-between text-[11px] text-muted font-devanagari-body px-1">
                   <span>
                     नाम:{' '}
@@ -203,7 +221,7 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
                 </div>
               )}
 
-              {showNameField && !isAuthenticated && (
+              {showNameField && !isAuthenticated && isChatEnabled && (
                 <div className="relative">
                   <UserIcon className="w-3.5 h-3.5 text-muted absolute left-2.5 top-1/2 -translate-y-1/2" />
                   <input
@@ -221,20 +239,27 @@ export const ArtiChatPanel: React.FC<ArtiChatPanelProps> = ({
                 <div className="relative flex-1">
                   <input
                     type="text"
-                    placeholder="माँ दुर्गा के लिए जयकारा / टिप्पणी लिखें..."
+                    disabled={!isChatEnabled}
+                    placeholder={
+                      isChatEnabled
+                        ? 'माँ दुर्गा के लिए जयकारा / टिप्पणी लिखें...'
+                        : 'चैट सेवा वर्तमान में बंद है...'
+                    }
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     maxLength={200}
-                    className="w-full pl-3 pr-12 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs font-devanagari-body focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700"
+                    className="w-full pl-3 pr-12 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs font-devanagari-body focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 disabled:opacity-50 disabled:bg-cream-200/50"
                   />
-                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted font-mono">
-                    {200 - message.length}
-                  </span>
+                  {isChatEnabled && (
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted font-mono">
+                      {200 - message.length}
+                    </span>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={!message.trim()}
+                  disabled={!message.trim() || !isChatEnabled}
                   className="p-2.5 rounded-xl bg-gradient-to-r from-maroon-800 to-maroon-950 text-gold-300 disabled:opacity-50 disabled:cursor-not-allowed hover:from-maroon-900 hover:to-dark-950 border border-gold-500/30 shadow-sm transition-all"
                   aria-label="Send Comment"
                 >

@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Globe,
   Compass,
+  Radio,
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -456,8 +457,24 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Quick Action Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link
+          to="/admin/broadcast"
+          className="bg-cream-100 p-6 rounded-2xl border border-gold-400/60 hover:border-gold-500 shadow-soft hover:shadow-md transition-all group flex items-start justify-between bg-gradient-to-br from-cream-50 to-gold-50/30"
+        >
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-maroon-800 font-bold text-sm font-devanagari-heading">
+              <Radio className="w-4 h-4 text-red-600 animate-pulse" />
+              <span>लाइव प्रसारण एवं शेड्यूल नियंत्रण</span>
+            </div>
+            <p className="text-xs font-devanagari-body text-muted leading-relaxed">
+              लाइव आरती शुरू करें, आगामी प्रसारण शेड्यूल करें, चैट/दान टॉगल करें एवं पीक दर्शक इतिहास देखें।
+            </p>
+          </div>
+          <ArrowUpRight className="w-5 h-5 text-gold-700 group-hover:text-maroon-800 transition-colors shrink-0" />
+        </Link>
+
         <Link
           to="/admin/reports"
           className="bg-cream-100 p-6 rounded-2xl border border-cream-300 hover:border-red-400/60 shadow-soft transition-all group flex items-start justify-between"
@@ -467,7 +484,7 @@ export const AdminDashboard: React.FC = () => {
               <AlertCircle className="w-4 h-4" />
               <span>लंबित सामग्री रिपोर्ट्स की समीक्षा</span>
             </div>
-            <p className="text-xs font-devanagari-body text-muted leading-relaxed max-w-sm">
+            <p className="text-xs font-devanagari-body text-muted leading-relaxed">
               भक्तों द्वारा दर्ज की गई आपत्तियों की जाँच करें और अनुचित सामग्री को हटाएं या छिपाएं।
             </p>
           </div>
@@ -483,7 +500,7 @@ export const AdminDashboard: React.FC = () => {
               <Award className="w-4 h-4" />
               <span>समिति सदस्य सूची प्रबंधन</span>
             </div>
-            <p className="text-xs font-devanagari-body text-muted leading-relaxed max-w-sm">
+            <p className="text-xs font-devanagari-body text-muted leading-relaxed">
               नवीन पदाधिकारियों को जोड़ें, उनका क्रम बदलें या फोटो अपडेट करें।
             </p>
           </div>
@@ -495,3 +512,4 @@ export const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
+
