@@ -63,7 +63,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
         amount: orderData.data.amount,
         currency: orderData.data.currency,
         name: 'यदुवंशी दुर्गा पूजा कपूरीपुर',
-        description: `सुपर चैट दान — ${streamTitle || 'माँ दुर्गा महाआरती'}`,
+        description: `पावन दक्षिणा — ${streamTitle || 'माँ दुर्गा महाआरती'}`,
         image: '/favicon.svg',
         order_id: orderData.data.orderId,
         handler: async (response: any) => {
@@ -74,7 +74,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
               razorpaySignature: response.razorpay_signature,
             });
 
-            toast.success('माँ के चरणों में आपका पावन दान एवं सुपर चैट सफल हुआ! 🌸');
+            toast.success('माँ के चरणों में आपकी पावन दक्षिणा सफलतापूर्वक समर्पित हुई! 🌸');
             onClose();
           } catch (err: any) {
             toast.error(err.message || 'भुगतान सत्यापन में समस्या आई');
@@ -90,6 +90,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
         modal: {
           ondismiss: () => {
             setIsLoading(false);
+            toast.info('दक्षिणा भुगतान प्रक्रिया रद्द कर दी गई');
           },
         },
       };
@@ -107,14 +108,15 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
       <div className="relative w-full max-w-md bg-gradient-to-b from-cream-50 to-cream-100 rounded-3xl border-2 border-gold-500 shadow-2xl overflow-hidden">
         {/* Header with Golden Theme */}
         <div className="bg-gradient-to-r from-maroon-950 via-maroon-900 to-maroon-950 text-gold-200 p-5 text-center relative border-b border-gold-500/40">
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3.5 right-3.5 p-1.5 rounded-full bg-black/40 text-gold-300 hover:text-white transition-colors"
+            className="absolute top-3.5 right-3.5 p-1.5 rounded-full bg-black/40 text-gold-300 hover:text-white hover:bg-black/60 transition-colors"
+            title="बंद करें (Close)"
           >
             <X className="w-4 h-4" />
           </button>
@@ -124,10 +126,10 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
           </div>
 
           <h3 className="font-heading font-black text-lg text-cream-50 tracking-wide">
-            सुपर चैट • पावन दान एवं सेवा
+            पावन दक्षिणा • सेवा समर्पण
           </h3>
           <p className="text-xs text-gold-300/90 font-body mt-0.5">
-            आपका दान और संदेश लाइव स्ट्रीम में सुनहरे रंग में हाइलाइट होगा 🌟
+            आपकी दक्षिणा और संदेश लाइव स्ट्रीम में सुनहरे रंग में हाइलाइट होगा 🌟
           </p>
         </div>
 
@@ -135,7 +137,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
           {/* Preset Amount Chips */}
           <div>
             <label className="block text-xs font-bold text-dark-900 font-body mb-2 uppercase">
-              सेवा राशि चुनें (Select Amount) *
+              दक्षिणा राशि चुनें (Select Dakshina) *
             </label>
             <div className="grid grid-cols-3 gap-2">
               {PRESET_AMOUNTS.map((p) => {
@@ -162,7 +164,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
           {/* Custom Amount Input */}
           <div>
             <label className="block text-xs font-bold text-dark-900 font-body mb-1">
-              अन्य राशि (Custom ₹ Amount)
+              अन्य दक्षिणा राशि (Custom ₹ Amount)
             </label>
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-maroon-900 text-sm">
@@ -181,7 +183,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
           {/* Donor Name */}
           <div>
             <label className="block text-xs font-bold text-dark-900 font-body mb-1">
-              भक्त का नाम (Donor Name)
+              भक्त का नाम (Devotee Name)
             </label>
             <input
               type="text"
@@ -196,7 +198,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
           {/* Devotional Message */}
           <div>
             <label className="block text-xs font-bold text-dark-900 font-body mb-1">
-              प्रार्थना / संदेश (Super Chat Prayer Message)
+              प्रार्थना / शुभ संदेश (Devotional Note)
             </label>
             <input
               type="text"
@@ -222,17 +224,29 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
             </label>
           </div>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            isLoading={isLoading}
-            className="w-full py-3 bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-400/60 shadow-xl font-bold flex items-center justify-center gap-2 mt-2"
-          >
-            <Sparkles className="w-4 h-4 text-gold-400" />
-            <span>₹{amount || 0} सुपर चैट दान करें (Pay via UPI / Card)</span>
-          </Button>
+          {/* Action Buttons: Cancel and Submit */}
+          <div className="flex items-center gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="md"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 border-cream-400 text-dark-800 hover:bg-cream-200"
+            >
+              वापस जाएँ (Cancel)
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              size="md"
+              isLoading={isLoading}
+              className="flex-[2] bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-400/60 shadow-xl font-bold flex items-center justify-center gap-1.5"
+            >
+              <Sparkles className="w-4 h-4 text-gold-400" />
+              <span>₹{amount || 0} दक्षिणा अर्पित करें</span>
+            </Button>
+          </div>
         </form>
       </div>
     </div>

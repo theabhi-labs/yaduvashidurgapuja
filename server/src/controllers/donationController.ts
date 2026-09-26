@@ -8,6 +8,10 @@ import { ApiError, sendResponse, PaginationMeta } from '../utils/apiResponse';
 import { logger } from '../utils/logger';
 import escapeRegExp from 'lodash.escaperegexp';
 
+import { sendEmail } from '../config/brevo';
+import { getReceiptEmailHtml } from '../emails/receiptEmail';
+import { User } from '../models/User';
+
 // ---- PUBLIC: Create a Razorpay donation order ----
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -18,7 +22,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
       throw new ApiError(400, 'दान राशि कम से कम ₹1 होनी चाहिए');
     }
 
-    const effectiveDonorName = isAnonymous ? 'गुमनाम भक्त' : (donorName?.trim() || 'श्रद्धालु');
+    const effectiveDonorName = isAnonymous ? 'गुमनाम भक्त' : (donorName?.trim() || req.user?.name || 'श्रद्धालु');
     let orderId: string;
 
     if (razorpayInstance) {
@@ -29,6 +33,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
         notes: {
           donorName: effectiveDonorName,
           liveSessionRoomName: liveSessionRoomName || '',
+          userId: req.user?._id?.toString() || '',
         },
       });
       orderId = order.id;
@@ -63,7 +68,7 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-// ---- PUBLIC: Verify Razorpay payment signature & emit real-time event ----
+// ---- PUBLIC: Verify Razorpay payment signature, send digital receipt, and emit real-time event ----
 export const verifyPayment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
@@ -72,7 +77,7 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
       throw new ApiError(400, 'ऑर्डर आईडी और पेमेंट आईडी आवश्यक हैं');
     }
 
-    const donation = await Donation.findOne({ razorpayOrderId });
+    const donation = await Donation.findOne({ razorpayOrderId }).populate('user', 'name username avatar email');
     if (!donation) {
       throw new ApiError(404, 'दान रिकॉर्ड नहीं मिला');
     }
@@ -108,14 +113,47 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
     donation.razorpaySignature = razorpaySignature;
     await donation.save();
 
-    // Broadcast real-time donation event to viewers
+    const userObj = donation.user as any;
+    const finalDonorName = donation.isAnonymous ? 'गुमनाम भक्त' : (donation.donorName || userObj?.name || 'श्रद्धालु');
+    const finalAvatar = donation.isAnonymous ? '' : (userObj?.avatar || '');
+    const finalUsername = donation.isAnonymous ? '' : (userObj?.username || '');
+
+    // Broadcast real-time donation event to viewers with avatar & username
     emitDonation({
-      donorName: donation.isAnonymous ? 'गुमनाम भक्त' : donation.donorName,
+      donorName: finalDonorName,
       amount: donation.amount,
       message: donation.message,
+      avatar: finalAvatar,
+      username: finalUsername,
       roomName: donation.liveSessionRoomName,
       timestamp: new Date().toISOString(),
     });
+
+    // Send instant devotional receipt email if devotee email is available
+    const recipientEmail = userObj?.email || req.body.email;
+    if (recipientEmail) {
+      const formattedDate = new Date().toLocaleDateString('hi-IN', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      sendEmail({
+        to: recipientEmail,
+        name: finalDonorName,
+        subject: `पावन दान पावती रसीद (₹${donation.amount}) — श्री यदुवंशी दुर्गा पूजा कपूरिपुर`,
+        htmlContent: getReceiptEmailHtml({
+          donorName: finalDonorName,
+          amount: donation.amount,
+          razorpayPaymentId,
+          razorpayOrderId,
+          date: formattedDate,
+          message: donation.message,
+        }),
+      }).catch((e) => logger.warn(`[Donation Email Warning] Receipt delivery error: ${e.message}`));
+    }
 
     return sendResponse(
       res,
@@ -123,6 +161,82 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
       'माँ दुर्गा की कृपा से आपका दान सफलतापूर्वक प्राप्त हुआ! जय माता दी 🙏',
       donation
     );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ---- PUBLIC: Get Wall of Donors sorted descending by donation amount ----
+export const getPublicDonorsWall = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const [donors, stats] = await Promise.all([
+      Donation.find({ status: 'paid' })
+        .sort({ amount: -1, createdAt: -1 })
+        .limit(200)
+        .populate('user', 'name username avatar role')
+        .lean(),
+      Donation.aggregate([
+        { $match: { status: 'paid' } },
+        {
+          $group: {
+            _id: null,
+            totalAmount: { $sum: '$amount' },
+            totalDonors: { $sum: 1 },
+            highestDonation: { $max: '$amount' },
+          },
+        },
+      ]),
+    ]);
+
+    // Sanitize anonymous donors
+    const sanitizedDonors = donors.map((d: any) => {
+      const isAnon = Boolean(d.isAnonymous);
+      const user = d.user;
+      return {
+        _id: d._id,
+        donorName: isAnon ? 'गुमनाम भक्त' : (d.donorName || user?.name || 'श्रद्धालु'),
+        username: isAnon ? undefined : (user?.username || undefined),
+        avatar: isAnon ? '' : (user?.avatar || ''),
+        amount: d.amount,
+        message: d.message,
+        createdAt: d.createdAt,
+        isAnonymous: isAnon,
+      };
+    });
+
+    const summary = stats.length > 0 ? stats[0] : { totalAmount: 0, totalDonors: 0, highestDonation: 0 };
+
+    return sendResponse(res, 200, 'दानदाता सूची प्राप्त हुई', {
+      donors: sanitizedDonors,
+      summary: {
+        totalAmount: summary.totalAmount || 0,
+        totalDonors: summary.totalDonors || 0,
+        highestDonation: summary.highestDonation || 0,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ---- USER AUTHENTICATED: Get my donation history with receipts ----
+export const getMyDonations = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      throw new ApiError(401, 'कृपया लॉगिन करें');
+    }
+
+    const donations = await Donation.find({ user: req.user._id, status: 'paid' })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const totalContributed = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+
+    return sendResponse(res, 200, 'आपकी दान रसीदें प्राप्त हुईं', {
+      donations,
+      totalContributed,
+      count: donations.length,
+    });
   } catch (err) {
     next(err);
   }

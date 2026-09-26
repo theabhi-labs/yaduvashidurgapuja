@@ -105,7 +105,7 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
     // --- 2. LIVE ARTI COMMENTS (Ephemeral Redis Storage with Admin/SuperAdmin Toggle Checks) ---
     socket.on(
       'send-comment',
-      async (data: { roomName: string; message: string; name?: string }) => {
+      async (data: { roomName: string; message: string; name?: string; username?: string; avatar?: string; userId?: string }) => {
         try {
           if (!data || !data.roomName || !data.message) {
             return;
@@ -138,26 +138,31 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
             return;
           }
 
-          // 2.2 Enforce Rate Limiting (1 message per 2000ms per socket)
+          // 2.2 Enforce Rate Limiting (1 message per 1500ms per socket)
           const now = Date.now();
           const lastSent = lastCommentTimestamp.get(socket.id) || 0;
-          if (now - lastSent < 2000) {
+          if (now - lastSent < 1500) {
+            // Silently drop excessive rapid spam or send subtle notification without breaking UI
             socket.emit('chat-rate-limited', {
-              message: 'कृपया धीरे-धीरे टिप्पणी करें (2 सेकंड प्रतीक्षा करें)',
+              message: 'कृपया धीरे-धीरे टिप्पणी करें (1.5 सेकंड प्रतीक्षा करें)',
             });
             return;
           }
           lastCommentTimestamp.set(socket.id, now);
 
-          // 2.3 Sanitization & Length check (Max 200 chars)
-          const cleanMessage = rawMessage.slice(0, 200);
+          // 2.3 Sanitization & Length check (Max 250 chars)
+          const cleanMessage = rawMessage.slice(0, 250);
           const cleanName = data.name && data.name.trim().length > 0
             ? data.name.trim().slice(0, 50)
             : 'भक्त';
+          const cleanUsername = data.username ? String(data.username).trim().slice(0, 30) : undefined;
+          const cleanAvatar = data.avatar ? String(data.avatar).trim() : undefined;
 
           const comment: ChatComment = {
             id: `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
             name: cleanName,
+            username: cleanUsername,
+            avatar: cleanAvatar,
             message: cleanMessage,
             timestamp: new Date().toISOString(),
           };
@@ -169,7 +174,10 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
           LiveMessage.create({
             roomName,
             liveSession: session?._id,
+            user: data.userId || undefined,
             name: cleanName,
+            username: cleanUsername,
+            avatar: cleanAvatar,
             message: cleanMessage,
             isSuperChat: false,
           }).catch((e) => logger.warn(`[Socket.io] DB LiveMessage save error: ${e.message}`));
@@ -220,6 +228,8 @@ export interface DonationBroadcastPayload {
   donorName: string;
   amount: number;
   message?: string;
+  avatar?: string;
+  username?: string;
   roomName?: string;
   timestamp: string;
 }
@@ -235,7 +245,9 @@ export const emitDonation = async (payload: DonationBroadcastPayload) => {
     const superChatPayload = {
       id: `sc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       name: payload.donorName,
-      message: payload.message || 'माँ के चरणों में पावन समर्पण एवं दान',
+      username: payload.username,
+      avatar: payload.avatar,
+      message: payload.message || 'माँ के चरणों में पावन समर्पण एवं दक्षिणा',
       amount: payload.amount,
       isSuperChat: true,
       timestamp: payload.timestamp || new Date().toISOString(),
@@ -254,6 +266,8 @@ export const emitDonation = async (payload: DonationBroadcastPayload) => {
         roomName: payload.roomName,
         liveSession: session?._id,
         name: payload.donorName,
+        username: payload.username,
+        avatar: payload.avatar,
         message: payload.message || 'पावन दान एवं समर्पण',
         isSuperChat: true,
         donationAmount: payload.amount,

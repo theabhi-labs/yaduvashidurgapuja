@@ -16,7 +16,7 @@ export const getOtpEmailHtml = (userName: string, otp: string): string => {
           <!-- Sacred Header -->
           <tr>
             <td align="center" style="background: linear-gradient(135deg, #460C11 0%, #700c0c 50%, #8b1313 100%); padding: 30px 20px; color: #ffffff; border-bottom: 4px solid #d97706;">
-              <div style="font-size: 28px; margin-bottom: 6px;">🔐</div>
+              <img src="https://kapooripur.in/favicon.svg" width="52" height="52" alt="यदुवंशी दुर्गा पूजा" style="display: block; margin: 0 auto 10px auto; border-radius: 12px; border: 2px solid #fbbf24; background-color: #580c11; padding: 4px;" />
               <p style="margin: 0; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #fde68a; font-weight: 600;">॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर ॥</p>
               <h1 style="margin: 8px 0 0 0; font-size: 22px; font-weight: 700; color: #ffffff;">पासवर्ड रीसेट हेतु OTP</h1>
             </td>

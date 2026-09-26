@@ -5,9 +5,14 @@ import { logger } from '../utils/logger';
 export interface ChatComment {
   id?: string;
   name: string;
+  username?: string;
+  avatar?: string;
   message: string;
   timestamp: string;
   isDevotee?: boolean;
+  isSuperChat?: boolean;
+  amount?: number;
+  role?: string;
 }
 
 // In-memory fallback map if Redis is not available

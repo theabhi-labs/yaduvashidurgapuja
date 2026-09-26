@@ -8,6 +8,7 @@ import { Modal } from '../components/common/Modal';
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../utils/helpers';
 import { InstagramPostModal } from '../components/memory/InstagramPostModal';
+import { ImageCropperModal } from '../components/common/ImageCropperModal';
 import { useToast } from '../context/ToastContext';
 import {
   ShieldCheck,
@@ -37,8 +38,10 @@ export const Profile: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedModalMemory, setSelectedModalMemory] = useState<Memory | null>(null);
 
-  // Avatar upload state
+  // Avatar upload & crop state
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedRawImageFile, setSelectedRawImageFile] = useState<File | null>(null);
+  const [isCropperOpen, setIsCropperOpen] = useState<boolean>(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState<boolean>(false);
   const [isRemovingAvatar, setIsRemovingAvatar] = useState<boolean>(false);
 
@@ -121,8 +124,8 @@ export const Profile: React.FC = () => {
     return () => clearTimeout(timer);
   }, [editUsername, isEditModalOpen, user?.username]);
 
-  // Handle avatar photo selection
-  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle avatar photo selection -> Open Cropper Modal
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -131,14 +134,23 @@ export const Profile: React.FC = () => {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('फ़ाइल का आकार 10MB से कम होना चाहिए');
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error('फ़ाइल का आकार 15MB से कम होना चाहिए');
       return;
     }
 
+    setSelectedRawImageFile(file);
+    setIsCropperOpen(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Handle upload after user adjusts and confirms crop
+  const handleCropComplete = async (croppedFile: File) => {
     setIsUploadingAvatar(true);
     try {
-      const res = await authService.uploadAvatar(file);
+      const res = await authService.uploadAvatar(croppedFile);
       if (res.success && res.data.user) {
         updateUserState(res.data.user);
         toast.success('प्रोफ़ाइल फ़ोटो सफलतापूर्वक अपडेट हो गई! 🌸');
@@ -147,9 +159,7 @@ export const Profile: React.FC = () => {
       toast.error(err.message || 'फ़ोटो अपलोड करने में समस्या आई');
     } finally {
       setIsUploadingAvatar(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      setSelectedRawImageFile(null);
     }
   };
 
@@ -610,6 +620,17 @@ export const Profile: React.FC = () => {
           </div>
         </form>
       </Modal>
+
+      {/* 6. Circular Profile Photo Cropper Modal */}
+      <ImageCropperModal
+        isOpen={isCropperOpen}
+        imageFile={selectedRawImageFile}
+        onClose={() => {
+          setIsCropperOpen(false);
+          setSelectedRawImageFile(null);
+        }}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };

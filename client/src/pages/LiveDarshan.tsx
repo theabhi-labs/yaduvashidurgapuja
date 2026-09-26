@@ -50,6 +50,9 @@ const QUICK_CHANTS = [
 // Devotional floating emojis
 const REACTION_EMOJIS = ['❤️', '🌸', '🚩', '🪔', '🕉️'];
 
+import { Link } from 'react-router-dom';
+import { getImageUrl } from '../utils/helpers';
+
 // =========================================================================
 // INSTAGRAM LIVE STYLE VIDEO PLAYER & IMMERSIVE OVERLAYS
 // =========================================================================
@@ -59,13 +62,12 @@ const InstagramLivePlayer: React.FC<{
   onForceEnd?: () => void;
   canManageStream?: boolean;
 }> = ({ session, currentViewers, onForceEnd, canManageStream }) => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isSuperChatOpen, setIsSuperChatOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>('');
-  const guestName = user?.name || 'श्रद्धालु';
   const containerRef = useRef<HTMLDivElement>(null);
-  const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // LiveKit tracks
   const tracks = useTracks(
@@ -83,35 +85,48 @@ const InstagramLivePlayer: React.FC<{
         (t.source === Track.Source.Camera || t.source === Track.Source.ScreenShare)
     ) || tracks[0];
 
-  // Chat & Super Chat Socket hook
+  // Chat & Dakshina Socket hook
   const {
     comments,
     activeSuperChats,
     reactions,
     isChatEnabled,
-    rateLimitWarning,
     sendComment,
     sendReaction,
   } = useArtiChat({
     roomName: session.roomName,
-    defaultName: guestName || 'श्रद्धालु',
+    defaultName: user?.name || 'भक्त',
     initialChatEnabled: session.isChatEnabled ?? true,
   });
 
-  // Auto-scroll chat to bottom
+  // Smooth scroll strictly INSIDE the chat container (prevents window jumping)
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }, [comments]);
 
   const handleSendMessage = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!inputMessage.trim()) return;
-    sendComment(inputMessage.trim(), guestName || 'भक्त');
+    if (!inputMessage.trim() || !isAuthenticated) return;
+    sendComment(inputMessage.trim(), user?.name || 'भक्त', {
+      username: user?.username,
+      avatar: user?.avatar,
+      userId: user?._id,
+    });
     setInputMessage('');
   };
 
   const handleQuickChant = (chant: string) => {
-    sendComment(chant, guestName || 'भक्त');
+    if (!isAuthenticated) return;
+    sendComment(chant, user?.name || 'भक्त', {
+      username: user?.username,
+      avatar: user?.avatar,
+      userId: user?._id,
+    });
   };
 
   const toggleFullscreen = () => {
@@ -229,7 +244,7 @@ const InstagramLivePlayer: React.FC<{
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. PINNED SUPER CHAT / GOLDEN SEVA BANNER (Top Pin Highlight) */}
+      {/* 2. PINNED DAKSHINA / SACRED OFFERING BANNER (Top Pin Highlight) */}
       {/* ========================================================================= */}
       <AnimatePresence>
         {activeSuperChats.length > 0 && (
@@ -251,7 +266,7 @@ const InstagramLivePlayer: React.FC<{
                       {activeSuperChats[0].name}
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-gold-500 text-maroon-950 text-[10px] font-black shrink-0 shadow-sm">
-                      ₹{activeSuperChats[0].amount} दान समर्पण
+                      ₹{activeSuperChats[0].amount} पावन दक्षिणा
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm font-body text-cream-100 font-semibold truncate mt-0.5">
@@ -269,50 +284,68 @@ const InstagramLivePlayer: React.FC<{
       {/* ========================================================================= */}
       {/* 3. FLOATING INSTAGRAM LIVE CHAT STREAM (Bottom-Left Overlay) */}
       {/* ========================================================================= */}
-      <div className="absolute bottom-24 sm:bottom-28 left-3 right-16 sm:right-auto sm:max-w-md max-h-56 sm:max-h-72 overflow-y-auto pointer-events-none z-20 pr-2 scrollbar-none flex flex-col justify-end space-y-2">
+      <div
+        ref={chatContainerRef}
+        className="absolute bottom-24 sm:bottom-28 left-3 right-16 sm:right-auto sm:max-w-md max-h-56 sm:max-h-72 overflow-y-auto pointer-events-none z-20 pr-2 scrollbar-none flex flex-col justify-end space-y-2"
+      >
         <div className="space-y-2">
-          {comments.slice(-25).map((item) => {
-            const isSuperChat = Boolean(item.isSuperChat || (item as any).amount);
+          {comments.slice(-30).map((item) => {
+            const isDakshina = Boolean(item.isSuperChat || (item as any).amount);
             return (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 15, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                className={`pointer-events-auto flex items-start gap-2 max-w-full rounded-2xl px-3 py-1.5 shadow-lg backdrop-blur-md transition-all ${
-                  isSuperChat
+                className={`pointer-events-auto flex items-start gap-2.5 max-w-full rounded-2xl px-3 py-1.5 shadow-lg backdrop-blur-md transition-all ${
+                  isDakshina
                     ? 'bg-gradient-to-r from-amber-950/90 to-maroon-900/90 border-2 border-gold-400 text-gold-100 shadow-[0_0_15px_rgba(234,179,8,0.3)]'
-                    : 'bg-black/55 border border-white/15 text-white'
+                    : 'bg-black/60 border border-white/15 text-white'
                 }`}
               >
-                {/* Avatar Initials */}
+                {/* Profile Avatar with Photo or Colored Initials */}
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${
-                    isSuperChat
-                      ? 'bg-gold-500 text-maroon-950 font-black'
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 overflow-hidden ${
+                    isDakshina
+                      ? 'ring-2 ring-gold-400 bg-gold-500 text-maroon-950 font-black'
                       : 'bg-maroon-700 text-cream-100 border border-gold-500/40'
                   }`}
                 >
-                  {item.name ? item.name.charAt(0).toUpperCase() : 'भ'}
+                  {item.avatar ? (
+                    <img
+                      src={getImageUrl(item.avatar)}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : item.name ? (
+                    item.name.charAt(0).toUpperCase()
+                  ) : (
+                    'भ'
+                  )}
                 </div>
 
                 <div className="min-w-0 flex-1 text-xs">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span
                       className={`font-heading font-bold truncate ${
-                        isSuperChat ? 'text-gold-300 font-black' : 'text-gold-400'
+                        isDakshina ? 'text-gold-300 font-black' : 'text-gold-400'
                       }`}
                     >
                       {item.name}
                     </span>
-                    {isSuperChat && (
+                    {item.username && (
+                      <span className="text-[10px] text-white/60 font-mono">
+                        @{item.username}
+                      </span>
+                    )}
+                    {isDakshina && (
                       <span className="px-1.5 py-0.2 rounded bg-gold-500 text-maroon-950 font-black text-[10px]">
-                        ₹{(item as any).amount || (item as any).donationAmount}
+                        ₹{(item as any).amount || (item as any).donationAmount} दक्षिणा
                       </span>
                     )}
                   </div>
                   <p
                     className={`font-body leading-snug break-words ${
-                      isSuperChat ? 'text-cream-50 font-semibold' : 'text-cream-200'
+                      isDakshina ? 'text-cream-50 font-semibold' : 'text-cream-100'
                     }`}
                   >
                     {item.message}
@@ -321,7 +354,6 @@ const InstagramLivePlayer: React.FC<{
               </motion.div>
             );
           })}
-          <div ref={chatBottomRef} />
         </div>
       </div>
 
@@ -352,72 +384,72 @@ const InstagramLivePlayer: React.FC<{
       </div>
 
       {/* ========================================================================= */}
-      {/* 5. BOTTOM INTERACTIVE BAR (Comment Input, Quick Chants, Super Chat & Reactions) */}
+      {/* 5. BOTTOM INTERACTIVE BAR (Comment Input, Quick Chants, Dakshina & Reactions) */}
       {/* ========================================================================= */}
       <div className="absolute bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-4 z-20 space-y-2 pointer-events-auto">
-        {/* Rate limit warning banner */}
-        {rateLimitWarning && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center text-[11px] font-body bg-maroon-900/90 text-gold-200 border border-gold-500/40 px-3 py-1 rounded-full backdrop-blur-md max-w-sm mx-auto shadow-md"
-          >
-            ⚠️ {rateLimitWarning}
-          </motion.div>
-        )}
-
         {/* Quick Devotional Chants Pills (Horizontal scrollable) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {QUICK_CHANTS.map((chant) => (
-            <button
-              key={chant}
-              type="button"
-              onClick={() => handleQuickChant(chant)}
-              className="shrink-0 px-2.5 py-1 rounded-full bg-black/60 hover:bg-maroon-900/80 border border-white/20 text-cream-100 text-[11px] font-bold font-body backdrop-blur-md transition-all active:scale-95 shadow-sm hover:border-gold-400"
-            >
-              {chant}
-            </button>
-          ))}
-        </div>
+        {isAuthenticated && (
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {QUICK_CHANTS.map((chant) => (
+              <button
+                key={chant}
+                type="button"
+                onClick={() => handleQuickChant(chant)}
+                className="shrink-0 px-2.5 py-1 rounded-full bg-black/60 hover:bg-maroon-900/80 border border-white/20 text-cream-100 text-[11px] font-bold font-body backdrop-blur-md transition-all active:scale-95 shadow-sm hover:border-gold-400"
+              >
+                {chant}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Main Action Bar */}
         <div className="flex items-center gap-2">
-          {/* Live Super Chat / Divine Offering Golden Button */}
+          {/* Live Dakshina Offering Golden Button */}
           {session.isDonationEnabled !== false && (
             <button
               type="button"
               onClick={() => setIsSuperChatOpen(true)}
               className="shrink-0 px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-gold-500 via-amber-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-maroon-950 font-heading font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(234,179,8,0.5)] border-2 border-gold-200 flex items-center gap-1.5 transition-all active:scale-95 animate-pulse"
-              title="Super Chat / Highlight Divine Offering"
+              title="पावन दक्षिणा अर्पित करें"
             >
               <Sparkles className="w-4 h-4 text-maroon-950" />
-              <span>सुपर चैट 🪙</span>
+              <span>पावन दक्षिणा 🪙</span>
             </button>
           )}
 
-          {/* Comment Form */}
-          <form
-            onSubmit={handleSendMessage}
-            className="flex-1 flex items-center bg-black/60 backdrop-blur-md rounded-full border border-white/20 focus-within:border-gold-400 px-3 py-1.5 shadow-lg min-w-0"
-          >
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={
-                isChatEnabled ? 'लाइव चैट में जयकारा लगाएं...' : 'चैट बंद है...'
-              }
-              disabled={!isChatEnabled}
-              className="flex-1 bg-transparent text-white placeholder-white/50 text-xs sm:text-sm focus:outline-none min-w-0 font-body"
-            />
-            <button
-              type="submit"
-              disabled={!inputMessage.trim() || !isChatEnabled}
-              className="p-1.5 rounded-full text-gold-400 hover:text-gold-200 disabled:opacity-40 transition-colors shrink-0"
+          {/* Comment Form or Login Gate */}
+          {isAuthenticated ? (
+            <form
+              onSubmit={handleSendMessage}
+              className="flex-1 flex items-center bg-black/60 backdrop-blur-md rounded-full border border-white/20 focus-within:border-gold-400 px-3 py-1.5 shadow-lg min-w-0"
             >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                placeholder={
+                  isChatEnabled ? 'लाइव चैट में जयकारा लगाएं...' : 'चैट बंद है...'
+                }
+                disabled={!isChatEnabled}
+                className="flex-1 bg-transparent text-white placeholder-white/50 text-xs sm:text-sm focus:outline-none min-w-0 font-body"
+              />
+              <button
+                type="submit"
+                disabled={!inputMessage.trim() || !isChatEnabled}
+                className="p-1.5 rounded-full text-gold-400 hover:text-gold-200 disabled:opacity-40 transition-colors shrink-0"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          ) : (
+            <Link
+              to="/login?redirect=/live-darshan"
+              className="flex-1 py-2 px-3 bg-black/70 hover:bg-black/90 backdrop-blur-md border border-gold-400/60 rounded-full text-center text-xs font-bold text-gold-300 transition-all flex items-center justify-center gap-1.5 shadow-md truncate"
+            >
+              <span>🌸 चैट हेतु लॉगिन करें (Login to Chat)</span>
+            </Link>
+          )}
 
           {/* Devotional Reaction Emojis (Tap to float) */}
           <div className="flex items-center gap-1 shrink-0">
@@ -436,7 +468,7 @@ const InstagramLivePlayer: React.FC<{
         </div>
       </div>
 
-      {/* Super Chat Modal */}
+      {/* Dakshina Modal */}
       <LiveSuperChatModal
         isOpen={isSuperChatOpen}
         onClose={() => setIsSuperChatOpen(false)}

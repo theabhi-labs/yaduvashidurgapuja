@@ -28,6 +28,42 @@ export const donationService = {
     return res.data;
   },
 
+  // Public: Get wall of donors sorted descending by amount with live summary stats
+  async getPublicWall() {
+    const res = await api.get<
+      ApiResponse<{
+        donors: Array<{
+          _id: string;
+          donorName: string;
+          username?: string;
+          avatar?: string;
+          amount: number;
+          message?: string;
+          createdAt: string;
+          isAnonymous?: boolean;
+        }>;
+        summary: {
+          totalAmount: number;
+          totalDonors: number;
+          highestDonation: number;
+        };
+      }>
+    >('/donations/public-wall');
+    return res.data;
+  },
+
+  // User: Get personal donation history & receipts
+  async getMyDonations() {
+    const res = await api.get<
+      ApiResponse<{
+        donations: Donation[];
+        totalContributed: number;
+        count: number;
+      }>
+    >('/donations/my-donations');
+    return res.data;
+  },
+
   // Admin: Get donation logs & metrics
   async getDonations(params?: { page?: number; limit?: number; status?: string; search?: string }) {
     const res = await api.get<

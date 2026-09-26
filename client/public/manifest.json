@@ -1,12 +1,12 @@
 {
-  "name": "Yaduvanshi Durga Puja Kapooripur",
-  "short_name": "Durga Puja",
-  "description": "Digital Memory Archive & Live Darshan for Yaduvanshi Durga Puja Kapooripur",
+  "name": "KapooripurPuja",
+  "short_name": "KapooripurPuja",
+  "description": "यदुवंशी माँ दुर्गा पूजा समिति कपूरीपुर - डिजिटल स्मृति अभिलेखागार, लाइव दर्शन एवं पावन दान",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#700c0c",
+  "background_color": "#4a0404",
   "theme_color": "#700c0c",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/favicon.svg",

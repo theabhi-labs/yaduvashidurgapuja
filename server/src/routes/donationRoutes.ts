@@ -6,11 +6,19 @@ import {
   verifyPayment,
   getDonations,
   handleRazorpayWebhook,
+  getPublicDonorsWall,
+  getMyDonations,
 } from '../controllers/donationController';
 
 const router = Router();
 
-// Public / Guest allowed — make a donation
+// Public Wall of Donors (Sorted descending, real-time ready)
+router.get('/public-wall', getPublicDonorsWall);
+
+// Authenticated user's receipts
+router.get('/my-donations', authenticate, getMyDonations);
+
+// Create donation order (requires auth or guest) & verify
 router.post('/create-order', optionalAuthenticate, createOrder);
 router.post('/verify', verifyPayment);
 

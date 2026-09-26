@@ -127,11 +127,8 @@ export const useArtiChat = ({
       }, 2500);
     };
 
-    const handleRateLimited = (data: { message: string }) => {
-      setRateLimitWarning(data?.message || 'Please slow down (wait 2 seconds between messages)');
-      setTimeout(() => {
-        setRateLimitWarning(null);
-      }, 2500);
+    const handleRateLimited = () => {
+      // Backend handles rate-limiting smoothly without bothering devotee with blocking alerts
     };
 
     const handleChatStatusChanged = (data: { roomName: string; isChatEnabled: boolean }) => {
@@ -166,24 +163,41 @@ export const useArtiChat = ({
     };
   }, [roomName, loadInitialComments]);
 
-  // Send comment via Socket.io
+  // Send comment via Socket.io with immediate optimistic UI update
   const sendComment = useCallback(
-    (message: string, customName?: string) => {
-      if (!roomName || !message.trim()) return;
+    (
+      messageText: string,
+      customName?: string,
+      userMeta?: { username?: string; avatar?: string; userId?: string }
+    ) => {
+      if (!roomName || !messageText.trim()) return;
 
-      if (!isChatEnabled) {
-        setRateLimitWarning('Live chat is currently disabled by administrator');
-        setTimeout(() => setRateLimitWarning(null), 2500);
-        return;
-      }
+      if (!isChatEnabled) return;
 
       const socket = getSocket();
-      const senderName = customName?.trim() || defaultName || 'Devotee';
+      const senderName = customName?.trim() || defaultName || 'भक्त';
+      const cleanMessage = messageText.trim().slice(0, 250);
+      const generatedId = `cmt_opt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+      const optimisticComment: ChatComment = {
+        id: generatedId,
+        name: senderName,
+        username: userMeta?.username,
+        avatar: userMeta?.avatar,
+        message: cleanMessage,
+        timestamp: new Date().toISOString(),
+      };
+
+      // Instantly show in local state (Optimistic UI)
+      setComments((prev) => [...prev.slice(-199), optimisticComment]);
 
       socket.emit('send-comment', {
         roomName,
-        message: message.trim(),
+        message: cleanMessage,
         name: senderName,
+        username: userMeta?.username,
+        avatar: userMeta?.avatar,
+        userId: userMeta?.userId,
       });
     },
     [roomName, defaultName, isChatEnabled]

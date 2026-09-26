@@ -48,6 +48,9 @@ export interface Memory {
 export interface ChatComment {
   id?: string;
   name: string;
+  username?: string;
+  avatar?: string;
+  role?: string;
   message: string;
   timestamp: string;
   isSuperChat?: boolean;

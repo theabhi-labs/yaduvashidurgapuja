@@ -19,10 +19,10 @@ export const getWelcomeEmailHtml = (userName: string): string => {
           
           <!-- Sacred Header -->
           <tr>
-            <td align="center" style="background: linear-gradient(135deg, #460C11 0%, #700c0c 50%, #8b1313 100%); padding: 35px 20px; color: #ffffff; border-bottom: 4px solid #d97706;">
-              <div style="font-size: 32px; margin-bottom: 8px;">🪔</div>
+            <td align="center" style="background: linear-gradient(135deg, #460C11 0%, #700c0c 50%, #8b1313 100%); padding: 32px 20px; color: #ffffff; border-bottom: 4px solid #d97706;">
+              <img src="https://kapooripur.in/favicon.svg" width="56" height="56" alt="यदुवंशी दुर्गा पूजा" style="display: block; margin: 0 auto 10px auto; border-radius: 12px; border: 2px solid #fbbf24; background-color: #580c11; padding: 4px;" />
               <p style="margin: 0; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #fde68a; font-weight: 600;">॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर ॥</p>
-              <h1 style="margin: 10px 0 0 0; font-size: 24px; font-weight: 700; color: #ffffff;">डिजिटल स्मृति संचय में स्वागत है</h1>
+              <h1 style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: #ffffff;">डिजिटल स्मृति संचय में स्वागत है</h1>
             </td>
           </tr>
 

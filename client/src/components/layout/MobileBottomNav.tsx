@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Compass, PlusSquare, Users, User as UserIcon } from 'lucide-react';
+import { Home, Compass, PlusSquare, Heart, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getImageUrl } from '../../utils/helpers';
 
@@ -95,13 +95,13 @@ export const MobileBottomNav: React.FC = () => {
           </span>
         </button>
 
-        {/* 4. Committee */}
+        {/* 4. Donate / दान सेवा */}
         <NavLink
-          to="/committee"
+          to="/donate"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center flex-1 py-1 transition-all ${
               isActive
-                ? 'text-maroon-800 scale-105'
+                ? 'text-amber-800 scale-105'
                 : 'text-dark-700/60 hover:text-dark-900'
             }`
           }
@@ -109,13 +109,13 @@ export const MobileBottomNav: React.FC = () => {
           {({ isActive }) => (
             <>
               <div className="relative">
-                <Users className={`w-6 h-6 transition-transform ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+                <Heart className={`w-6 h-6 transition-transform ${isActive ? 'stroke-[2.5px] fill-amber-500/20 text-amber-800' : 'stroke-2'}`} />
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-maroon-700 rounded-full" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-amber-600 rounded-full" />
                 )}
               </div>
-              <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-maroon-900' : 'font-medium'}`}>
-                Committee
+              <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-amber-900' : 'font-medium'}`}>
+                दान (Donate)
               </span>
             </>
           )}

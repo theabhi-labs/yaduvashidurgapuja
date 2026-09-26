@@ -99,16 +99,30 @@ export const AdminLayout: React.FC = () => {
         </button>
       </div>
 
+      {/* Mobile Backdrop Overlay - closes sidebar when touched anywhere outside */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 md:hidden"
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar for Desktop & Mobile Overlay */}
       <aside
-        className={`fixed md:sticky top-0 z-40 h-screen w-64 bg-dark-900 text-cream-100 flex flex-col justify-between p-5 border-r border-dark-700 transition-transform duration-300 ${
+        className={`fixed md:sticky top-0 z-40 h-screen w-64 bg-dark-900 text-cream-100 flex flex-col justify-between p-5 border-r border-dark-700 transition-transform duration-300 shadow-2xl md:shadow-none ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div>
           {/* Brand header */}
-          <div className="pb-6 mb-6 border-b border-dark-700">
-            <Link to="/" className="flex items-center gap-3 group">
+          <div className="pb-6 mb-6 border-b border-dark-700 flex items-center justify-between">
+            <Link to="/" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-xl bg-maroon-800 p-1 flex items-center justify-center border border-amber-400/40 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
                 <img
                   src="/favicon.svg"
@@ -118,7 +132,7 @@ export const AdminLayout: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-serif font-bold text-base text-cream-50 leading-tight group-hover:text-amber-300 transition-colors">
-                  Yaduvanshi Durga Puja
+                  Kapooripur Puja
                 </span>
                 <span
                   className={`text-[11px] font-body font-semibold flex items-center gap-1 ${
@@ -139,6 +153,14 @@ export const AdminLayout: React.FC = () => {
                 </span>
               </div>
             </Link>
+            {/* Close ✕ button on mobile */}
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="md:hidden p-2 rounded-xl text-cream-300 hover:text-white hover:bg-dark-800 transition-colors"
+              aria-label="Close sidebar"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation Links */}

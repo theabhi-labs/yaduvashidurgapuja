@@ -20,6 +20,7 @@ import {
 import { getImageUrl } from '../../utils/helpers';
 
 import { BrandLogo } from '../common/BrandLogo';
+import { PWAInstallButton } from '../common/PWAInstallButton';
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, isAdmin, isSuperAdmin, logout } = useAuth();
@@ -96,6 +97,9 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Right Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
+            {/* 1-Click App Install Shortcut */}
+            <PWAInstallButton variant="badge" />
+
             {/* Share CTA button */}
             <Link to="/share-memory">
               <Button
@@ -200,8 +204,11 @@ export const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile Right Controls: Clean Menu */}
-          <div className="flex md:hidden items-center">
+          {/* Mobile Right Controls: Download Icon & Hamburger Menu */}
+          <div className="flex md:hidden items-center gap-2">
+            {/* Download App Icon Button */}
+            <PWAInstallButton variant="icon" />
+
             {/* Mobile Hamburger Drawer Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
