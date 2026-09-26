@@ -2,171 +2,181 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { LegalPageLayout, TocItem } from '../components/legal/LegalPageLayout';
 import { LegalSection } from '../components/legal/LegalSection';
-import { CONTACT_EMAIL, LEGAL_ENTITY_NAME } from '../utils/constants';
+import { CONTACT_EMAIL, OFFICIAL_PHONE, LEGAL_ENTITY_NAME, LOCATION_TEXT } from '../utils/constants';
 
 export const PrivacyPolicy: React.FC = () => {
   const tocItems: TocItem[] = [
-    { id: 'intro', title: '1. Introduction' },
+    { id: 'intro', title: '1. Introduction & Scope' },
     { id: 'collection', title: '2. Information We Collect' },
-    { id: 'memories', title: '3. Uploaded Memories' },
-    { id: 'usage', title: '4. How We Use Information' },
-    { id: 'cookies', title: '5. Cookies & Authentication' },
-    { id: 'images', title: '6. Image Processing & Privacy' },
-    { id: 'sharing', title: '7. Data Sharing' },
-    { id: 'retention', title: '8. Data Retention' },
-    { id: 'rights', title: '9. User Rights' },
-    { id: 'security', title: '10. Security Practices' },
-    { id: 'children', title: '11. Children\'s Privacy' },
-    { id: 'changes', title: '12. Policy Updates' },
-    { id: 'contact', title: '13. Contact Us' },
+    { id: 'contributions', title: '3. Voluntary Contribution Information' },
+    { id: 'payment-sec', title: '4. Third-Party Payment Processing' },
+    { id: 'wall-consent', title: '5. Community Support Wall & Public Consent' },
+    { id: 'contact-data', title: '6. Contact Form & Inquiries' },
+    { id: 'memories', title: '7. Uploaded Archive Memories' },
+    { id: 'cookies', title: '8. Cookies & Technical Logs' },
+    { id: 'sharing', title: '9. Data Sharing & Third Parties' },
+    { id: 'retention', title: '10. Data Retention' },
+    { id: 'security', title: '11. Data Security Measures' },
+    { id: 'user-rights', title: '12. User Rights & Data Requests' },
+    { id: 'children', title: '13. Children\'s Privacy' },
+    { id: 'changes', title: '14. Policy Updates' },
+    { id: 'contact', title: '15. Contact Information' },
   ];
 
   return (
     <LegalPageLayout
-      badge="Privacy & Security"
-      titleHindi="Privacy Policy"
-      titleEnglish="How we protect and manage your data on Yaduvanshi Durga Puja Archive"
-      description="This Privacy Policy outlines how Yaduvanshi Durga Puja Kapooripur collects, protects, uses, and displays your account details and contributed photographs."
+      badge="Privacy & Data Protection"
+      title="Privacy Policy"
+      description="This Privacy Policy outlines how Yaduvanshi Durga Puja Samiti, Kapooripur collects, uses, protects, and manages information provided by visitors, contributors, and devotees on kapooripur.in."
       tocItems={tocItems}
     >
       {/* 1. Introduction */}
-      <LegalSection id="intro" number="1" title="Introduction">
+      <LegalSection id="intro" number="1" title="Introduction & Scope">
         <p>
-          Welcome to the official digital portal (<code>kapooripur.in</code>) managed by {LEGAL_ENTITY_NAME} ("we", "our committee", or "portal").
+          Welcome to the official community portal (<code>kapooripur.in</code>) operated by {LEGAL_ENTITY_NAME} ("Samiti", "we", "us", or "portal").
         </p>
         <p>
-          Our platform is a sacred digital memory archive. We fully respect the privacy and dignity of our devotees and visitors, adhering to transparent data protection practices.
+          We are committed to maintaining the highest level of trust, transparency, and data privacy for all community members, contributors, and visitors. This Privacy Policy details how personal information is collected, processed, and safeguarded.
         </p>
       </LegalSection>
 
       {/* 2. Information We Collect */}
       <LegalSection id="collection" number="2" title="Information We Collect">
-        <p>We collect only the minimum necessary information required to operate the portal and maintain the digital archive:</p>
+        <p>We collect only the minimum necessary information required to operate community services, maintain the memory archive, and acknowledge voluntary contributions:</p>
         <ul className="list-disc list-inside space-y-1.5 pl-2">
           <li>
-            <strong>Account Registration Data:</strong> Your full name, email address, and securely hashed (Bcrypt) password.
+            <strong>Voluntary Contributor Information:</strong> Full name, email address, optional phone number, contribution amount, and optional devotional message when you choose to support Durga Puja.
           </li>
           <li>
-            <strong>Memory Submissions:</strong> Photographs voluntarily uploaded by you, accompanying captions, and festival years.
+            <strong>Account Registration Data:</strong> Name, email address, username, profile photograph (if uploaded), and securely hashed passwords for community members who register to share memories.
           </li>
           <li>
-            <strong>Contact & Report Inquiries:</strong> Messages, feedback, or content violation reports submitted through our forms.
+            <strong>Contact Form Messages:</strong> Name, email address, phone number, and message inquiries submitted via our contact channels.
           </li>
           <li>
-            <strong>Technical Logs:</strong> IP address, request timestamps, and browser user agent for security and rate-limiting.
+            <strong>Uploaded Archival Media:</strong> Photographs and captions voluntarily contributed to document festive moments.
+          </li>
+          <li>
+            <strong>Technical Log Data:</strong> Standard server logs, IP addresses, request timestamps, and browser user-agent strings collected strictly for server security and spam prevention.
           </li>
         </ul>
       </LegalSection>
 
-      {/* 3. Uploaded Memories */}
-      <LegalSection id="memories" number="3" title="Uploaded Memories">
+      {/* 3. Voluntary Contribution Information */}
+      <LegalSection id="contributions" number="3" title="Voluntary Contribution Information">
         <p>
-          This portal is a public community archive. When a registered devotee publishes a photograph and caption, the image, text description, festival year, and contributor's <strong>Display Name</strong> become visible to all website visitors.
-        </p>
-        <p className="p-3 bg-cream-100 rounded-xl border border-gold-400/40 text-gold-950">
-          <strong>Important:</strong> Your private email address, encrypted password, and internal account IDs are never exposed on public memory cards or pages.
+          When you make a voluntary contribution to support festival आयोजन and community activities, we collect your name, email, chosen amount, and message so that we can generate an electronic confirmation receipt and properly attribute your support.
         </p>
       </LegalSection>
 
-      {/* 4. How We Use Information */}
-      <LegalSection id="usage" number="4" title="How We Use Information">
-        <p>We utilize the collected information strictly for legitimate festival and archival purposes:</p>
-        <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>User registration, authentication, and secure session management.</li>
-          <li>Cataloging and presenting annual Durga Puja festival memories chronologically.</li>
-          <li>Facilitating secure password resets and necessary service notifications.</li>
-          <li>Content moderation, spam prevention, and reviewing flagged submissions.</li>
-          <li>Responding promptly to user support inquiries and feedback.</li>
-        </ul>
+      {/* 4. Payment Processing */}
+      <LegalSection id="payment-sec" number="4" title="Payment Processing & Third-Party Gateways">
+        <div className="p-4 bg-amber-50 rounded-2xl border border-amber-300 text-xs sm:text-sm text-dark-900 space-y-2">
+          <p className="font-bold text-maroon-900">
+            Crucial Distinction Regarding Payment Data:
+          </p>
+          <p>
+            Online payment transactions are processed entirely by authorized, RBI-licensed payment aggregators (e.g., Razorpay).
+          </p>
+          <p>
+            <strong>{LEGAL_ENTITY_NAME} and the website <code>kapooripur.in</code> never store, process, or have access to your credit card numbers, debit card details, CVV codes, net banking passwords, or UPI PINs.</strong> All sensitive payment credentials are entered directly into the payment gateway's secure, encrypted TLS environment.
+          </p>
+        </div>
       </LegalSection>
 
-      {/* 5. Cookies & Authentication */}
-      <LegalSection id="cookies" number="5" title="Cookies & Authentication">
+      {/* 5. Community Support Wall Consent */}
+      <LegalSection id="wall-consent" number="5" title="Community Support Wall & Public Consent">
         <p>
-          We use <strong>Secure HTTP-Only Cookies</strong> strictly for user authentication:
-        </p>
-        <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>Cookies store signed JSON Web Tokens (JWT) for authenticated sessions.</li>
-          <li>HTTP-Only flags prevent access via browser JavaScript, safeguarding against XSS vulnerabilities.</li>
-          <li>We never store authentication tokens in vulnerable browser <code>localStorage</code>.</li>
-          <li>We do not employ third-party advertising or commercial tracking cookies.</li>
-        </ul>
-      </LegalSection>
-
-      {/* 6. Image Processing & Privacy */}
-      <LegalSection id="images" number="6" title="Image Processing & EXIF Sanitization">
-        <p>
-          For your privacy and device security, our server utilizes an automated <strong>Sharp image processing pipeline</strong>:
+          To maintain transparency, the portal features a Community Support Wall / Contributors Wall. The public display of your information is strictly consent-driven:
         </p>
         <ul className="list-disc list-inside space-y-1.5 pl-2">
           <li>
-            <strong>EXIF / GPS Stripping:</strong> Camera metadata, GPS geolocation tags, and device identifiers are stripped immediately upon upload.
+            <strong>Affirmative Consent:</strong> Your name and contribution amount will only be displayed publicly on the website or Mandap TV screen if you have actively checked the consent box (<i>"I agree to the public display of my name and contribution amount"</i>).
           </li>
           <li>
-            <strong>WebP Optimization:</strong> Images are converted and compressed into modern WebP format for fast loading and reduced bandwidth consumption.
+            <strong>Anonymous Contribution Option:</strong> You can select the <i>"Donate Anonymously"</i> option to keep your name and identity completely hidden from public listings.
           </li>
           <li>
-            <strong>File Type Validation:</strong> Only validated JPG, PNG, and WebP images are permitted; arbitrary or executable files are rejected automatically.
+            <strong>Protected Details:</strong> We never publicly display your email address, phone number, order ID, or payment transaction IDs.
           </li>
         </ul>
       </LegalSection>
 
-      {/* 7. Data Sharing */}
-      <LegalSection id="sharing" number="7" title="Data Sharing">
+      {/* 6. Contact Data */}
+      <LegalSection id="contact-data" number="6" title="Contact Form & Inquiries">
         <p>
-          We do not sell, rent, or trade your personal information or email addresses to any advertisers or third-party brokers. Data is processed exclusively by our trusted infrastructure providers (Cloudflare R2, MongoDB Atlas, and hosting servers) solely to deliver this service.
+          When you communicate with the Samiti via our contact form or official email, your contact details are used solely to respond to your question, feedback, or grievance. We do not use contact form submissions for unsolicited promotional marketing.
         </p>
       </LegalSection>
 
-      {/* 8. Data Retention */}
-      <LegalSection id="retention" number="8" title="Data Retention">
+      {/* 7. Uploaded Memories */}
+      <LegalSection id="memories" number="7" title="Uploaded Archive Memories & Image Processing">
         <p>
-          The archival goal is long-term historical preservation. Published memories remain preserved until deleted by the author or removed by the committee administration. When you delete a memory, its associated image and records are purged.
+          The portal allows devotees to upload historical and current Durga Puja photos. For user privacy and security:
         </p>
-      </LegalSection>
-
-      {/* 9. User Rights */}
-      <LegalSection id="rights" number="9" title="User Rights & Controls">
-        <p>Every registered devotee has full control over their contributed content:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>Access the 'My Memories' section to review, manage, or delete your submissions at any time.</li>
-          <li>Submit report flags against inappropriate or unauthorized content.</li>
-          <li>Contact the committee administration to request account assistance or data updates.</li>
+          <li>EXIF metadata, device serial numbers, and camera GPS coordinates are stripped upon upload via our automated image sanitization pipeline.</li>
+          <li>Images are converted to optimized WebP format for fast, secure delivery.</li>
         </ul>
       </LegalSection>
 
-      {/* 10. Security Practices */}
-      <LegalSection id="security" number="10" title="Security Practices">
-        <p>We implement industry-standard protective measures:</p>
-        <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>Full end-to-end SSL/TLS encryption across all communications (HTTPS).</li>
-          <li>Cryptographic password hashing using Bcrypt with salt rounds.</li>
-          <li>Automated rate-limiting on authentication and sensitive endpoints to thwart brute-force attacks.</li>
-          <li>Robust security headers (Helmet) and strict input validation (Zod schemas).</li>
-        </ul>
-      </LegalSection>
-
-      {/* 11. Children's Privacy */}
-      <LegalSection id="children" number="11" title="Children's Privacy">
+      {/* 8. Cookies */}
+      <LegalSection id="cookies" number="8" title="Cookies & Technical Logs">
         <p>
-          This website serves a family-friendly devotional community. We do not intentionally collect personal information from minors. Family photos containing children must be uploaded with parental or guardian knowledge and consent.
+          We use strictly necessary HTTP-only session cookies to authenticate logged-in users and secure administrative actions. We do not use third-party behavioral advertising cookies.
         </p>
       </LegalSection>
 
-      {/* 12. Policy Updates */}
-      <LegalSection id="changes" number="12" title="Policy Updates">
+      {/* 9. Data Sharing */}
+      <LegalSection id="sharing" number="9" title="Data Sharing & Third-Party Service Providers">
         <p>
-          We may revise this Privacy Policy periodically to reflect technological updates or legal requirements. Updated versions will be published directly on this page with the revised effective date.
+          We do not sell, rent, or trade personal data to commercial data brokers. Information is shared only with trusted technical infrastructure providers necessary to operate the platform (e.g., Cloudflare for CDN/DDoS protection, MongoDB Atlas for secure database storage, Brevo for transactional receipt emails, and Razorpay for payment processing).
         </p>
       </LegalSection>
 
-      {/* 13. Contact Us */}
-      <LegalSection id="contact" number="13" title="Contact Us">
+      {/* 10. Data Retention */}
+      <LegalSection id="retention" number="10" title="Data Retention">
         <p>
-          If you have questions regarding this Privacy Policy, your uploaded photos, or account data, please reach out:
+          Account and memory data are retained as part of the historical festival archive until requested for removal by the author or committee administration. Financial accounting logs of contributions are retained for audit and verification purposes in compliance with applicable standards.
+        </p>
+      </LegalSection>
+
+      {/* 11. Security */}
+      <LegalSection id="security" number="11" title="Data Security Measures">
+        <p>
+          We employ industry-standard administrative, physical, and technical safeguards, including HTTPS (SSL/TLS encryption), cryptographic password hashing (Bcrypt), strict API rate limiting, and secure server headers.
+        </p>
+      </LegalSection>
+
+      {/* 12. User Rights */}
+      <LegalSection id="user-rights" number="12" title="User Rights & Data Deletion Requests">
+        <p>
+          Community members have the right to request access to, correction of, or deletion of their personal data or uploaded photographs. To request data deletion or update, please email <a href={`mailto:${CONTACT_EMAIL}`} className="text-maroon-800 underline font-mono">{CONTACT_EMAIL}</a>.
+        </p>
+      </LegalSection>
+
+      {/* 13. Children */}
+      <LegalSection id="children" number="13" title="Children's Privacy">
+        <p>
+          This is a family-oriented community website. We do not knowingly collect personal information from children under 13 without parental or guardian knowledge.
+        </p>
+      </LegalSection>
+
+      {/* 14. Changes */}
+      <LegalSection id="changes" number="14" title="Policy Updates">
+        <p>
+          The Samiti may update this Privacy Policy periodically to reflect operational, legal, or regulatory enhancements. Any changes will be posted on this page with the updated revision date.
+        </p>
+      </LegalSection>
+
+      {/* 15. Contact */}
+      <LegalSection id="contact" number="15" title="Contact Information">
+        <p>
+          For questions, concerns, or requests regarding this Privacy Policy or your data, please contact:
         </p>
         <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 space-y-1.5 text-xs font-body">
           <p className="font-bold text-dark-950">{LEGAL_ENTITY_NAME}</p>
+          <p>Address: {LOCATION_TEXT}</p>
           <p>
             Email:{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-maroon-800 underline font-mono">
@@ -174,9 +184,15 @@ export const PrivacyPolicy: React.FC = () => {
             </a>
           </p>
           <p>
+            Phone:{' '}
+            <a href={`tel:${OFFICIAL_PHONE}`} className="text-maroon-800 underline font-mono">
+              {OFFICIAL_PHONE}
+            </a>
+          </p>
+          <p className="pt-1">
             Online Contact Form:{' '}
             <Link to="/contact" className="text-maroon-800 underline font-semibold">
-              Click Here →
+              Contact Us →
             </Link>
           </p>
         </div>
@@ -184,3 +200,5 @@ export const PrivacyPolicy: React.FC = () => {
     </LegalPageLayout>
   );
 };
+
+export default PrivacyPolicy;

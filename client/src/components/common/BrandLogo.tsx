@@ -69,7 +69,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
               isLight ? 'text-amber-400/90' : 'text-amber-800'
             }`}
           >
-            Kapooripur • Digital Archive
+            Samiti, Kapooripur
           </span>
         )}
       </div>

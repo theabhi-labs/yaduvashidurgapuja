@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { donationService } from '../services/donationService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -9,11 +10,16 @@ import { MandapTvDisplayModal } from '../components/donation/MandapTvDisplayModa
 import { getSocket } from '../services/socket';
 import { getImageUrl } from '../utils/helpers';
 import {
+  LEGAL_ENTITY_NAME,
+} from '../utils/constants';
+import {
   Check,
   ShieldCheck,
   ArrowRight,
   HandHeart,
   X,
+  FileText,
+  Sparkles,
 } from 'lucide-react';
 
 interface DonorItem {
@@ -32,10 +38,10 @@ interface DonorItem {
 const PRESET_AMOUNTS = [51, 101, 251, 501, 1100, 2100, 5100];
 
 const SEVA_CATEGORIES = [
-  { id: 'general', name: 'सामान्य पूजा सेवा (General Seva)' },
-  { id: 'prasad', name: 'महाप्रसाद एवं भंडारा सेवा (Bhandara)' },
-  { id: 'aarti', name: 'महाआरती एवं पुष्प सेवा (Aarti Seva)' },
-  { id: 'pandal', name: 'पंडाल व विद्युत सज्जा (Pandal Seva)' },
+  { id: 'general', name: 'सामान्य पूजा व्यवस्था (General Seva)' },
+  { id: 'prasad', name: 'महाप्रसाद एवं भंडारा (Bhandara & Prasad)' },
+  { id: 'aarti', name: 'महाआरती एवं पूजा सामग्री (Rituals & Aarti)' },
+  { id: 'pandal', name: 'पंडाल, मंच व विद्युत सज्जा (Pandal & Lighting)' },
 ];
 
 export const Donation: React.FC = () => {
@@ -47,12 +53,15 @@ export const Donation: React.FC = () => {
   const [isDonateModalOpen, setIsDonateModalOpen] = useState<boolean>(false);
   const [isTvModalOpen, setIsTvModalOpen] = useState<boolean>(false);
 
-  // Donation Form States
+  // Contribution Form States
   const [amount, setAmount] = useState<number>(101);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [donorName, setDonorName] = useState<string>(user?.name || '');
   const [donorEmail, setDonorEmail] = useState<string>(user?.email || '');
+  const [donorPhone, setDonorPhone] = useState<string>('');
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
+  const [agreeDisplayWall, setAgreeDisplayWall] = useState<boolean>(true);
+  const [agreeDisplayPhoto, setAgreeDisplayPhoto] = useState<boolean>(true);
   const [sevaCategory, setSevaCategory] = useState<string>('general');
   const [message, setMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -90,7 +99,7 @@ export const Donation: React.FC = () => {
     fetchPublicWall();
   }, [fetchPublicWall]);
 
-  // Real-time live socket listener for new donations
+  // Real-time live socket listener for new contributions
   useEffect(() => {
     const socket = getSocket();
 
@@ -151,22 +160,23 @@ export const Donation: React.FC = () => {
     setIsDonateModalOpen(false);
   };
 
-  // Process Donation via Razorpay
+  // Process Voluntary Contribution via Razorpay
   const handleDonate = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const finalAmount = customAmount ? Number(customAmount) : amount;
     if (isNaN(finalAmount) || finalAmount < 1) {
-      toast.error('कृपया दान राशि न्यूनतम ₹1 दर्ज करें');
+      toast.error('कृपया न्यूनतम सहयोग राशि ₹1 दर्ज करें');
       return;
     }
 
     setIsSubmitting(true);
     try {
+      const effectiveAnonymous = isAnonymous || !agreeDisplayWall;
       const res = await donationService.createOrder({
         amount: finalAmount,
-        donorName: isAnonymous ? 'गुमनाम भक्त' : (donorName.trim() || user?.name || 'श्रद्धालु भक्त'),
-        isAnonymous,
+        donorName: effectiveAnonymous ? 'गुमनाम भक्त' : (donorName.trim() || user?.name || 'श्रद्धालु भक्त'),
+        isAnonymous: effectiveAnonymous,
         type: 'donation',
         message: `${sevaCategory ? `[${sevaCategory.toUpperCase()}] ` : ''}${message.trim()}`.trim() || undefined,
       });
@@ -183,13 +193,14 @@ export const Donation: React.FC = () => {
         key: orderData.keyId,
         amount: Math.round(orderData.amount * 100),
         currency: orderData.currency || 'INR',
-        name: 'यदुवंशी दुर्गा पूजा समिति कपूरिपुर',
-        description: 'माँ दुर्गा पूजा सेवा एवं महाप्रसाद समर्पण',
+        name: LEGAL_ENTITY_NAME,
+        description: 'Voluntary Contribution for Durga Puja Seva & Organization',
         image: '/favicon.svg',
         order_id: orderData.orderId,
         prefill: {
-          name: isAnonymous ? 'Anonymous' : (donorName || user?.name || ''),
+          name: effectiveAnonymous ? 'Anonymous' : (donorName || user?.name || ''),
           email: user?.email || donorEmail || '',
+          contact: donorPhone || undefined,
         },
         theme: {
           color: '#700c0c',
@@ -202,7 +213,7 @@ export const Donation: React.FC = () => {
               razorpaySignature: paymentResponse.razorpay_signature,
             });
 
-            toast.success('माँ दुर्गा की कृपा से आपका दान सफलतापूर्वक समर्पित हुआ! जय माता दी 🙏');
+            toast.success('Thank you for supporting the Durga Puja celebration. जय माता दी 🙏');
             handleCloseDonateModal();
             setMessage('');
             fetchPublicWall();
@@ -217,7 +228,7 @@ export const Donation: React.FC = () => {
           ondismiss: () => {
             setIsSubmitting(false);
             rzpInstanceRef.current = null;
-            toast.info('दान भुगतान प्रक्रिया रद्द कर दी गई');
+            toast.info('सहयोग भुगतान प्रक्रिया रद्द कर दी गई');
           },
         },
       };
@@ -233,7 +244,7 @@ export const Donation: React.FC = () => {
 
       rzp.open();
     } catch (err: any) {
-      toast.error(err.message || 'दान प्रक्रिया शुरू करने में त्रुटि आई');
+      toast.error(err.message || 'सहयोग प्रक्रिया शुरू करने में त्रुटि आई');
       setIsSubmitting(false);
       rzpInstanceRef.current = null;
     }
@@ -242,101 +253,106 @@ export const Donation: React.FC = () => {
   const selectedFinalAmount = customAmount ? Number(customAmount) : amount;
 
   return (
-    <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 font-body">
-      {/* Floating High Z-Index Cancel/Close Button during active Payment */}
+    <div className="min-h-screen py-8 sm:py-12 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 font-body">
+      {/* Floating Cancel/Close Button during active Payment */}
       {isSubmitting && (
         <div className="fixed top-4 right-4 z-[99999] animate-fade-in">
           <button
             type="button"
             onClick={handleCloseDonateModal}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-heading font-bold text-xs sm:text-sm shadow-2xl border-2 border-white/90 active:scale-95 transition-all cursor-pointer"
-            title="भुगतान रद्द करें"
+            title="रद्द करें"
           >
             <X className="w-4 h-4" />
-            <span>✕ रद्द करें (Close)</span>
+            <span>✕ Cancel / Close</span>
           </button>
         </div>
       )}
 
-      {/* 1. Header & Shloka Section */}
-      <div className="text-center space-y-2 sm:space-y-3">
+      {/* 1. Official Header & Voluntary Contribution Disclosures */}
+      <div className="text-center space-y-3">
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-950 text-xs sm:text-sm font-semibold shadow-2xs"
         >
-          <span>॥ श्री यदुवंशी दुर्गा पूजा पावन सहयोगी एवं दानदाता ॥</span>
+          <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+          <span>॥ {LEGAL_ENTITY_NAME} ॥</span>
         </motion.div>
 
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-black text-dark-950 tracking-tight">
-          माँ भगवती के पावन सहयोगी (Contributors Wall)
+        <h1 className="text-2xl sm:text-4xl font-heading font-black text-dark-950 tracking-tight">
+          Support Durga Puja
         </h1>
 
-        <p className="text-xs sm:text-sm text-dark-700 max-w-2xl mx-auto leading-relaxed font-normal">
-          कपूरिपुर दुर्गा पूजा के पावन सहयोगियों, दानदाताओं, प्रत्यक्ष विकास एवं भव्य पावन आयोजन में अपनी अक्षुण्ण/अमूल्य श्रद्धा पूजन कमेटी अपने सभी सम्भ्रान्त दानकर्ताओं को वंदन करता।
+        <p className="text-xs sm:text-sm text-dark-800 max-w-2xl mx-auto leading-relaxed">
+          Community members and well-wishers may make voluntary contributions to support the organization of Durga Puja and related community activities.
         </p>
 
-        <div className="inline-block text-xs sm:text-sm font-body text-maroon-900 italic bg-amber-50/80 border border-amber-300/80 rounded-2xl py-1.5 px-4 shadow-2xs">
-          "दानेन प्राप्यते सर्वं दानेन सुखमेधते । दानेन परमो धर्मो दानं हि परमो निधिः ॥"
+        <div className="bg-amber-50/90 p-3.5 rounded-2xl border border-amber-300/80 text-xs text-amber-950 max-w-2xl mx-auto leading-relaxed">
+          These contributions are intended to support the <strong>आयोजन</strong> (puja rituals, pandal arrangements, prasad distribution, and community cultural activities) organized by the Samiti. Voluntary contributions do not constitute a purchase of products, services, investment, or commercial transaction.
         </div>
       </div>
 
-      {/* 2. Seva Participation Card (Clean compact action bar) */}
-      <div className="bg-cream-100/90 p-4 sm:p-5 rounded-3xl border border-gold-400/50 shadow-xs">
+      {/* 2. Action Card: Make Contribution & Mandap TV Display */}
+      <div className="bg-cream-100 p-5 sm:p-6 rounded-3xl border border-gold-400/50 shadow-soft">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-center sm:text-left space-y-0.5">
-            <h3 className="text-sm sm:text-base font-heading font-bold text-dark-950 flex items-center justify-center sm:justify-start gap-1.5">
+          <div className="text-center sm:text-left space-y-1">
+            <h2 className="text-base sm:text-lg font-heading font-bold text-dark-950 flex items-center justify-center sm:justify-start gap-1.5">
               <span>🪔</span>
-              <span>माँ दुर्गा पूजा सेवा में सम्मिलित हों</span>
-            </h3>
-            <p className="text-[11px] sm:text-xs text-dark-600">
-              अपना शुभ सहयोग समर्पित करें तथा देवी सिंदूर एवं पावन प्रसादी का आशीष प्राप्त करें।
+              <span>Voluntary Puja Seva & Support</span>
+            </h2>
+            <p className="text-xs text-dark-700">
+              Contribute towards the upcoming Sharadotsav festival and view the live community recognition wall.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0 justify-center">
-            {/* Button 1: Donate */}
+            {/* Make a Contribution Button */}
             <button
               onClick={() => setIsDonateModalOpen(true)}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 hover:from-amber-500 hover:to-gold-500 text-maroon-950 font-heading font-bold text-xs sm:text-sm border border-gold-300 shadow-sm transition-all active:scale-95 cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 hover:from-amber-500 hover:to-gold-500 text-maroon-950 font-heading font-bold text-xs sm:text-sm border border-gold-300 shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <span>❤️ दान / सहयोग करें</span>
+              <HandHeart className="w-4 h-4 text-maroon-950" />
+              <span>Make a Contribution</span>
             </button>
 
-            {/* Button 2: TV Live */}
+            {/* Mandap TV Screen Button */}
             <button
               onClick={() => setIsTvModalOpen(true)}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-maroon-900 via-dark-950 to-maroon-950 hover:from-maroon-950 hover:to-black text-gold-300 font-heading font-bold text-xs sm:text-sm border border-gold-500/60 shadow-sm transition-all active:scale-95 cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl bg-gradient-to-r from-maroon-900 via-dark-950 to-maroon-950 hover:from-maroon-950 hover:to-black text-gold-300 font-heading font-bold text-xs sm:text-sm border border-gold-500/60 shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <span>📺 TV Live (मंडप स्क्रीन)</span>
+              <span>📺 TV Live Screen</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 3. Section Title: समस्त सहयोगी गौरव कार्ड्स */}
-      <div className="pt-2">
+      {/* 3. Community Support Wall Header */}
+      <div className="flex items-center justify-between pt-2">
         <h2 className="text-base sm:text-lg font-heading font-bold text-dark-950 flex items-center gap-2">
           <span className="text-amber-600">🪔</span>
-          <span>समस्त सहयोगी गौरव कार्ड्स</span>
+          <span>Community Support Wall (सहयोगी सूची)</span>
         </h2>
+        <span className="text-xs text-muted">
+          Decreasing order by contribution
+        </span>
       </div>
 
-      {/* 4. Devotee Cards Grid (Exact matching layout from mockup) */}
+      {/* 4. Contributor Cards Grid */}
       {isLoadingWall ? (
         <div className="py-16 text-center text-xs text-muted animate-pulse">
-          सहयोगी गौरव कार्ड्स लोड हो रहे हैं...
+          Community Support Wall लोड हो रही है...
         </div>
       ) : donors.length === 0 ? (
         <div className="py-14 text-center bg-white rounded-3xl border border-cream-300 p-6 space-y-3">
           <p className="text-sm font-bold text-dark-800">
-            माँ भगवती के चरणों में प्रथम पावन दान समर्पित करें 🙏
+            Be the first well-wisher to make a voluntary contribution for Durga Puja! 🙏
           </p>
           <button
             onClick={() => setIsDonateModalOpen(true)}
-            className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-gold-400 text-maroon-950 font-bold text-xs shadow-sm cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-gold-400 text-maroon-950 font-bold text-xs shadow-sm cursor-pointer"
           >
-            ❤️ दान / सहयोग करें
+            Make a Contribution
           </button>
         </div>
       ) : (
@@ -344,7 +360,7 @@ export const Donation: React.FC = () => {
           {donors.map((donor, idx) => {
             const isLastOdd = idx === donors.length - 1 && donors.length % 2 !== 0;
             const avatarUrl = donor.avatar ? getImageUrl(donor.avatar) : null;
-            const displayName = donor.isAnonymous ? 'गुमनाम भक्त' : (donor.donorName || 'श्रद्धालु भक्त');
+            const displayName = donor.isAnonymous ? 'गुमनाम भक्त (Anonymous)' : (donor.donorName || 'श्रद्धालु भक्त');
             const formattedAmount = (Number(donor.amount) || 0).toLocaleString('en-IN');
 
             return (
@@ -359,7 +375,7 @@ export const Donation: React.FC = () => {
               >
                 {/* Devotee Avatar Photo */}
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-amber-300 ring-2 sm:ring-4 ring-amber-100/80 shadow-xs mb-2.5 sm:mb-3 shrink-0 flex items-center justify-center bg-gradient-to-tr from-amber-100 to-cream-100">
-                  {avatarUrl ? (
+                  {avatarUrl && !donor.isAnonymous ? (
                     <img
                       src={avatarUrl}
                       alt={displayName}
@@ -390,60 +406,70 @@ export const Donation: React.FC = () => {
         </div>
       )}
 
-      {/* 5. Bottom Transparency Note Card */}
-      <div className="bg-cream-100/80 rounded-3xl border border-cream-300 p-4 sm:p-5 text-xs font-body space-y-3">
+      {/* 5. Policy Links & Transparency Card */}
+      <div className="bg-cream-100/80 rounded-3xl border border-cream-300 p-4 sm:p-6 text-xs space-y-3">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-maroon-800 text-amber-300 flex items-center justify-center text-xs font-bold shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-maroon-800 text-amber-300 flex items-center justify-center font-bold shrink-0">
             🪔
           </div>
           <div>
             <h4 className="font-heading font-bold text-xs sm:text-sm text-dark-950">
-              पारदर्शिता एवं सेवा संकल्प
+              Transparency & Contribution Disclosures
             </h4>
-            <p className="text-[10px] text-muted">यदुवंशी दुर्गा पूजा समिति कपूरिपुर</p>
+            <p className="text-[10px] text-muted">{LEGAL_ENTITY_NAME}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-          <div className="flex items-start gap-1.5 bg-white p-2.5 rounded-xl border border-cream-200">
+          <div className="flex items-start gap-1.5 bg-white p-3 rounded-xl border border-cream-200">
             <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
             <span className="text-[11px] text-dark-800">
-              पावन दान सूची केवल पूजा व भगवती जन कल्याण सम्मानार्थ समर्पित है।
+              Contributions are voluntary and used exclusively for organizing Durga Puja festival events.
             </span>
           </div>
-          <div className="flex items-start gap-1.5 bg-white p-2.5 rounded-xl border border-cream-200">
+          <div className="flex items-start gap-1.5 bg-white p-3 rounded-xl border border-cream-200">
             <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
             <span className="text-[11px] text-dark-800">
-              डिजिटल दान का पाई-पाई रिकॉर्ड तुरंत मंडप स्क्रीन और ऑनलाइन पोर्टल पर प्रदर्शित होता है।
+              Payment processing is handled securely by Razorpay. The Samiti does not store card/banking credentials.
             </span>
           </div>
-          <div className="flex items-start gap-1.5 bg-white p-2.5 rounded-xl border border-cream-200">
+          <div className="flex items-start gap-1.5 bg-white p-3 rounded-xl border border-cream-200">
             <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
             <span className="text-[11px] text-dark-800">
-              सच्चा भाव व निष्ठा: यदुवंशी कमेटी हर पावन आहुति और स्मृति के प्रति कृतज्ञ एवं उत्तरदायी है।
+              Contributor details on the wall are displayed only with voluntary consent. Anonymous options are fully respected.
             </span>
           </div>
         </div>
+
+        <div className="pt-2 text-center border-t border-cream-200">
+          <Link
+            to="/contribution-policy"
+            className="text-maroon-800 hover:text-maroon-900 font-semibold underline text-xs inline-flex items-center gap-1"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Read Complete Contribution Policy & Terms</span>
+          </Link>
+        </div>
       </div>
 
-      {/* 6. Donation Modal */}
+      {/* 6. Contribution Modal with Consent Checkboxes and Compliance Notice */}
       <Modal
         isOpen={isDonateModalOpen}
         onClose={handleCloseDonateModal}
-        title="माँ दुर्गा के चरणों में दान समर्पण"
+        title="Support Durga Puja — Voluntary Contribution"
         maxWidth="md"
       >
-        <form onSubmit={handleDonate} className="space-y-4">
+        <form onSubmit={handleDonate} className="space-y-4 text-xs font-body">
           <div className="bg-gradient-to-r from-amber-500/15 via-gold-500/20 to-amber-500/15 p-3 rounded-2xl border border-amber-400/40 text-center">
-            <p className="text-xs font-body text-maroon-950 font-semibold">
-              आपकी सहयोग राशि कपूरिपुर दुर्गा पूजा के पावन अनुष्ठानों व भंडारा सेवा में समर्पित होगी 🌸
+            <p className="font-semibold text-maroon-950">
+              Your voluntary contribution will support the organization of Durga Puja and community activities in Kapooripur 🌸
             </p>
           </div>
 
           {/* Preset Amount Grid */}
           <div>
-            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-2 font-body">
-              दान राशि चुनें (INR ₹) *
+            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-2">
+              Select Contribution Amount (INR ₹) *
             </label>
             <div className="grid grid-cols-4 gap-2 mb-2.5">
               {PRESET_AMOUNTS.map((amt) => {
@@ -471,7 +497,7 @@ export const Donation: React.FC = () => {
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted font-bold text-sm">₹</span>
               <input
                 type="number"
-                placeholder="अन्य इच्छित राशि..."
+                placeholder="Other custom amount..."
                 value={customAmount}
                 onChange={handleCustomChange}
                 min="1"
@@ -482,8 +508,8 @@ export const Donation: React.FC = () => {
 
           {/* Seva Category Selection */}
           <div>
-            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1.5 font-body">
-              सेवा का उद्देश्य (Seva Purpose)
+            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1.5">
+              Contribution Purpose Category
             </label>
             <div className="grid grid-cols-2 gap-2">
               {SEVA_CATEGORIES.map((cat) => {
@@ -514,56 +540,124 @@ export const Donation: React.FC = () => {
             </div>
           </div>
 
-          {/* Devotee Name & Anonymous */}
+          {/* Contributor Name */}
           <div>
-            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1 font-body">
-              श्रद्धालु का नाम (Devotee Name)
+            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1">
+              Contributor Name *
             </label>
             <input
               type="text"
               disabled={isAnonymous}
-              placeholder={isAnonymous ? 'गुमनाम भक्त' : 'अपना पूरा नाम...'}
+              placeholder={isAnonymous ? 'Anonymous' : 'Full Name'}
               value={donorName}
               onChange={(e) => setDonorName(e.target.value)}
               className={`w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 ${
                 isAnonymous ? 'opacity-50 cursor-not-allowed bg-cream-200' : ''
               }`}
             />
+          </div>
 
-            <div className="flex items-center gap-2 mt-1.5">
-              <input
-                type="checkbox"
-                id="modal-anonymous-check"
-                checked={isAnonymous}
-                onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="w-4 h-4 rounded text-maroon-800 border-cream-400 focus:ring-maroon-700 cursor-pointer"
-              />
-              <label
-                htmlFor="modal-anonymous-check"
-                className="text-xs text-muted font-medium cursor-pointer select-none font-body"
-              >
-                नाम गुप्त रखें (Donate Anonymously)
+          {/* Contributor Email & Phone */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1">
+                Email Address
               </label>
+              <input
+                type="email"
+                placeholder="your.email@example.com"
+                value={donorEmail}
+                onChange={(e) => setDonorEmail(e.target.value)}
+                className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1">
+                Phone (Optional)
+              </label>
+              <input
+                type="tel"
+                placeholder="+91 98765 43210"
+                value={donorPhone}
+                onChange={(e) => setDonorPhone(e.target.value)}
+                className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700"
+              />
             </div>
           </div>
 
-          {/* Devotional Note */}
+          {/* Optional Message */}
           <div>
-            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1 font-body">
-              माँ दुर्गा से प्रार्थना / शुभ संदेश (Optional)
+            <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1">
+              Optional Message / Devotional Note
             </label>
             <input
               type="text"
-              placeholder="जय माता दी! माँ दुर्गा सब पर कृपा बनाए रखें..."
+              placeholder="Jai Maa Durga! Bless our village and family..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               maxLength={100}
-              className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs font-body focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700"
+              className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700"
             />
           </div>
 
+          {/* Consent Checkboxes */}
+          <div className="p-3 bg-cream-50 rounded-xl border border-cream-200 space-y-2 text-[11px] text-dark-800">
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={agreeDisplayWall && !isAnonymous}
+                disabled={isAnonymous}
+                onChange={(e) => setAgreeDisplayWall(e.target.checked)}
+                className="w-4 h-4 rounded text-maroon-800 border-cream-400 focus:ring-maroon-700 mt-0.5 cursor-pointer"
+              />
+              <span>Display my name on the Community Support Wall (I agree to the public display of my name and contribution amount).</span>
+            </label>
+
+            <label className="flex items-start gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={agreeDisplayPhoto && !isAnonymous}
+                disabled={isAnonymous}
+                onChange={(e) => setAgreeDisplayPhoto(e.target.checked)}
+                className="w-4 h-4 rounded text-maroon-800 border-cream-400 focus:ring-maroon-700 mt-0.5 cursor-pointer"
+              />
+              <span>I agree to the public display of my profile photo.</span>
+            </label>
+
+            <label className="flex items-start gap-2 cursor-pointer select-none pt-1 border-t border-cream-200">
+              <input
+                type="checkbox"
+                checked={isAnonymous}
+                onChange={(e) => {
+                  setIsAnonymous(e.target.checked);
+                  if (e.target.checked) {
+                    setAgreeDisplayWall(false);
+                    setAgreeDisplayPhoto(false);
+                  } else {
+                    setAgreeDisplayWall(true);
+                    setAgreeDisplayPhoto(true);
+                  }
+                }}
+                className="w-4 h-4 rounded text-maroon-800 border-cream-400 focus:ring-maroon-700 mt-0.5 cursor-pointer"
+              />
+              <span className="font-semibold text-maroon-900">Make this an Anonymous contribution (hide my name and photo from public view).</span>
+            </label>
+          </div>
+
+          {/* Pre-Payment Acknowledgment Notice */}
+          <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-950 leading-relaxed">
+            By continuing, you acknowledge that this is a voluntary contribution towards the activities described above and agree to the{' '}
+            <Link to="/contribution-policy" target="_blank" className="underline font-semibold text-maroon-900">
+              Contribution Policy
+            </Link>{' '}
+            and{' '}
+            <Link to="/terms-and-conditions" target="_blank" className="underline font-semibold text-maroon-900">
+              Terms & Conditions
+            </Link>.
+          </div>
+
           {/* Submit & Cancel Buttons */}
-          <div className="pt-2 space-y-2">
+          <div className="pt-1 space-y-2">
             <Button
               type="submit"
               variant="gold"
@@ -573,7 +667,7 @@ export const Donation: React.FC = () => {
             >
               <HandHeart className="w-4 h-4 text-maroon-950" />
               <span>
-                ₹{selectedFinalAmount ? selectedFinalAmount.toLocaleString('en-IN') : 0} दान समर्पित करें
+                Continue to Contribution (₹{selectedFinalAmount ? selectedFinalAmount.toLocaleString('en-IN') : 0})
               </span>
               <ArrowRight className="w-4 h-4 text-maroon-950 ml-1" />
             </Button>
@@ -585,13 +679,13 @@ export const Donation: React.FC = () => {
                 className="w-full py-2 rounded-xl text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-                <span>भुगतान प्रक्रिया रद्द करें (Cancel Payment)</span>
+                <span>Cancel Payment Process</span>
               </button>
             )}
 
-            <div className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-muted font-body">
+            <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>सुरक्षित Razorpay गेटवे (UPI, GPay, PhonePe, Cards)</span>
+              <span>Processed securely via Razorpay (UPI, GPay, PhonePe, Cards, NetBanking)</span>
             </div>
           </div>
         </form>

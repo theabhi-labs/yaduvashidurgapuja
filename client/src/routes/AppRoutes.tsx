@@ -56,6 +56,9 @@ const Committee = React.lazy(() =>
 const About = React.lazy(() =>
   import('../pages/About').then((m) => ({ default: m.About }))
 );
+const Events = React.lazy(() =>
+  import('../pages/Events').then((m) => ({ default: m.Events }))
+);
 const Contact = React.lazy(() =>
   import('../pages/Contact').then((m) => ({ default: m.Contact }))
 );
@@ -64,6 +67,12 @@ const PrivacyPolicy = React.lazy(() =>
 );
 const TermsConditions = React.lazy(() =>
   import('../pages/TermsConditions').then((m) => ({ default: m.TermsConditions }))
+);
+const ContributionPolicy = React.lazy(() =>
+  import('../pages/ContributionPolicy').then((m) => ({ default: m.ContributionPolicy }))
+);
+const Disclaimer = React.lazy(() =>
+  import('../pages/Disclaimer').then((m) => ({ default: m.Disclaimer }))
 );
 const Login = React.lazy(() =>
   import('../pages/Login').then((m) => ({ default: m.Login }))
@@ -140,19 +149,41 @@ export const AppRoutes: React.FC = () => {
           <Route path="/live-darshan" element={<LiveDarshan />} />
           <Route path="/live darshan" element={<LiveDarshan />} />
           <Route path="/live%20darshan" element={<LiveDarshan />} />
+          
+          {/* Support & Voluntary Contribution Routes */}
+          <Route path="/support" element={<Donation />} />
+          <Route path="/support-durga-puja" element={<Donation />} />
           <Route path="/contributors" element={<Donation />} />
           <Route path="/contributor" element={<Donation />} />
           <Route path="/donate" element={<Donation />} />
           <Route path="/donation" element={<Donation />} />
           <Route path="/donations" element={<Donation />} />
 
+          {/* Events & Puja Schedule Routes */}
+          <Route path="/events" element={<Events />} />
+          <Route path="/schedule" element={<Events />} />
+          <Route path="/puja-schedule" element={<Events />} />
+
           <Route path="/memories" element={<Memories />} />
           <Route path="/memories/:id" element={<MemoryDetail />} />
           <Route path="/committee" element={<Committee />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+
+          {/* Compliance and Legal Routes */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/privacypolicy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          <Route path="/termsandconditions" element={<TermsConditions />} />
+          <Route path="/terms-conditions" element={<TermsConditions />} />
+          <Route path="/contribution-policy" element={<ContributionPolicy />} />
+          <Route path="/contributionpolicy" element={<ContributionPolicy />} />
+          <Route path="/refund-policy" element={<ContributionPolicy />} />
+          <Route path="/refund" element={<ContributionPolicy />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/signup" element={<Register />} />

@@ -2,147 +2,155 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { LegalPageLayout, TocItem } from '../components/legal/LegalPageLayout';
 import { LegalSection } from '../components/legal/LegalSection';
-import { CONTACT_EMAIL, LEGAL_ENTITY_NAME } from '../utils/constants';
+import { CONTACT_EMAIL, OFFICIAL_PHONE, LEGAL_ENTITY_NAME, LOCATION_TEXT } from '../utils/constants';
 
 export const TermsConditions: React.FC = () => {
   const tocItems: TocItem[] = [
     { id: 'acceptance', title: '1. Acceptance of Terms' },
-    { id: 'platform', title: '2. About the Platform' },
-    { id: 'accounts', title: '3. User Accounts' },
-    { id: 'uploads', title: '4. Memory Upload Rules' },
-    { id: 'ownership', title: '5. Content Ownership & Rights' },
-    { id: 'public-view', title: '6. Public Memories' },
-    { id: 'moderation', title: '7. Content Moderation & Reporting' },
-    { id: 'prohibited', title: '8. Prohibited Activities' },
-    { id: 'availability', title: '9. Service Availability' },
-    { id: 'third-party', title: '10. Third-Party Services' },
-    { id: 'modifications', title: '11. Changes to Terms' },
-    { id: 'contact', title: '12. Contact Us' },
+    { id: 'about', title: '2. About the Community Initiative' },
+    { id: 'usage', title: '3. Website Usage & Eligibility' },
+    { id: 'events', title: '4. Community Events & Schedules' },
+    { id: 'contributions', title: '5. Voluntary Contributions' },
+    { id: 'payment', title: '6. Payment Gateway Processing' },
+    { id: 'support-wall', title: '7. Community Support Wall' },
+    { id: 'content', title: '8. User-Submitted Content & Memories' },
+    { id: 'moderation', title: '9. Content Moderation Standards' },
+    { id: 'ip', title: '10. Intellectual Property Rights' },
+    { id: 'third-party', title: '11. Third-Party Services & Links' },
+    { id: 'availability', title: '12. Service Availability & Uptime' },
+    { id: 'liability', title: '13. Limitation of Liability' },
+    { id: 'modifications', title: '14. Amendments to Terms' },
+    { id: 'contact', title: '15. Contact Information' },
   ];
 
   return (
     <LegalPageLayout
-      badge="Terms & Governance"
-      titleHindi="Terms & Conditions"
-      titleEnglish="Terms of use for Yaduvanshi Durga Puja Kapooripur Memory Archive"
-      description="Please review these terms and conditions carefully before using or contributing photographs to the Yaduvanshi Durga Puja Kapooripur digital portal."
+      badge="Terms of Governance"
+      title="Terms & Conditions"
+      description="These Terms & Conditions govern the access, voluntary contributions, and use of the Yaduvanshi Durga Puja Samiti, Kapooripur community portal on kapooripur.in."
       tocItems={tocItems}
     >
       {/* 1. Acceptance */}
       <LegalSection id="acceptance" number="1" title="Acceptance of Terms">
         <p>
-          By accessing or using this website (<code>kapooripur.in</code>) and contributing photographs or memories, you signify your agreement to these Terms & Conditions and our Privacy Policy.
+          By accessing or using the website <code>kapooripur.in</code> ("Website"), participating in community activities, or submitting voluntary contributions, you agree to be bound by these Terms & Conditions and our <Link to="/privacy" className="text-maroon-800 underline font-semibold">Privacy Policy</Link> and <Link to="/contribution-policy" className="text-maroon-800 underline font-semibold">Contribution Policy</Link>.
         </p>
         <p>
-          If you do not agree with any part of these terms, please discontinue your use of the platform.
+          If you do not agree with any provision of these terms, please refrain from using the Website.
         </p>
       </LegalSection>
 
-      {/* 2. About Platform */}
-      <LegalSection id="platform" number="2" title="About the Platform">
+      {/* 2. About Initiative */}
+      <LegalSection id="about" number="2" title="About the Community Initiative">
         <p>
-          This portal is a cultural, non-commercial digital memory archive operated by {LEGAL_ENTITY_NAME}.
+          {LEGAL_ENTITY_NAME} ("Samiti", "we", "us") is a local community organization established in Kapooripur to coordinate the annual celebration of Durga Puja, traditional religious rituals, and community cultural programs.
         </p>
         <p>
-          Its sole purpose is to preserve and celebrate the rich heritage, traditions, idol craftsmanship, pandals, Maha Arti moments, and devotional experiences of the annual Kapooripur Durga Puja festival for future generations.
+          This website serves as an authentic informational portal and digital memory archive to connect residents, devotees, and well-wishers worldwide.
         </p>
       </LegalSection>
 
-      {/* 3. User Accounts */}
-      <LegalSection id="accounts" number="3" title="User Accounts">
-        <p>When creating an account to share memories, users agree to the following obligations:</p>
+      {/* 3. Website Usage */}
+      <LegalSection id="usage" number="3" title="Website Usage & Eligibility">
+        <p>Users agree to use the website in a lawful, respectful, and peaceful manner:</p>
         <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>Provide authentic and accurate details (valid full name and active email address).</li>
-          <li>Maintain the confidentiality and security of your account credentials.</li>
-          <li>Impersonation of any individual, organization, or committee member is strictly forbidden.</li>
-          <li>The administration reserves the right to suspend accounts violating community standards.</li>
+          <li>You will not use the portal for any unlawful, fraudulent, or harmful purposes.</li>
+          <li>You will not disrupt normal website operations, livestreams, or server infrastructure.</li>
+          <li>Account credentials must be kept confidential; impersonation of committee members or other devotees is strictly forbidden.</li>
         </ul>
       </LegalSection>
 
-      {/* 4. Memory Upload Rules */}
-      <LegalSection id="uploads" number="4" title="Memory Upload Rules">
+      {/* 4. Events */}
+      <LegalSection id="events" number="4" title="Community Events & Schedules">
         <p>
-          Devotees may upload photographs and remembrances solely related to <strong>Yaduvanshi Durga Puja Kapooripur</strong>, for which they possess legitimate rights or consent.
+          Festival schedules, aarti times, and program venues published on the website are provided for community coordination. All event timings are subject to change by the Samiti based on ritual requirements, local administration directives, or weather conditions.
         </p>
-        <p className="font-semibold text-maroon-900">The following content is strictly prohibited:</p>
-        <ul className="list-disc list-inside space-y-1 pl-2 text-red-950">
-          <li>Content that harms religious, communal, or social harmony.</li>
-          <li>Vulgar, defamatory, violent, threatening, or illegal photographs and text.</li>
-          <li>Commercial advertisements, spam, promotional campaigns, or unrelated media.</li>
-          <li>Media infringing on third-party copyrights, trademarks, or privacy rights.</li>
-          <li>Misleading, falsified, or abusive historical claims.</li>
-        </ul>
       </LegalSection>
 
-      {/* 5. Content Ownership */}
-      <LegalSection id="ownership" number="5" title="Content Ownership & Rights">
-        <div className="space-y-2">
+      {/* 5. Voluntary Contributions */}
+      <LegalSection id="contributions" number="5" title="Voluntary Contributions">
+        <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-300 text-xs sm:text-sm text-dark-900 space-y-1.5">
+          <p className="font-bold text-maroon-900">Nature of Contributions:</p>
           <p>
-            <strong>User Submissions:</strong> You retain ownership of the photos and captions you upload. By submitting content, you grant {LEGAL_ENTITY_NAME} a non-exclusive, royalty-free license to display, optimize, and archive the media on this digital platform.
+            Contributions made through the website are completely voluntary and are intended exclusively to support the Durga Puja आयोजन (pandal setup, idol craftsmanship, puja samagri, Maha Aarti, bhog distribution, and cultural activities) and related community activities described on the website.
           </p>
           <p>
-            <strong>Platform IP:</strong> The portal's branding, layout, custom code, graphics, and official text content remain the intellectual property of {LEGAL_ENTITY_NAME}.
+            Contributions do not constitute a purchase of commercial products or services, nor do they entitle the contributor to any commercial returns, shares, or material considerations.
           </p>
         </div>
       </LegalSection>
 
-      {/* 6. Public Memories */}
-      <LegalSection id="public-view" number="6" title="Public Memories">
+      {/* 6. Payment Processing */}
+      <LegalSection id="payment" number="6" title="Payment Gateway Processing">
         <p>
-          Submitting a memory implies acknowledgement that the photo, caption, festival year, and contributor name will be publicly visible in the memory archive. Visitors may share these links to celebrate the festival spirit.
+          Online voluntary contributions are handled by third-party payment aggregators (e.g., Razorpay). The website does not store sensitive card data, CVVs, or bank credentials. All transactions are subject to the terms and privacy regulations of the payment provider and your issuing bank.
         </p>
       </LegalSection>
 
-      {/* 7. Content Moderation */}
-      <LegalSection id="moderation" number="7" title="Content Moderation & Reporting">
+      {/* 7. Support Wall */}
+      <LegalSection id="support-wall" number="7" title="Community Support Wall">
         <p>
-          To maintain the dignity and sacred character of the archive, the committee administration reviews submitted content and holds the absolute right to:
-        </p>
-        <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>Hide or permanently delete any photograph or text violating community guidelines.</li>
-          <li>Investigate reports submitted by community members and take appropriate actions.</li>
-          <li>Restrict upload privileges for accounts repeatedly violating rules.</li>
-        </ul>
-      </LegalSection>
-
-      {/* 8. Prohibited Activities */}
-      <LegalSection id="prohibited" number="8" title="Prohibited Activities">
-        <p>Users shall not engage in any of the following malicious activities:</p>
-        <ul className="list-disc list-inside space-y-1 pl-2">
-          <li>Attempting unauthorized access to servers, databases, or API infrastructure.</li>
-          <li>Scraping content using automated bots, crawlers, or scripts.</li>
-          <li>Disrupting normal website operations, livestreams, or donation processes.</li>
-        </ul>
-      </LegalSection>
-
-      {/* 9. Service Availability */}
-      <LegalSection id="availability" number="9" title="Service Availability">
-        <p>
-          While we strive for high uptime and smooth operations, the platform may experience scheduled maintenance or occasional downtime. The committee bears no liability for temporary unavailability.
+          Contributors may opt to have their name and contribution amount displayed on the public Community Support Wall. Such display requires affirmative user consent via the designated checkbox. Contributors also have the option to contribute anonymously.
         </p>
       </LegalSection>
 
-      {/* 10. Third-Party Services */}
-      <LegalSection id="third-party" number="10" title="Third-Party Services">
+      {/* 8. User Content */}
+      <LegalSection id="content" number="8" title="User-Submitted Content & Memories">
         <p>
-          We employ cloud infrastructure providers (such as Cloudflare R2, MongoDB Atlas, and payment gateways) to operate the platform. These third-party services operate under their respective terms and privacy policies.
+          Devotees uploading photographs and descriptions to the memory archive warrant that they have the right or consent to share such content. By submitting content, users grant the Samiti a non-exclusive license to host, optimize, and archive the media on the portal.
         </p>
       </LegalSection>
 
-      {/* 11. Changes to Terms */}
-      <LegalSection id="modifications" number="11" title="Changes to Terms">
+      {/* 9. Content Moderation */}
+      <LegalSection id="moderation" number="9" title="Content Moderation Standards">
         <p>
-          The committee reserves the right to modify these Terms & Conditions whenever necessary. Updated terms will take effect immediately upon publication on this page.
+          To maintain the sacred character of the portal, the Samiti reserves the right to review, edit, or remove any submitted photograph, message, or user account that violates community guidelines, contains vulgarity, promotes commercial spam, or causes social discord.
         </p>
       </LegalSection>
 
-      {/* 12. Contact Us */}
-      <LegalSection id="contact" number="12" title="Contact Us">
+      {/* 10. Intellectual Property */}
+      <LegalSection id="ip" number="10" title="Intellectual Property Rights">
         <p>
-          If you have questions, inquiries, or feedback regarding these terms, please contact us:
+          The layout, design, custom graphics, portal software, and official text on <code>kapooripur.in</code> are the intellectual property of {LEGAL_ENTITY_NAME}. Contributed user photographs remain the property of their respective creators.
+        </p>
+      </LegalSection>
+
+      {/* 11. Third-Party Services */}
+      <LegalSection id="third-party" number="11" title="Third-Party Services & Links">
+        <p>
+          The portal may integrate cloud services (e.g., Cloudflare, MongoDB, Razorpay) to provide functionality. The Samiti is not responsible for the independent operations, outages, or terms of third-party platforms.
+        </p>
+      </LegalSection>
+
+      {/* 12. Service Availability */}
+      <LegalSection id="availability" number="12" title="Service Availability & Uptime">
+        <p>
+          The Samiti endeavors to provide continuous, reliable access to the website and live streams but does not warrant uninterrupted or error-free service during maintenance, network outages, or unforeseen technical difficulties.
+        </p>
+      </LegalSection>
+
+      {/* 13. Limitation of Liability */}
+      <LegalSection id="liability" number="13" title="Limitation of Liability">
+        <p>
+          To the maximum extent permitted by law, {LEGAL_ENTITY_NAME}, its organizers, and volunteers shall not be liable for any direct, indirect, or incidental damages arising out of your access to or inability to use the Website.
+        </p>
+      </LegalSection>
+
+      {/* 14. Modifications */}
+      <LegalSection id="modifications" number="14" title="Amendments to Terms">
+        <p>
+          The Samiti reserves the right to update these Terms & Conditions as necessary. Continued use of the website following any changes signifies your acceptance of the revised terms.
+        </p>
+      </LegalSection>
+
+      {/* 15. Contact */}
+      <LegalSection id="contact" number="15" title="Contact Information">
+        <p>
+          For questions or formal communications regarding these Terms & Conditions, please contact us:
         </p>
         <div className="p-4 bg-cream-100 rounded-2xl border border-cream-300 space-y-1.5 text-xs font-body">
           <p className="font-bold text-dark-950">{LEGAL_ENTITY_NAME}</p>
+          <p>Location: {LOCATION_TEXT}</p>
           <p>
             Email:{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-maroon-800 underline font-mono">
@@ -150,9 +158,15 @@ export const TermsConditions: React.FC = () => {
             </a>
           </p>
           <p>
-            Online Inquiry Form:{' '}
+            Phone:{' '}
+            <a href={`tel:${OFFICIAL_PHONE}`} className="text-maroon-800 underline font-mono">
+              {OFFICIAL_PHONE}
+            </a>
+          </p>
+          <p className="pt-1">
+            Online Contact:{' '}
             <Link to="/contact" className="text-maroon-800 underline font-semibold">
-              Send Message Here →
+              Contact Form →
             </Link>
           </p>
         </div>
@@ -160,3 +174,5 @@ export const TermsConditions: React.FC = () => {
     </LegalPageLayout>
   );
 };
+
+export default TermsConditions;
