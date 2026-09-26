@@ -7,7 +7,8 @@ import {
   Play, 
   Pause, 
   Sparkles, 
-  Crown
+  Crown,
+  Heart
 } from 'lucide-react';
 import { getImageUrl } from '../../utils/helpers';
 
@@ -16,6 +17,8 @@ interface DonorItem {
   donorName: string;
   amount: number;
   message?: string;
+  avatar?: string;
+  username?: string;
   isAnonymous?: boolean;
   createdAt?: string;
   user?: {
@@ -44,7 +47,7 @@ export const MandapTvDisplayModal: React.FC<MandapTvDisplayModalProps> = ({
   const modalContainerRef = useRef<HTMLDivElement>(null);
 
   // Filter and sort donations: highest amount first, valid paid donations
-  const sortedDonations = [...donations].sort((a, b) => (b.amount || 0) - (a.amount || 0));
+  const sortedDonations = [...(donations || [])].sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
   // Auto cycle timer
   useEffect(() => {
@@ -75,8 +78,9 @@ export const MandapTvDisplayModal: React.FC<MandapTvDisplayModalProps> = ({
   const donorName = currentDonor?.isAnonymous
     ? 'गुमनाम भक्त'
     : currentDonor?.user?.name || currentDonor?.donorName || 'श्रद्धालु भक्त';
-  const donorUsername = currentDonor?.user?.username;
-  const donorAvatar = currentDonor?.user?.avatar;
+  const donorUsername = currentDonor?.user?.username || currentDonor?.username;
+  const rawAvatar = currentDonor?.user?.avatar || currentDonor?.avatar;
+  const donorAvatar = rawAvatar ? getImageUrl(rawAvatar) : '';
 
   return (
     <div
@@ -99,156 +103,140 @@ export const MandapTvDisplayModal: React.FC<MandapTvDisplayModalProps> = ({
                 {currentIndex + 1} / {sortedDonations.length || 1}
               </span>
             </div>
-            <h1 className="text-base sm:text-xl font-heading font-black text-gold-200 mt-0.5">
-              ॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर — पावन दानदाता एवं सेवा समर्पण ॥
+            <h1 className="text-lg sm:text-2xl font-serif font-bold text-gold-300 tracking-wide mt-0.5">
+              यदुवंशी दुर्गा पूजा समिति कपूरिपुर
             </h1>
           </div>
         </div>
 
-        {/* Top Controls */}
+        {/* TV Top Controls */}
         <div className="flex items-center gap-2">
-          {/* Pause / Play */}
           <button
             onClick={() => setIsPaused(!isPaused)}
-            className="p-2.5 rounded-xl bg-maroon-900/80 hover:bg-maroon-800 text-gold-300 border border-gold-500/30 transition-all active:scale-90"
-            title={isPaused ? 'चलाएं (Play)' : 'रोकें (Pause)'}
+            className="p-2.5 rounded-xl bg-dark-900/80 hover:bg-maroon-900 text-cream-100 border border-gold-500/30 transition-all active:scale-95"
+            title={isPaused ? 'स्लाइड शो चलाएं' : 'रोकें'}
           >
-            {isPaused ? <Play className="w-5 h-5 fill-gold-400" /> : <Pause className="w-5 h-5" />}
+            {isPaused ? <Play className="w-5 h-5 text-emerald-400" /> : <Pause className="w-5 h-5 text-amber-400" />}
           </button>
 
-          {/* Fullscreen Toggle */}
           <button
             onClick={toggleFullscreen}
-            className="p-2.5 rounded-xl bg-maroon-900/80 hover:bg-maroon-800 text-gold-300 border border-gold-500/30 transition-all active:scale-90"
-            title="फ़ुलस्क्रीन"
+            className="p-2.5 rounded-xl bg-dark-900/80 hover:bg-maroon-900 text-cream-100 border border-gold-500/30 transition-all active:scale-95"
+            title={isFullscreen ? 'सामान्य स्क्रीन' : 'फुल स्क्रीन (TV Mode)'}
           >
-            {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+            {isFullscreen ? <Minimize2 className="w-5 h-5 text-gold-300" /> : <Maximize2 className="w-5 h-5 text-gold-300" />}
           </button>
 
-          {/* Close Button */}
           <button
             onClick={onClose}
-            className="p-2.5 rounded-xl bg-red-950/80 hover:bg-red-900 text-rose-300 border border-red-500/40 transition-all active:scale-90"
-            title="बंद करें (Close)"
+            className="p-2.5 rounded-xl bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-500/40 transition-all active:scale-95 ml-1"
+            title="स्क्रीन बंद करें"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* 2. Main TV Spotlight Showcase Card */}
-      <div className="flex-1 flex items-center justify-center my-6 max-w-4xl mx-auto w-full">
-        {currentDonor ? (
-          <AnimatePresence mode="wait">
+      {/* 2. Main Large TV Display Area (Rotating Devotees) */}
+      <div className="flex-1 flex items-center justify-center my-4 sm:my-8 relative">
+        <AnimatePresence mode="wait">
+          {sortedDonations.length === 0 ? (
             <motion.div
-              key={currentDonor._id + currentIndex}
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: -30 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-              className="w-full bg-gradient-to-b from-maroon-900/90 via-dark-900/95 to-maroon-950/90 border-2 border-gold-400/80 rounded-3xl p-6 sm:p-12 shadow-[0_0_60px_rgba(234,179,8,0.35)] text-center relative overflow-hidden backdrop-blur-xl"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center space-y-4 p-8 bg-dark-900/60 rounded-3xl border border-gold-500/20 max-w-lg"
             >
-              {/* Floating Temple Shimmer Accent */}
-              <div className="absolute top-3 left-6 text-gold-500/30 text-3xl font-serif">
-                🪔
-              </div>
-              <div className="absolute top-3 right-6 text-gold-500/30 text-3xl font-serif">
-                🪔
-              </div>
+              <Sparkles className="w-16 h-16 text-gold-400 mx-auto animate-bounce" />
+              <h2 className="text-2xl font-serif text-gold-200">माँ भगवती के पावन सहयोगी</h2>
+              <p className="text-cream-200 text-sm">
+                कपूरिपुर दुर्गा पूजा में अपने पावन सहयोग से सम्मिलित हों। जय माता दी 🙏
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key={currentDonor?._id || currentIndex}
+              initial={{ opacity: 0, scale: 0.88, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.08, y: -20 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="w-full max-w-3xl bg-gradient-to-b from-maroon-900/90 via-dark-900/95 to-maroon-950/90 border-2 border-gold-400/80 rounded-3xl p-6 sm:p-12 shadow-[0_0_60px_rgba(234,179,8,0.35)] text-center relative overflow-hidden backdrop-blur-xl"
+            >
+              {/* Background ambient aura */}
+              <div className="absolute -top-24 -left-24 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-gold-400/15 rounded-full blur-3xl pointer-events-none" />
 
-              {/* Devotee Avatar with Golden Ring */}
-              <div className="relative inline-block mb-4">
-                <div className="p-1 rounded-full bg-gradient-to-tr from-gold-400 via-amber-300 to-amber-600 shadow-xl animate-pulse">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-maroon-950 text-gold-300 flex items-center justify-center font-heading font-black text-4xl sm:text-5xl border-4 border-maroon-900 overflow-hidden shadow-inner">
-                    {donorAvatar ? (
-                      <img
-                        src={getImageUrl(donorAvatar)}
-                        alt={donorName}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span>{donorName.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Rank / Crown Badge */}
-                <div className="absolute -top-2 -right-2 p-2 rounded-full bg-gradient-to-r from-gold-500 to-amber-400 text-maroon-950 shadow-md border-2 border-cream-100">
-                  <Crown className="w-5 h-5 fill-maroon-950" />
-                </div>
+              {/* Devotee Rank / Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/30 via-gold-500/40 to-amber-500/30 border border-gold-400/60 text-gold-200 text-xs sm:text-sm font-bold tracking-wide mb-6">
+                <Crown className="w-4 h-4 text-gold-300 animate-pulse" />
+                <span>माँ भगवती पावन सहयोगी #{currentIndex + 1}</span>
               </div>
 
-              {/* Devotee Name & @Username */}
-              <div className="space-y-1">
-                <h2 className="text-2xl sm:text-4xl font-heading font-black text-cream-50 tracking-wide drop-shadow-md">
-                  {donorName}
-                </h2>
-                {donorUsername && (
-                  <p className="text-sm sm:text-base font-mono font-bold text-gold-400">
-                    @{donorUsername}
-                  </p>
-                )}
-              </div>
-
-              {/* Big Golden Donation Amount */}
-              <div className="my-6 inline-block">
-                <div className="bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500 text-maroon-950 px-8 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(234,179,8,0.6)] border-2 border-gold-200">
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider block text-maroon-900">
-                    पावन दान एवं सेवा समर्पण
-                  </span>
-                  <span className="text-3xl sm:text-5xl font-heading font-black tracking-tight">
-                    ₹{currentDonor.amount.toLocaleString('en-IN')}
-                  </span>
+              {/* Devotee Avatar Photo */}
+              <div className="w-28 h-28 sm:w-36 sm:h-36 mx-auto rounded-full p-1.5 bg-gradient-to-tr from-amber-400 via-gold-300 to-amber-500 shadow-[0_0_30px_rgba(234,179,8,0.5)] mb-5">
+                <div className="w-full h-full rounded-full overflow-hidden bg-dark-900 flex items-center justify-center">
+                  {donorAvatar ? (
+                    <img
+                      src={donorAvatar}
+                      alt={donorName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-3xl sm:text-4xl font-serif font-black text-gold-300">
+                      {currentDonor?.isAnonymous ? '?' : donorName.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Devotee Prayer / Blessing Note */}
-              {currentDonor.message ? (
-                <div className="max-w-xl mx-auto bg-black/40 border border-gold-500/30 p-3.5 rounded-2xl">
-                  <p className="text-sm sm:text-base font-body text-cream-100 italic leading-relaxed">
-                    "{currentDonor.message}"
-                  </p>
-                </div>
-              ) : (
-                <p className="text-xs sm:text-sm font-body text-gold-300/80 italic">
-                  "माँ दुर्गा की असीम कृपा आप व आपके परिवार पर सदैव बनी रहे।"
+              {/* Devotee Name & Handle */}
+              <h2 className="text-2xl sm:text-4xl font-serif font-bold text-cream-50 tracking-tight mb-1">
+                {donorName}
+              </h2>
+              {donorUsername && !currentDonor?.isAnonymous && (
+                <p className="text-gold-400/90 font-mono text-sm sm:text-base font-medium mb-3">
+                  @{donorUsername}
                 </p>
               )}
+
+              {/* Amount Display */}
+              <div className="my-6 inline-block bg-gradient-to-r from-amber-500/20 via-gold-400/30 to-amber-500/20 border-2 border-gold-400/80 px-8 py-4 rounded-3xl shadow-[0_0_35px_rgba(234,179,8,0.3)]">
+                <span className="text-xs uppercase tracking-widest text-gold-300 font-bold block mb-1">
+                  समर्पित पावन सेवा राशि
+                </span>
+                <span className="text-3xl sm:text-5xl font-serif font-black text-gold-100 tracking-tight">
+                  ₹{(currentDonor?.amount || 0).toLocaleString('en-IN')}
+                </span>
+              </div>
+
+              {/* Devotional Note / Blessing Message */}
+              {currentDonor?.message && (
+                <div className="max-w-xl mx-auto mt-2 p-3.5 rounded-2xl bg-dark-950/60 border border-gold-500/30 text-gold-200/90 italic text-sm sm:text-base">
+                  "{currentDonor.message}"
+                </div>
+              )}
             </motion.div>
-          </AnimatePresence>
-        ) : (
-          <div className="text-center text-muted">
-            <p>कोई दानदाता रिकॉर्ड लोड नहीं हुआ</p>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* 3. Bottom Continuous Ticker Marquee */}
+      {/* 3. Bottom Ticker Banner */}
       <div className="bg-dark-900/90 border border-gold-500/30 rounded-2xl p-3 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <span className="shrink-0 text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-1.5 px-3 py-1 bg-maroon-900 rounded-lg border border-gold-500/30">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>दानदाता सूची</span>
-          </span>
-
-          <div className="flex-1 overflow-x-auto whitespace-nowrap scrollbar-none flex items-center gap-6 text-xs sm:text-sm font-body text-cream-100">
-            {sortedDonations.map((d, i) => (
-              <button
-                key={d._id}
-                onClick={() => setCurrentIndex(i)}
-                className={`inline-flex items-center gap-2 px-3 py-1 rounded-xl transition-all ${
-                  i === currentIndex
-                    ? 'bg-gold-500 text-maroon-950 font-bold shadow-md'
-                    : 'bg-cream-100/10 hover:bg-cream-100/20 text-cream-200'
-                }`}
-              >
-                <span>{d.isAnonymous ? 'गुमनाम भक्त' : d.donorName}</span>
-                <span className="font-mono font-bold">₹{d.amount.toLocaleString('en-IN')}</span>
-              </button>
-            ))}
+        <div className="flex items-center justify-between gap-4 text-xs font-mono">
+          <div className="flex items-center gap-2 text-gold-300 font-bold truncate">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+            <span className="truncate">
+              ॥ या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता । नमस्तस्यै नमस्तस्यै नमस्तस्यै नमो नमः ॥
+            </span>
+          </div>
+          <div className="shrink-0 flex items-center gap-1.5 text-cream-200">
+            <Heart className="w-4 h-4 text-red-400 fill-red-400/40" />
+            <span>लाइव मंडप प्रसारण</span>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default MandapTvDisplayModal;

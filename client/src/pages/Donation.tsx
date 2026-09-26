@@ -1,33 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { donationService } from '../services/donationService';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
-import { SectionHeading } from '../components/common/SectionHeading';
 import { MandapTvDisplayModal } from '../components/donation/MandapTvDisplayModal';
 import { getSocket } from '../services/socket';
 import { getImageUrl } from '../utils/helpers';
 import {
-  Sparkles,
-  ShieldCheck,
   Check,
-  QrCode,
-  Flame,
-  Crown,
-  Tv,
-  Heart,
-  Receipt,
-  FileCheck,
-  Search,
-  Landmark,
-  Radio,
+  ShieldCheck,
   ArrowRight,
   HandHeart,
-  Filter,
 } from 'lucide-react';
-
 
 interface DonorItem {
   _id: string;
@@ -42,30 +28,24 @@ interface DonorItem {
   isAnonymous?: boolean;
 }
 
-interface WallSummary {
-  totalAmount: number;
-  totalDonors: number;
-  highestDonation: number;
-}
-
 const PRESET_AMOUNTS = [51, 101, 251, 501, 1100, 2100, 5100];
 
 const SEVA_CATEGORIES = [
-  { id: 'general', name: 'सामान्य पूजा सेवा (General Seva)', desc: 'दैनिक पूजन, सामग्री व अखंड दीप' },
-  { id: 'prasad', name: 'महाप्रसाद एवं भंडारा सेवा (Bhandara Seva)', desc: 'भक्तों हेतु पावन प्रसाद वितरण' },
-  { id: 'aarti', name: 'महाआरती एवं पुष्प सेवा (Maha Aarti & Flowers)', desc: 'दैनिक संध्या व महाआरती व्यवस्था' },
-  { id: 'pandal', name: 'पंडाल व विद्युत सज्जा (Pandal & Lighting)', desc: 'प्रांगण, सजावट व सुरक्षा व्यवस्था' },
+  { id: 'general', name: 'सामान्य पूजा सेवा (General Seva)' },
+  { id: 'prasad', name: 'महाप्रसाद एवं भंडारा सेवा (Bhandara)' },
+  { id: 'aarti', name: 'महाआरती एवं पुष्प सेवा (Aarti Seva)' },
+  { id: 'pandal', name: 'पंडाल व विद्युत सज्जा (Pandal Seva)' },
 ];
 
 export const Donation: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const toast = useToast();
 
   // Modals state
   const [isDonateModalOpen, setIsDonateModalOpen] = useState<boolean>(false);
   const [isTvModalOpen, setIsTvModalOpen] = useState<boolean>(false);
 
-  // Donation Form States (Inside Modal)
+  // Donation Form States
   const [amount, setAmount] = useState<number>(101);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [donorName, setDonorName] = useState<string>(user?.name || '');
@@ -74,22 +54,10 @@ export const Donation: React.FC = () => {
   const [sevaCategory, setSevaCategory] = useState<string>('general');
   const [message, setMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [showDirectUpi, setShowDirectUpi] = useState<boolean>(false);
 
-  // Contributors Wall States
+  // Contributors Wall State (Strictly sorted in decreasing order)
   const [donors, setDonors] = useState<DonorItem[]>([]);
-  const [summary, setSummary] = useState<WallSummary>({
-    totalAmount: 0,
-    totalDonors: 0,
-    highestDonation: 0,
-  });
   const [isLoadingWall, setIsLoadingWall] = useState<boolean>(true);
-  const [donorSearch, setDonorSearch] = useState<string>('');
-  const [typeFilter, setTypeFilter] = useState<'all' | 'donation' | 'dakshina'>('all');
-
-  // Devotee's Personal Receipts
-  const [myReceipts, setMyReceipts] = useState<any[]>([]);
-  const [showMyReceipts, setShowMyReceipts] = useState<boolean>(false);
 
   // Sync logged in user details
   useEffect(() => {
@@ -97,18 +65,17 @@ export const Donation: React.FC = () => {
     if (user?.email) setDonorEmail(user.email);
   }, [user]);
 
-  // Fetch Public Contributors Wall (Sorted strictly decreasing)
+  // Fetch Public Contributors Wall
   const fetchPublicWall = useCallback(async () => {
     try {
       setIsLoadingWall(true);
       const res = await donationService.getPublicWall();
       if (res.success && res.data) {
-        // Ensure strictly sorted descending by amount
-        const rawDonors = (res.data.donors || []).sort((a, b) => (b.amount || 0) - (a.amount || 0));
-        setDonors(rawDonors);
-        if (res.data.summary) {
-          setSummary(res.data.summary);
-        }
+        // Strictly sort decreasing by amount
+        const sorted = (res.data.donors || []).sort(
+          (a, b) => (Number(b.amount) || 0) - (Number(a.amount) || 0)
+        );
+        setDonors(sorted);
       }
     } catch {
       // quiet fallback
@@ -120,20 +87,6 @@ export const Donation: React.FC = () => {
   useEffect(() => {
     fetchPublicWall();
   }, [fetchPublicWall]);
-
-  // Fetch My Receipts if logged in
-  useEffect(() => {
-    if (isAuthenticated) {
-      donationService
-        .getMyDonations()
-        .then((res) => {
-          if (res.success && res.data?.donations) {
-            setMyReceipts(res.data.donations);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [isAuthenticated]);
 
   // Real-time live socket listener for new donations
   useEffect(() => {
@@ -157,14 +110,8 @@ export const Donation: React.FC = () => {
 
       setDonors((prev) => {
         const next = [formattedItem, ...prev.filter((d) => d._id !== formattedItem._id)];
-        return next.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+        return next.sort((a, b) => (Number(b.amount) || 0) - (Number(a.amount) || 0));
       });
-
-      setSummary((prev) => ({
-        totalAmount: prev.totalAmount + (Number(newDonation.amount) || 0),
-        totalDonors: prev.totalDonors + 1,
-        highestDonation: Math.max(prev.highestDonation, Number(newDonation.amount) || 0),
-      }));
     };
 
     socket.on('donation_global', handleNewDonation);
@@ -202,7 +149,6 @@ export const Donation: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // 1. Create order on backend
       const res = await donationService.createOrder({
         amount: finalAmount,
         donorName: isAnonymous ? 'गुमनाम भक्त' : (donorName.trim() || user?.name || 'श्रद्धालु भक्त'),
@@ -213,14 +159,12 @@ export const Donation: React.FC = () => {
 
       const orderData = res.data;
 
-      // 2. Check if Razorpay SDK is loaded
       if (typeof (window as any).Razorpay === 'undefined') {
         toast.error('भुगतान गेटवे लोड नहीं हो पाया। कृपया पृष्ठ रीफ्रेश करें।');
         setIsSubmitting(false);
         return;
       }
 
-      // 3. Trigger Razorpay Checkout Popup
       const options = {
         key: orderData.keyId,
         amount: Math.round(orderData.amount * 100),
@@ -276,433 +220,177 @@ export const Donation: React.FC = () => {
 
   const selectedFinalAmount = customAmount ? Number(customAmount) : amount;
 
-  // Filtered contributors strictly sorted decreasing
-  const filteredDonors = donors
-    .filter((d) => {
-      // Type filter
-      if (typeFilter === 'dakshina' && d.type !== 'dakshina' && !d.liveSessionRoomName) return false;
-      if (typeFilter === 'donation' && (d.type === 'dakshina' || Boolean(d.liveSessionRoomName))) return false;
-
-      // Search query
-      if (!donorSearch.trim()) return true;
-      const q = donorSearch.toLowerCase();
-      return (
-        d.donorName.toLowerCase().includes(q) ||
-        (d.username && d.username.toLowerCase().includes(q)) ||
-        (d.message && d.message.toLowerCase().includes(q))
-      );
-    })
-    .sort((a, b) => (b.amount || 0) - (a.amount || 0));
-
   return (
-    <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-6 sm:space-y-8">
-      {/* 1. Header & Shloka Banner */}
-      <div className="text-center space-y-3">
+    <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 font-body">
+      {/* 1. Header & Shloka Section */}
+      <div className="text-center space-y-2 sm:space-y-3">
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/15 via-gold-500/25 to-amber-500/15 border border-amber-400/50 text-amber-950 text-xs sm:text-sm font-semibold font-body shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-950 text-xs sm:text-sm font-semibold shadow-2xs"
         >
-          <Sparkles className="w-4 h-4 text-amber-600 animate-pulse" />
           <span>॥ श्री यदुवंशी दुर्गा पूजा पावन सहयोगी एवं दानदाता ॥</span>
         </motion.div>
 
-        <SectionHeading
-          title="माँ भगवती के पावन सहयोगी (Contributors Wall)"
-          subtitle="कपूरिपुर दुर्गा पूजा के पावन अनुष्ठानों, महाआरती, प्रसाद वितरण एवं भव्य पंडाल व्यवस्था में अपनी सामर्थ्यानुसार श्रद्धा सुमन अर्पित करने वाले समस्त पुण्यात्माओं का गौरव स्थल।"
-        />
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-heading font-black text-dark-950 tracking-tight">
+          माँ भगवती के पावन सहयोगी (Contributors Wall)
+        </h1>
 
-        <div className="text-xs sm:text-sm font-body text-maroon-800 italic bg-amber-50/90 border border-amber-300/80 rounded-2xl py-2 px-4 max-w-lg mx-auto shadow-xs">
+        <p className="text-xs sm:text-sm text-dark-700 max-w-2xl mx-auto leading-relaxed font-normal">
+          कपूरिपुर दुर्गा पूजा के पावन सहयोगियों, दानदाताओं, प्रत्यक्ष विकास एवं भव्य पावन आयोजन में अपनी अक्षुण्ण/अमूल्य श्रद्धा पूजन कमेटी अपने सभी सम्भ्रान्त दानकर्ताओं को वंदन करता।
+        </p>
+
+        <div className="inline-block text-xs sm:text-sm font-body text-maroon-900 italic bg-amber-50/80 border border-amber-300/80 rounded-2xl py-1.5 px-4 shadow-2xs">
           "दानेन प्राप्यते सर्वं दानेन सुखमेधते । दानेन परमो धर्मो दानं हि परमो निधिः ॥"
         </div>
       </div>
 
-      {/* 2. Top Live Statistics Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <div className="bg-gradient-to-tr from-maroon-900 via-maroon-800 to-maroon-950 text-gold-200 p-4 sm:p-5 rounded-3xl border border-gold-500/40 shadow-md text-center">
-          <span className="text-xs uppercase tracking-wider block font-body text-gold-300/80 font-bold">
-            कुल संकलित सेवा राशि (Total Seva)
-          </span>
-          <span className="text-2xl sm:text-3xl font-heading font-black tracking-tight text-white block mt-1">
-            ₹{summary.totalAmount.toLocaleString('en-IN')}
-          </span>
-        </div>
-
-        <div className="bg-gradient-to-tr from-amber-500/20 via-gold-500/20 to-cream-100 text-maroon-950 p-4 sm:p-5 rounded-3xl border border-amber-400/60 shadow-sm text-center">
-          <span className="text-xs uppercase tracking-wider block font-body text-maroon-900 font-bold">
-            समर्पित सहयोगी भक्त (Total Contributors)
-          </span>
-          <span className="text-2xl sm:text-3xl font-heading font-black tracking-tight text-maroon-950 block mt-1">
-            {summary.totalDonors || donors.length} भक्त
-          </span>
-        </div>
-
-        <div className="bg-gradient-to-tr from-emerald-500/20 via-teal-500/20 to-cream-100 text-emerald-950 p-4 sm:p-5 rounded-3xl border border-emerald-400/60 shadow-sm text-center">
-          <span className="text-xs uppercase tracking-wider block font-body text-emerald-900 font-bold">
-            सर्वोच्च समर्पण (Top Offering)
-          </span>
-          <span className="text-2xl sm:text-3xl font-heading font-black tracking-tight text-emerald-950 block mt-1">
-            ₹{summary.highestDonation.toLocaleString('en-IN')}
-          </span>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 3. PRIMARY TOP ACTION BUTTONS (दान करें & टीवी लाइव डिस्प्ले)                */}
-      {/* ========================================================================= */}
-      <div className="bg-gradient-to-r from-cream-100 via-amber-50 to-cream-100 p-4 sm:p-6 rounded-3xl border-2 border-gold-500/50 shadow-md">
+      {/* 2. Seva Participation Card (Clean compact action bar) */}
+      <div className="bg-cream-100/90 p-4 sm:p-5 rounded-3xl border border-gold-400/50 shadow-xs">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <h3 className="text-base sm:text-lg font-heading font-black text-maroon-950 flex items-center gap-2">
-              <HandHeart className="w-5 h-5 text-amber-600" />
+          <div className="text-center sm:text-left space-y-0.5">
+            <h3 className="text-sm sm:text-base font-heading font-bold text-dark-950 flex items-center justify-center sm:justify-start gap-1.5">
+              <span>🪔</span>
               <span>माँ दुर्गा पूजा सेवा में सम्मिलित हों</span>
             </h3>
-            <p className="text-xs text-muted font-body mt-0.5">
-              अपना पावन सहयोग समर्पित करें अथवा मंडप लाइव टीवी डिस्प्ले पर समस्त सहयोगियों को देखें
+            <p className="text-[11px] sm:text-xs text-dark-600">
+              अपना शुभ सहयोग समर्पित करें तथा देवी सिंदूर एवं पावन प्रसादी का आशीष प्राप्त करें।
             </p>
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-            {/* Button 1: Donate / Contribute (दान / सहयोग करें) */}
-            <Button
-              variant="gold"
-              size="lg"
+          <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0 justify-center">
+            {/* Button 1: Donate */}
+            <button
               onClick={() => setIsDonateModalOpen(true)}
-              leftIcon={<Heart className="w-5 h-5 text-maroon-900 fill-maroon-900/20" />}
-              className="flex-1 sm:flex-none font-heading font-bold text-sm sm:text-base px-6 py-3.5 shadow-gold-glow bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 hover:from-amber-500 hover:to-gold-500 border border-gold-300 text-maroon-950 active:scale-95"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 hover:from-amber-500 hover:to-gold-500 text-maroon-950 font-heading font-bold text-xs sm:text-sm border border-gold-300 shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              ❤️ दान / सहयोग करें
-            </Button>
+              <span>❤️ दान / सहयोग करें</span>
+            </button>
 
-            {/* Button 2: TV Live / Mandap Screen (टीवी लाइव डिस्प्ले) */}
+            {/* Button 2: TV Live */}
             <button
               onClick={() => setIsTvModalOpen(true)}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-maroon-900 via-dark-950 to-maroon-950 hover:from-maroon-950 hover:to-black text-gold-300 border border-gold-400/80 font-heading font-bold text-sm sm:text-base shadow-md transition-all active:scale-95 group"
-              title="मंडप लाइव टीवी डिस्प्ले खोलें"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-maroon-900 via-dark-950 to-maroon-950 hover:from-maroon-950 hover:to-black text-gold-300 font-heading font-bold text-xs sm:text-sm border border-gold-500/60 shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <Tv className="w-5 h-5 text-gold-400 group-hover:scale-110 transition-transform" />
               <span>📺 TV Live (मंडप स्क्रीन)</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
             </button>
           </div>
         </div>
-
-        {/* My Receipts Quick Toggle for Logged-in Devotees */}
-        {isAuthenticated && myReceipts.length > 0 && (
-          <div className="mt-4 pt-3 border-t border-amber-300/40 flex items-center justify-between text-xs font-body">
-            <span className="text-dark-800">
-              आपके द्वारा कुल <strong>{myReceipts.length}</strong> दान समर्पित किए गए हैं
-            </span>
-            <button
-              onClick={() => setShowMyReceipts(!showMyReceipts)}
-              className="inline-flex items-center gap-1.5 font-bold text-maroon-800 hover:text-maroon-950 underline cursor-pointer"
-            >
-              <Receipt className="w-4 h-4 text-amber-700" />
-              <span>{showMyReceipts ? 'रसीदें छिपाएं' : 'मेरी दान रसीदें देखें'}</span>
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Devotee's Personal Receipts Drawer */}
-      <AnimatePresence>
-        {showMyReceipts && isAuthenticated && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="p-4 rounded-3xl bg-amber-50/90 border border-amber-300 shadow-soft space-y-3 overflow-hidden"
+      {/* 3. Section Title: समस्त सहयोगी गौरव कार्ड्स */}
+      <div className="pt-2">
+        <h2 className="text-base sm:text-lg font-heading font-bold text-dark-950 flex items-center gap-2">
+          <span className="text-amber-600">🪔</span>
+          <span>समस्त सहयोगी गौरव कार्ड्स</span>
+        </h2>
+      </div>
+
+      {/* 4. Devotee Cards Grid (Exact matching layout from mockup) */}
+      {isLoadingWall ? (
+        <div className="py-16 text-center text-xs text-muted animate-pulse">
+          सहयोगी गौरव कार्ड्स लोड हो रहे हैं...
+        </div>
+      ) : donors.length === 0 ? (
+        <div className="py-14 text-center bg-white rounded-3xl border border-cream-300 p-6 space-y-3">
+          <p className="text-sm font-bold text-dark-800">
+            माँ भगवती के चरणों में प्रथम पावन दान समर्पित करें 🙏
+          </p>
+          <button
+            onClick={() => setIsDonateModalOpen(true)}
+            className="px-5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-gold-400 text-maroon-950 font-bold text-xs shadow-sm cursor-pointer"
           >
-            <div className="flex items-center justify-between">
-              <h4 className="font-heading font-bold text-sm text-maroon-950 flex items-center gap-1.5">
-                <FileCheck className="w-4 h-4 text-emerald-600" />
-                <span>आपकी दान पावती रसीदें (Digital Receipts)</span>
-              </h4>
-              <span className="text-xs text-muted">ईमेल पर भी भेजी जा चुकी हैं</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {myReceipts.map((rcpt) => (
-                <div key={rcpt._id} className="p-3.5 rounded-2xl bg-white border border-amber-200 text-xs font-body space-y-1 shadow-xs">
-                  <div className="flex justify-between items-center font-bold">
-                    <span className="text-maroon-900 text-sm font-black">₹{rcpt.amount.toLocaleString('en-IN')}</span>
-                    <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] border border-emerald-200">सफल (Paid)</span>
-                  </div>
-                  <p className="text-muted font-mono text-[11px] truncate">ID: {rcpt.razorpayPaymentId || rcpt.razorpayOrderId}</p>
-                  <p className="text-[10px] text-muted">{new Date(rcpt.createdAt).toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ❤️ दान / सहयोग करें
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:gap-6">
+          {donors.map((donor, idx) => {
+            const isLastOdd = idx === donors.length - 1 && donors.length % 2 !== 0;
+            const avatarUrl = donor.avatar ? getImageUrl(donor.avatar) : null;
+            const displayName = donor.isAnonymous ? 'गुमनाम भक्त' : (donor.donorName || 'श्रद्धालु भक्त');
+            const formattedAmount = (Number(donor.amount) || 0).toLocaleString('en-IN');
 
-      {/* ========================================================================= */}
-      {/* 4. FULL LIST OF CONTRIBUTORS (दानदाता / सहयोगी सूची — DECREASING SORT)    */}
-      {/* ========================================================================= */}
-      <div className="bg-cream-100 rounded-3xl border-2 border-gold-500/40 shadow-soft p-4 sm:p-7 space-y-5">
-        {/* Leaderboard Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-cream-300 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-maroon-900 to-amber-600 text-gold-300 flex items-center justify-center font-bold text-lg shadow-sm border border-gold-400">
-              👑
-            </div>
-            <div>
-              <h3 className="font-heading font-black text-lg sm:text-xl text-maroon-950 flex items-center gap-2">
-                <span>समस्त सहयोगी एवं दानदाता गौरव सूची</span>
-                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-red-600 text-white animate-pulse">
-                  LIVE
-                </span>
-              </h3>
-              <p className="text-xs text-muted font-body">
-                सर्वोच्च सहयोग राशि से न्यूनतम क्रम में (Decreasing Order) • स्वतः लाइव अपडेट
-              </p>
-            </div>
-          </div>
-
-          {/* Type Filter Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            <span className="text-xs text-muted font-body flex items-center gap-1 mr-1 hidden sm:inline-flex">
-              <Filter className="w-3.5 h-3.5" />
-            </span>
-            {[
-              { id: 'all', label: 'सभी सहयोगी' },
-              { id: 'donation', label: '🏛️ पूजा दान' },
-              { id: 'dakshina', label: '🪔 पावन दक्षिणा' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setTypeFilter(tab.id as any)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold font-body whitespace-nowrap transition-all ${
-                  typeFilter === tab.id
-                    ? 'bg-maroon-800 text-cream-50 shadow-xs font-bold'
-                    : 'bg-cream-200 text-dark-800 hover:bg-cream-300'
+            return (
+              <motion.div
+                key={donor._id || idx}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: Math.min(idx * 0.04, 0.4) }}
+                className={`bg-white rounded-2xl sm:rounded-3xl border border-amber-200/90 shadow-2xs hover:shadow-md transition-all duration-300 p-4 sm:p-6 text-center flex flex-col items-center justify-center group ${
+                  isLastOdd ? 'col-span-2 max-w-[280px] sm:max-w-xs mx-auto w-full' : ''
                 }`}
               >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Search Input for Contributors */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="सहयोगी भक्त का नाम, @username या संदेश से खोजें..."
-            value={donorSearch}
-            onChange={(e) => setDonorSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs sm:text-sm font-body focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700"
-          />
-          <Search className="w-4 h-4 text-muted absolute left-3 top-3.5" />
-          {donorSearch && (
-            <button
-              onClick={() => setDonorSearch('')}
-              className="absolute right-3 top-3 text-xs text-muted hover:text-dark-900"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-
-        {/* List of Contributors (Strictly Decreasing by Amount) */}
-        <div className="space-y-2.5">
-          {isLoadingWall ? (
-            <div className="py-16 text-center text-muted text-xs font-body animate-pulse">
-              <span>सहयोगी सूची लोड हो रही है...</span>
-            </div>
-          ) : filteredDonors.length === 0 ? (
-            <div className="py-16 text-center text-muted text-xs font-body space-y-3">
-              <Heart className="w-10 h-10 text-amber-500/40 mx-auto" />
-              <p className="font-semibold text-dark-900 text-sm">
-                {donorSearch ? 'दिए गए खोज शब्दों के अनुसार कोई सहयोगी नहीं मिला' : 'माँ के चरणों में प्रथम दान समर्पित करें 🙏'}
-              </p>
-              <Button
-                variant="gold"
-                size="sm"
-                onClick={() => setIsDonateModalOpen(true)}
-              >
-                दान समर्पित करें
-              </Button>
-            </div>
-          ) : (
-            filteredDonors.map((donor, idx) => {
-              const rank = idx + 1;
-              const isTop1 = rank === 1;
-              const isTop2 = rank === 2;
-              const isTop3 = rank === 3;
-              const isDakshina = donor.type === 'dakshina' || Boolean(donor.liveSessionRoomName);
-
-              return (
-                <motion.div
-                  key={donor._id || idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`p-3.5 sm:p-4 rounded-2xl border flex items-center justify-between gap-3 transition-all ${
-                    isTop1
-                      ? 'bg-gradient-to-r from-amber-100/90 via-cream-50 to-amber-50/90 border-gold-400 shadow-md ring-1 ring-gold-400/50'
-                      : isTop2
-                      ? 'bg-gradient-to-r from-slate-100/80 to-cream-50 border-slate-300 shadow-xs'
-                      : isTop3
-                      ? 'bg-gradient-to-r from-amber-50/60 to-cream-50 border-amber-300 shadow-xs'
-                      : 'bg-cream-50/90 border-cream-200 hover:border-cream-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    {/* Rank Badge */}
-                    <div className="shrink-0 text-center w-7">
-                      {isTop1 ? (
-                        <Crown className="w-6 h-6 text-amber-600 fill-amber-500 mx-auto animate-bounce" />
-                      ) : isTop2 ? (
-                        <span className="text-xs font-black font-mono text-slate-700 bg-slate-200 px-1.5 py-0.5 rounded-full">#2</span>
-                      ) : isTop3 ? (
-                        <span className="text-xs font-black font-mono text-amber-900 bg-amber-200 px-1.5 py-0.5 rounded-full">#3</span>
-                      ) : (
-                        <span className="text-xs font-bold font-mono text-muted">
-                          #{rank}
-                        </span>
-                      )}
+                {/* Devotee Avatar Photo */}
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-amber-300 ring-2 sm:ring-4 ring-amber-100/80 shadow-xs mb-2.5 sm:mb-3 shrink-0 flex items-center justify-center bg-gradient-to-tr from-amber-100 to-cream-100">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={displayName}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-tr from-maroon-800 to-amber-700 text-gold-200 font-bold flex items-center justify-center text-lg sm:text-xl font-heading">
+                      {donor.isAnonymous ? '?' : displayName.charAt(0).toUpperCase()}
                     </div>
+                  )}
+                </div>
 
-                    {/* Avatar Photo or Letter Emblem */}
-                    <div
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-sm font-bold shrink-0 overflow-hidden shadow-xs ${
-                        isTop1
-                          ? 'ring-2 ring-gold-500 bg-maroon-900 text-gold-200'
-                          : 'bg-maroon-800 text-cream-100 border border-gold-500/30'
-                      }`}
-                    >
-                      {donor.avatar ? (
-                        <img
-                          src={getImageUrl(donor.avatar)}
-                          alt={donor.donorName}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span>{donor.isAnonymous ? '?' : donor.donorName.charAt(0).toUpperCase()}</span>
-                      )}
-                    </div>
+                {/* Devotee Name */}
+                <h3 className="font-heading font-bold text-sm sm:text-base text-dark-900 truncate max-w-full px-1">
+                  {displayName}
+                </h3>
 
-                    {/* Contributor Details */}
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="font-heading font-bold text-dark-950 text-xs sm:text-sm truncate">
-                          {donor.isAnonymous ? 'गुमनाम भक्त' : donor.donorName}
-                        </span>
-                        {donor.isAnonymous && (
-                          <span className="text-[9px] text-amber-900 bg-amber-100/90 px-1.5 py-0.5 rounded font-semibold border border-amber-300">
-                            Anonymous
-                          </span>
-                        )}
-                        {!donor.isAnonymous && donor.username && (
-                          <span className="text-[11px] font-mono text-muted font-bold">
-                            @{donor.username}
-                          </span>
-                        )}
-                        {/* Seva Type Badge */}
-                        {isDakshina ? (
-                          <span className="text-[9px] font-bold text-rose-900 bg-rose-100/80 px-1.5 py-0.5 rounded border border-rose-200 inline-flex items-center gap-1">
-                            <Radio className="w-2.5 h-2.5 text-rose-600 animate-pulse" />
-                            पावन दक्षिणा
-                          </span>
-                        ) : (
-                          <span className="text-[9px] font-bold text-amber-900 bg-amber-100/80 px-1.5 py-0.5 rounded border border-amber-200 inline-flex items-center gap-1">
-                            <Landmark className="w-2.5 h-2.5 text-amber-700" />
-                            पूजा दान
-                          </span>
-                        )}
-                      </div>
-                      {donor.message && (
-                        <p className="text-[11px] text-dark-700 italic truncate max-w-[190px] sm:max-w-md mt-0.5">
-                          "{donor.message}"
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                {/* Fine Golden Divider */}
+                <div className="h-[1px] w-24 sm:w-32 bg-gradient-to-r from-transparent via-amber-300 to-transparent my-2" />
 
-                  {/* Contribution Amount Badge */}
-                  <div className="text-right shrink-0">
-                    <span
-                      className={`inline-block px-3 py-1.5 rounded-2xl font-heading font-black text-xs sm:text-base shadow-xs ${
-                        isTop1
-                          ? 'bg-gradient-to-r from-maroon-900 to-maroon-800 text-gold-300 border border-gold-400'
-                          : 'bg-gradient-to-r from-amber-500/20 to-gold-500/20 text-maroon-950 border border-amber-400/50'
-                      }`}
-                    >
-                      ₹{donor.amount.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })
-          )}
+                {/* Contribution Amount */}
+                <p className="font-heading font-black text-base sm:text-xl text-dark-950 tracking-tight">
+                  ₹{formattedAmount}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
-      </div>
+      )}
 
-      {/* 5. Transparency & Direct Bank / UPI Transfer Section */}
-      <div className="bg-cream-100 rounded-3xl border border-cream-300 p-5 sm:p-6 shadow-soft space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-maroon-800 text-amber-400 flex items-center justify-center shadow-sm">
-            <Flame className="w-5 h-5" />
+      {/* 5. Bottom Transparency Note Card */}
+      <div className="bg-cream-100/80 rounded-3xl border border-cream-300 p-4 sm:p-5 text-xs font-body space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-maroon-800 text-amber-300 flex items-center justify-center text-xs font-bold shrink-0">
+            🪔
           </div>
           <div>
-            <h3 className="font-heading font-bold text-dark-950 text-sm sm:text-base">
+            <h4 className="font-heading font-bold text-xs sm:text-sm text-dark-950">
               पारदर्शिता एवं सेवा संकल्प
-            </h3>
-            <p className="text-xs text-muted font-body">यदुवंशी दुर्गा पूजा समिति कपूरिपुर</p>
+            </h4>
+            <p className="text-[10px] text-muted">यदुवंशी दुर्गा पूजा समिति कपूरिपुर</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-body text-dark-800 pt-1">
-          <div className="flex items-start gap-2 bg-cream-50 p-3 rounded-2xl border border-cream-200">
-            <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-            <span>समस्त दान राशि सीधे पूजा, महाआरती एवं भंडारा व्यवस्था में उपयोग होती है।</span>
-          </div>
-          <div className="flex items-start gap-2 bg-cream-50 p-3 rounded-2xl border border-cream-200">
-            <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-            <span>डिजिटल पावती एवं रसीद रिकॉर्ड तुरंत आपके ईमेल पर प्रेषित की जाती है।</span>
-          </div>
-          <div className="flex items-start gap-2 bg-cream-50 p-3 rounded-2xl border border-cream-200">
-            <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-            <span>दानदाता का नाम, प्रोफ़ाइल फ़ोटो एवं राशि गौरव सूची में लाइव सम्मिलित होती है।</span>
-          </div>
-        </div>
-
-        {/* Direct Bank / UPI QR Accordion */}
-        <div className="pt-2 border-t border-cream-200">
-          <button
-            type="button"
-            onClick={() => setShowDirectUpi(!showDirectUpi)}
-            className="w-full flex items-center justify-between text-xs font-bold text-maroon-800 hover:text-maroon-950 transition-colors"
-          >
-            <span className="flex items-center gap-1.5">
-              <QrCode className="w-4 h-4 text-amber-600" />
-              <span>समिति बैंक खाता व प्रत्यक्ष UPI विवरण</span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+          <div className="flex items-start gap-1.5 bg-white p-2.5 rounded-xl border border-cream-200">
+            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+            <span className="text-[11px] text-dark-800">
+              पावन दान सूची केवल पूजा व भगवती जन कल्याण सम्मानार्थ समर्पित है।
             </span>
-            <span>{showDirectUpi ? '▲' : '▼'}</span>
-          </button>
-
-          {showDirectUpi && (
-            <div className="mt-3 p-3.5 rounded-2xl bg-cream-50 border border-cream-300 text-xs font-body space-y-2 animate-fade-in">
-              <div className="flex justify-between">
-                <span className="text-muted">समिति:</span>
-                <span className="font-semibold text-dark-900">यदुवंशी दुर्गा पूजा समिति</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">स्थान:</span>
-                <span className="font-semibold text-dark-900">कपूरिपुर, सुरियावां, भदोही (UP)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted">UPI ID:</span>
-                <span className="font-mono font-bold text-maroon-900">kapooripur@upi</span>
-              </div>
-            </div>
-          )}
+          </div>
+          <div className="flex items-start gap-1.5 bg-white p-2.5 rounded-xl border border-cream-200">
+            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+            <span className="text-[11px] text-dark-800">
+              डिजिटल दान का पाई-पाई रिकॉर्ड तुरंत मंडप स्क्रीन और ऑनलाइन पोर्टल पर प्रदर्शित होता है।
+            </span>
+          </div>
+          <div className="flex items-start gap-1.5 bg-white p-2.5 rounded-xl border border-cream-200">
+            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+            <span className="text-[11px] text-dark-800">
+              सच्चा भाव व निष्ठा: यदुवंशी कमेटी हर पावन आहुति और स्मृति के प्रति कृतज्ञ एवं उत्तरदायी है।
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 6. DONATION CONTRIBUTION POPUP MODAL                                      */}
-      {/* ========================================================================= */}
+      {/* 6. Donation Modal */}
       <Modal
         isOpen={isDonateModalOpen}
         onClose={() => !isSubmitting && setIsDonateModalOpen(false)}
@@ -716,7 +404,7 @@ export const Donation: React.FC = () => {
             </p>
           </div>
 
-          {/* 1. Preset Amount Grid */}
+          {/* Preset Amount Grid */}
           <div>
             <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-2 font-body">
               दान राशि चुनें (INR ₹) *
@@ -756,7 +444,7 @@ export const Donation: React.FC = () => {
             </div>
           </div>
 
-          {/* 2. Seva Category Selection */}
+          {/* Seva Category Selection */}
           <div>
             <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1.5 font-body">
               सेवा का उद्देश्य (Seva Purpose)
@@ -790,7 +478,7 @@ export const Donation: React.FC = () => {
             </div>
           </div>
 
-          {/* 3. Devotee Name & Anonymous */}
+          {/* Devotee Name & Anonymous */}
           <div>
             <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1 font-body">
               श्रद्धालु का नाम (Devotee Name)
@@ -823,7 +511,7 @@ export const Donation: React.FC = () => {
             </div>
           </div>
 
-          {/* 4. Devotional Blessing Note */}
+          {/* Devotional Note */}
           <div>
             <label className="block text-xs font-bold text-dark-900 uppercase tracking-wider mb-1 font-body">
               माँ दुर्गा से प्रार्थना / शुभ संदेश (Optional)
@@ -838,7 +526,7 @@ export const Donation: React.FC = () => {
             />
           </div>
 
-          {/* 5. Submit Action Button */}
+          {/* Submit Button */}
           <div className="pt-2">
             <Button
               type="submit"
@@ -862,14 +550,11 @@ export const Donation: React.FC = () => {
         </form>
       </Modal>
 
-      {/* ========================================================================= */}
-      {/* 7. FULLSCREEN MANDAP TV MODAL                                             */}
-      {/* ========================================================================= */}
+      {/* 7. Mandap TV Display Modal */}
       <MandapTvDisplayModal
         isOpen={isTvModalOpen}
         onClose={() => setIsTvModalOpen(false)}
         donations={donors}
-        totalAmount={summary.totalAmount}
       />
     </div>
   );
