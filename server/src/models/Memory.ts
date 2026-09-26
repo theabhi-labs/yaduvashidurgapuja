@@ -2,10 +2,16 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 export type MemoryStatus = 'published' | 'hidden' | 'deleted';
 
+export interface IMemoryImage {
+  imageUrl: string;
+  thumbnailUrl: string;
+}
+
 export interface IMemory extends Document {
   userId: Types.ObjectId;
   imageUrl: string;
   thumbnailUrl: string;
+  images?: IMemoryImage[];
   caption: string;
   year: number;
   status: MemoryStatus;
@@ -30,6 +36,12 @@ const MemorySchema = new Schema<IMemory>(
       type: String,
       required: [true, 'थंबनेल URL आवश्यक है'],
     },
+    images: [
+      {
+        imageUrl: { type: String, required: true },
+        thumbnailUrl: { type: String, required: true },
+      },
+    ],
     caption: {
       type: String,
       required: [true, 'कृपया स्मृति का संक्षिप्त विवरण या शीर्षक लिखें'],

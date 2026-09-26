@@ -21,12 +21,15 @@ router.get('/:id', optionalAuthenticate, MemoryController.getMemoryById);
 router.post('/:id/impression', MemoryController.recordImpression);
 
 
-// Upload new memory
+// Upload new memory (supports single photo or multiple carousel photos up to 10)
 router.post(
   '/',
   authenticate,
   uploadLimiter,
-  upload.single('image'),
+  upload.fields([
+    { name: 'images', maxCount: 10 },
+    { name: 'image', maxCount: 1 },
+  ]),
   validateRequest(createMemorySchema),
   MemoryController.createMemory
 );

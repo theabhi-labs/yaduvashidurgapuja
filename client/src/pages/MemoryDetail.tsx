@@ -20,6 +20,9 @@ import {
   ShieldCheck,
   AlertTriangle,
   Eye,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
 } from 'lucide-react';
 
 export const MemoryDetail: React.FC = () => {
@@ -29,6 +32,7 @@ export const MemoryDetail: React.FC = () => {
   const toast = useToast();
 
   const [memory, setMemory] = useState<Memory | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -170,26 +174,98 @@ export const MemoryDetail: React.FC = () => {
       </div>
 
       {/* Main Memory Showcase Card */}
-      <article className="bg-cream-50 rounded-3xl overflow-hidden border border-cream-300 shadow-medium">
-        {/* Large High-Res Image Showcase */}
-        <div className="relative bg-dark-950/90 max-h-[700px] flex items-center justify-center overflow-hidden">
-          <img
-            src={getImageUrl(memory.imageUrl)}
-            alt={memory.caption}
-            className="w-full max-h-[700px] object-contain mx-auto"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
-            }}
-          />
+      {(() => {
+        const imagesList =
+          memory.images && memory.images.length > 0
+            ? memory.images
+            : [{ imageUrl: memory.imageUrl, thumbnailUrl: memory.thumbnailUrl }];
+        const isCarousel = imagesList.length > 1;
+        const currentImageUrl = imagesList[activeImageIndex]?.imageUrl || memory.imageUrl;
 
-          {/* Floating Year Tag */}
-          <div className="absolute top-4 right-4 bg-dark-900/85 backdrop-blur-md text-gold-300 text-xs sm:text-sm font-semibold px-3 py-1 rounded-full border border-gold-500/30 shadow-md">
-            Year {memory.year}
-          </div>
-        </div>
+        return (
+          <article className="bg-cream-50 rounded-3xl overflow-hidden border border-cream-300 shadow-medium">
+            {/* Large High-Res Image Showcase */}
+            <div className="relative bg-dark-950 max-h-[700px] min-h-[360px] sm:min-h-[480px] flex items-center justify-center overflow-hidden group">
+              <img
+                src={getImageUrl(currentImageUrl)}
+                alt={memory.caption}
+                className="w-full max-h-[700px] object-contain mx-auto transition-all duration-300"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+                }}
+              />
 
-        {/* Details & Metadata Section */}
-        <div className="p-6 sm:p-10 space-y-8">
+              {/* Top-Right Badge: Carousel Counter & Year Tag */}
+              <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                {isCarousel && (
+                  <div className="bg-dark-900/85 backdrop-blur-md text-gold-300 text-xs sm:text-sm font-semibold font-mono px-3 py-1 rounded-full border border-gold-500/30 shadow-md flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-gold-400" />
+                    <span>{activeImageIndex + 1} / {imagesList.length}</span>
+                  </div>
+                )}
+
+                <div className="bg-dark-900/85 backdrop-blur-md text-gold-300 text-xs sm:text-sm font-semibold px-3 py-1 rounded-full border border-gold-500/30 shadow-md">
+                  Year {memory.year}
+                </div>
+              </div>
+
+              {/* Navigation Arrows (if carousel) */}
+              {isCarousel && (
+                <>
+                  {activeImageIndex > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveImageIndex((prev) => prev - 1)}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-dark-900/80 hover:bg-dark-900 text-white backdrop-blur-md transition-all active:scale-95 shadow-xl border border-white/20 z-10"
+                      title="Previous photo (Left arrow key)"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                  )}
+
+                  {activeImageIndex < imagesList.length - 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveImageIndex((prev) => prev + 1)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-dark-900/80 hover:bg-dark-900 text-white backdrop-blur-md transition-all active:scale-95 shadow-xl border border-white/20 z-10"
+                      title="Next photo (Right arrow key)"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Thumbnail Navigation Filmstrip (if carousel) */}
+            {isCarousel && (
+              <div className="bg-dark-900/90 px-4 py-3 border-t border-dark-700 flex items-center gap-2 overflow-x-auto scrollbar-none">
+                {imagesList.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
+                      idx === activeImageIndex
+                        ? 'border-gold-400 ring-2 ring-gold-400/50 scale-105 shadow-md'
+                        : 'border-dark-700 opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <img
+                      src={getImageUrl(img.thumbnailUrl || img.imageUrl)}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute bottom-0.5 right-1 text-[9px] font-mono font-bold text-white bg-black/70 px-1 rounded">
+                      {idx + 1}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Details & Metadata Section */}
+            <div className="p-6 sm:p-10 space-y-8">
           {/* Header Row: Devotee Info & Actions */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-cream-300/80">
             {/* Devotee Info */}
@@ -271,6 +347,8 @@ export const MemoryDetail: React.FC = () => {
           </div>
         </div>
       </article>
+    );
+  })()}
 
       {/* Report Modal */}
       <ReportModal

@@ -17,6 +17,9 @@ import {
   Sparkles,
   Calendar,
   Eye,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
 } from 'lucide-react';
 
 interface InstagramMemoryCardProps {
@@ -34,6 +37,10 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const toast = useToast();
 
   const cardRef = useRef<HTMLElement | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchEndXRef = useRef<number | null>(null);
+
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [impressionsCount, setImpressionsCount] = useState<number>(memory.impressions || 0);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -41,11 +48,23 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const [isCaptionExpanded, setIsCaptionExpanded] = useState<boolean>(false);
   const [showBloom, setShowBloom] = useState<boolean>(false);
 
+  // Normalize images array (supports single image & carousel images)
+  const imagesList: Array<{ imageUrl: string; thumbnailUrl?: string }> =
+    memory.images && memory.images.length > 0
+      ? memory.images
+      : [{ imageUrl: memory.imageUrl, thumbnailUrl: memory.thumbnailUrl }];
+  const isCarousel = imagesList.length > 1;
+
   const uploaderName = memory.userId?.name || 'Devotee';
   const uploaderUsername = memory.userId?.username;
   const uploaderAvatar = memory.userId?.avatar;
   const uploaderInitial = uploaderName.charAt(0).toUpperCase();
   const isOwner = user && memory.userId && user._id === memory.userId._id;
+
+  // Reset active image index if memory prop changes
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [memory._id]);
 
   // Sync initial impressions if memory prop changes
   useEffect(() => {
@@ -122,12 +141,51 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
     lastTap = now;
   };
 
+  // Carousel navigation handlers
+  const handlePrevImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : prev));
+  };
+
+  const handleNextImage = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveImageIndex((prev) => (prev < imagesList.length - 1 ? prev + 1 : prev));
+  };
+
+  // Touch swipe support for mobile devices
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndXRef.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartXRef.current || !touchEndXRef.current) return;
+    const distance = touchStartXRef.current - touchEndXRef.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && activeImageIndex < imagesList.length - 1) {
+      setActiveImageIndex((prev) => prev + 1);
+    }
+    if (isRightSwipe && activeImageIndex > 0) {
+      setActiveImageIndex((prev) => prev - 1);
+    }
+
+    touchStartXRef.current = null;
+    touchEndXRef.current = null;
+  };
+
   const handleCopyLink = () => {
     const url = `${window.location.origin}/memories/${memory._id}`;
     navigator.clipboard.writeText(url);
     toast.success('Memory link copied to clipboard!');
     setShowMenu(false);
   };
+
+  const currentMediaUrl = imagesList[activeImageIndex]?.imageUrl || memory.imageUrl;
 
   const shareText = generateShareText(memory._id, memory.caption, memory.year);
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
@@ -222,18 +280,21 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
         </div>
       </div>
 
-      {/* 2. Media Image (Edge-to-Edge with double tap animation) */}
+      {/* 2. Media Image (Instagram Carousel Edge-to-Edge with swipe & double tap animation) */}
       <div 
-        className="relative aspect-square sm:aspect-[4/5] bg-cream-200 cursor-pointer select-none overflow-hidden"
+        className="relative aspect-square sm:aspect-[4/5] bg-dark-950 cursor-pointer select-none overflow-hidden group"
         onClick={() => {
           handleDoubleTap();
           if (onOpenDetail) onOpenDetail(memory);
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <img
-          src={getImageUrl(memory.imageUrl)}
+          src={getImageUrl(currentMediaUrl)}
           alt={memory.caption || 'Kapooripur Durga Puja Memory'}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.01]"
+          className="w-full h-full object-cover transition-all duration-300"
           loading="lazy"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
@@ -242,7 +303,7 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
 
         {/* Sacred Diya / Heart Double Tap Bloom Animation */}
         {showBloom && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10 backdrop-blur-[1px] animate-fade-in">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/10 backdrop-blur-[1px] animate-fade-in z-20">
             <div className="w-24 h-24 rounded-full bg-cream-50/90 text-amber-500 flex flex-col items-center justify-center shadow-2xl scale-125 animate-bounce">
               <Sparkles className="w-12 h-12 text-amber-500 animate-spin" />
               <span className="text-[10px] font-heading font-bold text-maroon-900 mt-1">
@@ -252,11 +313,61 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
           </div>
         )}
 
-        {/* Year Pill Tag */}
-        <div className="absolute top-3 right-3 bg-dark-950/70 backdrop-blur-md text-cream-100 text-xs font-body font-semibold px-2.5 py-1 rounded-full border border-cream-100/20 flex items-center gap-1 shadow-sm">
-          <Calendar className="w-3 h-3 text-amber-400" />
-          <span>{memory.year}</span>
+        {/* Top-Right Pill: Carousel Counter Badge or Year Tag */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+          {isCarousel && (
+            <div className="bg-dark-950/80 backdrop-blur-md text-gold-300 text-[11px] font-mono font-bold px-2.5 py-1 rounded-full border border-gold-500/30 flex items-center gap-1 shadow-md">
+              <Layers className="w-3 h-3 text-gold-400" />
+              <span>{activeImageIndex + 1}/{imagesList.length}</span>
+            </div>
+          )}
+
+          <div className="bg-dark-950/70 backdrop-blur-md text-cream-100 text-xs font-body font-semibold px-2.5 py-1 rounded-full border border-cream-100/20 flex items-center gap-1 shadow-sm">
+            <Calendar className="w-3 h-3 text-amber-400" />
+            <span>{memory.year}</span>
+          </div>
         </div>
+
+        {/* Instagram Left & Right Arrow Navigation Buttons */}
+        {isCarousel && (
+          <>
+            {activeImageIndex > 0 && (
+              <button
+                type="button"
+                onClick={handlePrevImage}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-dark-950/70 hover:bg-dark-900 text-white backdrop-blur-md transition-all active:scale-90 shadow-md border border-white/20 z-10 opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
+                title="Previous photo"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+
+            {activeImageIndex < imagesList.length - 1 && (
+              <button
+                type="button"
+                onClick={handleNextImage}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-dark-950/70 hover:bg-dark-900 text-white backdrop-blur-md transition-all active:scale-90 shadow-md border border-white/20 z-10 opacity-90 sm:opacity-0 sm:group-hover:opacity-100"
+                title="Next photo"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Bottom Centered Pagination Dots */}
+            <div className="absolute bottom-3 inset-x-0 flex items-center justify-center gap-1.5 z-10 pointer-events-none">
+              {imagesList.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`transition-all duration-300 rounded-full shadow-sm ${
+                    idx === activeImageIndex
+                      ? 'w-5 h-1.5 bg-amber-400'
+                      : 'w-1.5 h-1.5 bg-white/60'
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* 3. Action Bar */}

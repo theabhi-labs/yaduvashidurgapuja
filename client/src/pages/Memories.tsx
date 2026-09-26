@@ -23,7 +23,8 @@ import {
   SquareSplitVertical, 
   Sparkles,
   Users,
-  X
+  X,
+  Layers,
 } from 'lucide-react';
 
 const AD_FREQUENCY = 8;
@@ -356,32 +357,43 @@ export const Memories: React.FC = () => {
           {/* B. Instagram 3x3 Explore Grid View */}
           {viewMode === 'grid' && (
             <div className="grid grid-cols-3 gap-1 sm:gap-2.5">
-              {memories.map((memory) => (
-                <div
-                  key={memory._id}
-                  onClick={() => setSelectedModalMemory(memory)}
-                  className="relative aspect-square bg-cream-200 overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer group shadow-sm border border-cream-300/60"
-                >
-                  <img
-                    src={getImageUrl(memory.thumbnailUrl || memory.imageUrl)}
-                    alt={memory.caption || 'Kapooripur Memory'}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
-                    }}
-                  />
-                  {/* Subtle hover overlay */}
-                  <div className="absolute inset-0 bg-dark-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2 text-cream-50">
-                    <span className="self-end text-[10px] bg-dark-900/80 px-1.5 py-0.5 rounded-full font-bold">
-                      {memory.year}
-                    </span>
-                    <p className="text-[11px] font-body line-clamp-2 leading-tight">
-                      {memory.caption || 'Durga Puja Memory'}
-                    </p>
+              {memories.map((memory) => {
+                const isCarousel = memory.images && memory.images.length > 1;
+                return (
+                  <div
+                    key={memory._id}
+                    onClick={() => setSelectedModalMemory(memory)}
+                    className="relative aspect-square bg-cream-200 overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer group shadow-sm border border-cream-300/60"
+                  >
+                    <img
+                      src={getImageUrl(memory.thumbnailUrl || memory.imageUrl)}
+                      alt={memory.caption || 'Kapooripur Memory'}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+                      }}
+                    />
+
+                    {/* Instagram Carousel Badge (Top-Right) */}
+                    {isCarousel && (
+                      <div className="absolute top-1.5 right-1.5 p-1 rounded-md bg-dark-950/75 text-cream-50 backdrop-blur-sm shadow-sm pointer-events-none z-10">
+                        <Layers className="w-3.5 h-3.5 text-cream-100" />
+                      </div>
+                    )}
+
+                    {/* Subtle hover overlay */}
+                    <div className="absolute inset-0 bg-dark-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2 text-cream-50 z-20">
+                      <span className="self-end text-[10px] bg-dark-900/80 px-1.5 py-0.5 rounded-full font-bold">
+                        {memory.year}
+                      </span>
+                      <p className="text-[11px] font-body line-clamp-2 leading-tight">
+                        {memory.caption || 'Durga Puja Memory'}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </>

@@ -165,7 +165,7 @@ export class MemoryController {
 
   /**
    * Create New Memory
-   * POST /api/memories (multipart: image, caption, year)
+   * POST /api/memories (multipart: images/image, caption, year)
    */
   public static async createMemory(req: Request, res: Response, next: NextFunction) {
     try {
@@ -173,19 +173,47 @@ export class MemoryController {
         throw new ApiError(401, 'कृपया लॉगिन करें');
       }
 
-      if (!req.file) {
-        throw new ApiError(400, 'कृपया स्मृति का चित्र (फोटो) चुनें');
+      // Extract all uploaded files (supports both array 'images' and single 'image')
+      let files: Express.Multer.File[] = [];
+
+      if (req.files) {
+        if (Array.isArray(req.files)) {
+          files = req.files;
+        } else {
+          const filesObj = req.files as { [fieldname: string]: Express.Multer.File[] };
+          if (filesObj['images'] && filesObj['images'].length > 0) {
+            files = filesObj['images'];
+          } else if (filesObj['image'] && filesObj['image'].length > 0) {
+            files = filesObj['image'];
+          }
+        }
+      } else if (req.file) {
+        files = [req.file];
+      }
+
+      if (files.length === 0) {
+        throw new ApiError(400, 'कृपया कम से कम एक स्मृति चित्र (फोटो) चुनें');
+      }
+
+      if (files.length > 10) {
+        throw new ApiError(400, 'एक पोस्ट में अधिकतम 10 चित्र (तस्वीरें) ही अपलोड की जा सकती हैं');
       }
 
       const { caption, year } = req.body;
 
-      // Process image using Sharp with EXIF stripping and webp generation
-      const { imageUrl, thumbnailUrl } = await ImageService.processMemoryImage(req.file.buffer);
+      // Process all images concurrently using Sharp with EXIF stripping and webp generation
+      const processedImages = await Promise.all(
+        files.map((file) => ImageService.processMemoryImage(file.buffer))
+      );
 
       const memory = await Memory.create({
         userId: req.user._id,
-        imageUrl,
-        thumbnailUrl,
+        imageUrl: processedImages[0].imageUrl,
+        thumbnailUrl: processedImages[0].thumbnailUrl,
+        images: processedImages.map((img) => ({
+          imageUrl: img.imageUrl,
+          thumbnailUrl: img.thumbnailUrl,
+        })),
         caption,
         year: parseInt(year, 10),
         status: 'published',
@@ -193,7 +221,7 @@ export class MemoryController {
 
       const populatedMemory = await Memory.findById(memory._id).populate('userId', 'name username avatar');
 
-      logger.info(`New memory uploaded by user: ${req.user.email} (Year: ${year})`);
+      logger.info(`New memory with ${files.length} photo(s) uploaded by user: ${req.user.email} (Year: ${year})`);
 
       return sendResponse(
         res,

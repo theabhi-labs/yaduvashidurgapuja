@@ -26,6 +26,11 @@ export interface MemberSearchResult {
 
 export type MemoryStatus = 'published' | 'hidden' | 'deleted';
 
+export interface MemoryImage {
+  imageUrl: string;
+  thumbnailUrl: string;
+}
+
 export interface Memory {
   _id: string;
   userId: {
@@ -37,6 +42,7 @@ export interface Memory {
   };
   imageUrl: string;
   thumbnailUrl: string;
+  images?: MemoryImage[];
   caption: string;
   year: number;
   status: MemoryStatus;
