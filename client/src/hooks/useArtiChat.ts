@@ -3,6 +3,21 @@ import { getSocket } from '../services/socket';
 import { liveDarshanService } from '../services/liveDarshanService';
 import { ChatComment } from '../types';
 
+export interface SuperChatItem {
+  id: string;
+  name: string;
+  amount: number;
+  message: string;
+  timestamp: string;
+  expiresAt: number;
+}
+
+export interface FloatingReaction {
+  id: string;
+  emoji: string;
+  leftOffset: number;
+}
+
 interface UseArtiChatOptions {
   roomName?: string;
   defaultName?: string;
@@ -15,6 +30,8 @@ export const useArtiChat = ({
   initialChatEnabled = true,
 }: UseArtiChatOptions) => {
   const [comments, setComments] = useState<ChatComment[]>([]);
+  const [activeSuperChats, setActiveSuperChats] = useState<SuperChatItem[]>([]);
+  const [reactions, setReactions] = useState<FloatingReaction[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isChatEnabled, setIsChatEnabled] = useState<boolean>(initialChatEnabled);
   const [rateLimitWarning, setRateLimitWarning] = useState<string | null>(null);
@@ -23,6 +40,15 @@ export const useArtiChat = ({
   useEffect(() => {
     setIsChatEnabled(initialChatEnabled);
   }, [initialChatEnabled]);
+
+  // Clean expired Super Chats periodically
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = Date.now();
+      setActiveSuperChats((prev) => prev.filter((sc) => sc.expiresAt > now));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Fetch recent ephemeral comments from Redis on initial load
   const loadInitialComments = useCallback(async (room: string) => {
@@ -33,7 +59,7 @@ export const useArtiChat = ({
         setComments(res.data);
       }
     } catch {
-      // Quiet fallback if server is starting or redis is empty
+      // Quiet fallback
     } finally {
       setIsLoading(false);
     }
@@ -42,6 +68,8 @@ export const useArtiChat = ({
   useEffect(() => {
     if (!roomName) {
       setComments([]);
+      setActiveSuperChats([]);
+      setReactions([]);
       setIsLoading(false);
       return;
     }
@@ -55,14 +83,48 @@ export const useArtiChat = ({
     loadInitialComments(roomName);
 
     // 3. Listen for new incoming broadcast comments
-    const handleNewComment = (newComment: ChatComment) => {
+    const handleNewComment = (newComment: any) => {
       setComments((prev) => {
-        // Prevent duplicates
         if (newComment.id && prev.some((c) => c.id === newComment.id)) {
           return prev;
         }
         return [...prev.slice(-199), newComment];
       });
+    };
+
+    // 4. Listen for Super Chat / Divine Seva Highlights
+    const handleSuperChat = (data: any) => {
+      if (!data) return;
+      const amount = data.amount || 0;
+      // Duration based on donation size: 15s to 60s
+      const durationMs = Math.min(60000, Math.max(15000, amount * 100));
+      const newItem: SuperChatItem = {
+        id: data.id || `sc_${Date.now()}`,
+        name: data.name || data.donorName || 'भक्त',
+        amount,
+        message: data.message || 'माँ के चरणों में पावन दान एवं सेवा समर्पण',
+        timestamp: data.timestamp || new Date().toISOString(),
+        expiresAt: Date.now() + durationMs,
+      };
+
+      setActiveSuperChats((prev) => [newItem, ...prev.slice(0, 4)]);
+    };
+
+    // 5. Listen for Floating Devotional Reactions
+    const handleNewReaction = (data: { id: string; emoji: string }) => {
+      if (!data?.emoji) return;
+      const newReaction: FloatingReaction = {
+        id: data.id || `react_${Date.now()}_${Math.random()}`,
+        emoji: data.emoji,
+        leftOffset: Math.floor(Math.random() * 60) + 20, // 20% to 80% on reaction column
+      };
+
+      setReactions((prev) => [...prev.slice(-15), newReaction]);
+
+      // Remove after floating animation completes (2.5s)
+      setTimeout(() => {
+        setReactions((prev) => prev.filter((r) => r.id !== newReaction.id));
+      }, 2500);
     };
 
     const handleRateLimited = (data: { message: string }) => {
@@ -87,6 +149,8 @@ export const useArtiChat = ({
     };
 
     socket.on('new-comment', handleNewComment);
+    socket.on('super-chat', handleSuperChat);
+    socket.on('new-reaction', handleNewReaction);
     socket.on('chat-rate-limited', handleRateLimited);
     socket.on('chat-status-changed', handleChatStatusChanged);
     socket.on('chat-disabled', handleChatDisabled);
@@ -94,6 +158,8 @@ export const useArtiChat = ({
     return () => {
       socket.emit('leave-arti-room', { roomName });
       socket.off('new-comment', handleNewComment);
+      socket.off('super-chat', handleSuperChat);
+      socket.off('new-reaction', handleNewReaction);
       socket.off('chat-rate-limited', handleRateLimited);
       socket.off('chat-status-changed', handleChatStatusChanged);
       socket.off('chat-disabled', handleChatDisabled);
@@ -123,11 +189,24 @@ export const useArtiChat = ({
     [roomName, defaultName, isChatEnabled]
   );
 
+  // Send Devotional Reaction via Socket.io
+  const sendReaction = useCallback(
+    (emoji: string) => {
+      if (!roomName || !emoji) return;
+      const socket = getSocket();
+      socket.emit('send-reaction', { roomName, emoji });
+    },
+    [roomName]
+  );
+
   return {
     comments,
+    activeSuperChats,
+    reactions,
     isLoading,
     isChatEnabled,
     rateLimitWarning,
     sendComment,
+    sendReaction,
   };
 };

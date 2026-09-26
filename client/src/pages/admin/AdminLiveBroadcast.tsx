@@ -19,6 +19,8 @@ import {
   DollarSign,
   Settings,
   Plus,
+  FileText,
+  ShieldAlert,
 } from 'lucide-react';
 import {
   LiveKitRoom,
@@ -34,11 +36,13 @@ import '@livekit/components-styles';
 
 import { liveDarshanService } from '../../services/liveDarshanService';
 import {
+  LiveSessionInfo,
   LiveSessionStartResponse,
   ScheduledSession,
   BroadcastHistoryItem,
   DailyBroadcastStat,
   GlobalSystemSettings,
+  SessionLogsResponse,
 } from '../../types';
 import { Button } from '../../components/common/Button';
 import { Modal } from '../../components/common/Modal';
@@ -181,19 +185,25 @@ const BroadcasterStage: React.FC<BroadcasterStageProps> = ({
         </div>
       )}
 
-      {/* Top Floating Status Bar */}
+      {/* Top Floating Status Info */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs shadow-lg backdrop-blur-md animate-pulse">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs shadow-lg animate-pulse pointer-events-auto">
             <span className="w-2 h-2 rounded-full bg-white" />
-            LIVE ON-AIR
+            ON-AIR LIVE
           </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-dark-900/80 text-gold-300 font-mono text-xs backdrop-blur-md border border-gold-500/30">
+
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-dark-900/80 text-cream-100 text-xs font-mono font-bold backdrop-blur-md border border-gold-500/30 pointer-events-auto">
             ⏱️ {formatDuration(duration)}
           </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-dark-900/80 text-emerald-300 font-semibold text-xs backdrop-blur-md border border-emerald-500/30">
+
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-dark-900/80 text-emerald-400 text-xs font-bold backdrop-blur-md border border-emerald-500/30 pointer-events-auto">
             <Users className="w-3.5 h-3.5" />
-            {currentViewers} Viewers (Peak: {peakViewers})
+            <span>{currentViewers} Live</span>
+          </span>
+
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-dark-900/80 text-gold-300 text-xs font-bold backdrop-blur-md border border-gold-500/30 pointer-events-auto">
+            <span>Peak: {peakViewers}</span>
           </span>
         </div>
 
@@ -249,7 +259,7 @@ const BroadcasterStage: React.FC<BroadcasterStageProps> = ({
             <span className="hidden sm:inline">{isMicrophoneEnabled ? 'Mic On' : 'Muted'}</span>
           </button>
 
-          {/* Flip / Switch Camera (Back/Front for Smartphones) */}
+          {/* Flip Camera */}
           <button
             type="button"
             onClick={flipCamera}
@@ -282,7 +292,7 @@ export const AdminLiveBroadcast: React.FC = () => {
   const { user, isSuperAdmin } = useAuth();
   const toast = useToast();
 
-  // Active Broadcast State
+  // Active Broadcast State (Local Studio)
   const [isBroadcasting, setIsBroadcasting] = useState<boolean>(false);
   const [broadcastData, setBroadcastData] = useState<LiveSessionStartResponse | null>(null);
   const [currentViewers, setCurrentViewers] = useState<number>(0);
@@ -293,6 +303,9 @@ export const AdminLiveBroadcast: React.FC = () => {
   // Broadcaster Setup Form
   const [broadcastTitle, setBroadcastTitle] = useState<string>('Maa Durga Maha Aarti Live');
   const [broadcastDesc, setBroadcastDesc] = useState<string>('');
+
+  // Active Live Broadcasts Across All Admins
+  const [activeLiveStreams, setActiveLiveStreams] = useState<LiveSessionInfo[]>([]);
 
   // Schedules State
   const [schedules, setSchedules] = useState<ScheduledSession[]>([]);
@@ -311,24 +324,33 @@ export const AdminLiveBroadcast: React.FC = () => {
   const [dailyStats, setDailyStats] = useState<DailyBroadcastStat[]>([]);
   const [historyTotal, setHistoryTotal] = useState<number>(0);
 
+  // Per-Broadcast Logs Modal State
+  const [selectedRoomForLogs, setSelectedRoomForLogs] = useState<string | null>(null);
+  const [sessionLogsData, setSessionLogsData] = useState<SessionLogsResponse | null>(null);
+  const [isLoadingLogs, setIsLoadingLogs] = useState<boolean>(false);
+  const [activeLogsTab, setActiveLogsTab] = useState<'donations' | 'chat'>('donations');
+
   // Modals & Loaders
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showEndModal, setShowEndModal] = useState<boolean>(false);
+  const [isTerminatingAll, setIsTerminatingAll] = useState<boolean>(false);
 
   // Live donations during admin broadcast
   const { latestDonation, clearLatestDonation, donationQueue } = useDonationSocket(
     broadcastData?.roomName
   );
 
-  // Fetch Schedules & Global Settings & History
+  // Fetch Schedules, Active Streams, Global Settings & History
   const fetchData = useCallback(async () => {
     try {
-      const [schedRes, settingsRes, histRes] = await Promise.all([
+      const [liveRes, schedRes, settingsRes, histRes] = await Promise.all([
+        liveDarshanService.listLiveSessions(),
         liveDarshanService.listScheduledSessions(),
         liveDarshanService.getGlobalSettings(),
-        liveDarshanService.getBroadcastHistory({ limit: 10 }),
+        liveDarshanService.getBroadcastHistory({ limit: 15 }),
       ]);
 
+      if (liveRes.success) setActiveLiveStreams(liveRes.data || []);
       if (schedRes.success) setSchedules(schedRes.data || []);
       if (settingsRes.success) setGlobalSettings(settingsRes.data);
       if (histRes.success) {
@@ -343,6 +365,8 @@ export const AdminLiveBroadcast: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 15000);
+    return () => clearInterval(interval);
   }, [fetchData]);
 
   // Real-time viewer count & status updates for broadcaster
@@ -409,6 +433,61 @@ export const AdminLiveBroadcast: React.FC = () => {
     }
   };
 
+  // --- Force End an Active Session by roomName ---
+  const handleForceEndActiveSession = async (roomName: string, title?: string) => {
+    if (!window.confirm(`क्या आप सच में "${title || roomName}" प्रसारण को बंद करना चाहते हैं?`)) {
+      return;
+    }
+    try {
+      await liveDarshanService.endSession(roomName);
+      toast.success('लाइव प्रसारण बंद कर दिया गया (Broadcast Terminated)');
+      if (broadcastData?.roomName === roomName) {
+        setIsBroadcasting(false);
+        setBroadcastData(null);
+      }
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'लाइव बंद करने में समस्या आई');
+    }
+  };
+
+  // --- SuperAdmin / Admin: End All Active Streams ---
+  const handleEndAllStreams = async () => {
+    if (!window.confirm('चेतावनी: क्या आप सभी सक्रिय लाइव प्रसारणों को तुरंत बंद करना चाहते हैं? (Force end all active broadcasts?)')) {
+      return;
+    }
+    try {
+      setIsTerminatingAll(true);
+      await liveDarshanService.endAllLiveSessions();
+      toast.success('सभी लाइव प्रसारण सफलतापूर्वक बंद कर दिए गए (All streams ended)');
+      setIsBroadcasting(false);
+      setBroadcastData(null);
+      fetchData();
+    } catch (err: any) {
+      toast.error(err.message || 'सभी लाइव बंद करने में समस्या आई');
+    } finally {
+      setIsTerminatingAll(false);
+    }
+  };
+
+  // --- Inspect Per-Broadcast Logs (Donations & Chat Transcripts) ---
+  const handleViewSessionLogs = async (roomName: string) => {
+    try {
+      setSelectedRoomForLogs(roomName);
+      setIsLoadingLogs(true);
+      const res = await liveDarshanService.getSessionLogs(roomName);
+      if (res.success) {
+        setSessionLogsData(res.data);
+      } else {
+        toast.error('इस प्रसारण का विवरण प्राप्त नहीं हो सका');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'लॉग लोड करने में त्रुटि');
+    } finally {
+      setIsLoadingLogs(false);
+    }
+  };
+
   // --- Toggle Chat for Active Stream ---
   const handleToggleChat = async () => {
     if (!broadcastData?.roomName) return;
@@ -450,14 +529,15 @@ export const AdminLiveBroadcast: React.FC = () => {
         description: scheduleDesc.trim() || undefined,
         scheduledAt: new Date(scheduleTime).toISOString(),
       });
-      toast.success('Live session scheduled successfully!');
+
+      toast.success('Aarti broadcast scheduled successfully!');
       setIsScheduleModalOpen(false);
       setScheduleTitle('');
       setScheduleDesc('');
       setScheduleTime('');
       fetchData();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to schedule session');
+      toast.error(err.message || 'Failed to schedule broadcast');
     } finally {
       setIsScheduling(false);
     }
@@ -475,42 +555,57 @@ export const AdminLiveBroadcast: React.FC = () => {
     }
   };
 
-  // --- Super Admin Global Settings Toggle ---
-  const handleUpdateGlobalSetting = async (field: 'isDonationEnabled' | 'isLiveChatEnabled', value: boolean) => {
-    if (!isSuperAdmin) return;
-    setIsUpdatingSettings(true);
+  // --- Super Admin Global Settings Update ---
+  const handleUpdateGlobalSetting = async (
+    key: 'isDonationEnabled' | 'isLiveChatEnabled',
+    value: boolean
+  ) => {
     try {
-      const res = await liveDarshanService.updateGlobalSettings({
-        [field]: value,
-      });
-      setGlobalSettings(res.data);
-      toast.success('Super Admin: Global settings updated');
+      setIsUpdatingSettings(true);
+      const res = await liveDarshanService.updateGlobalSettings({ [key]: value });
+      if (res.success) {
+        setGlobalSettings(res.data);
+        toast.success(`Global ${key === 'isDonationEnabled' ? 'Donation' : 'Live Chat'} updated`);
+      }
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update global settings');
+      toast.error(err.message || 'Failed to update global setting');
     } finally {
       setIsUpdatingSettings(false);
     }
   };
 
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-cream-300">
+    <div className="space-y-8 pb-16">
+      {/* Top Banner & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cream-300">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="p-1.5 rounded-lg bg-maroon-900/10 text-maroon-800">
               <Radio className="w-5 h-5" />
             </span>
             <h1 className="text-2xl font-heading font-bold text-maroon-950">
-              Live Broadcast Studio
+              Live Broadcast Studio & Logs
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-muted font-body">
-            Start live Aarti streams, schedule upcoming broadcasts, toggle live chat/donations, and monitor audience analytics.
+            Start live Aarti streams, monitor real-time devotee offerings, inspect per-broadcast chat & donation logs, and manage active sessions.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {activeLiveStreams.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEndAllStreams}
+              isLoading={isTerminatingAll}
+              className="border-red-600 text-red-600 hover:bg-red-50 flex items-center gap-1.5 font-bold"
+            >
+              <ShieldAlert className="w-4 h-4" />
+              <span>End All Live ({activeLiveStreams.length})</span>
+            </Button>
+          )}
+
           {!isBroadcasting && (
             <Button
               variant="outline"
@@ -519,7 +614,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               className="border-gold-600 text-maroon-900 hover:bg-gold-50 flex items-center gap-1.5 font-bold"
             >
               <Plus className="w-4 h-4 text-gold-600" />
-              <span>Schedule New Broadcast</span>
+              <span>Schedule Aarti</span>
             </Button>
           )}
 
@@ -551,8 +646,74 @@ export const AdminLiveBroadcast: React.FC = () => {
         />
       </div>
 
+      {/* ========================================================================= */}
+      {/* 🔴 ACTIVE LIVE BROADCASTS MANAGER (Force Stop Orphaned / Running Streams) */}
+      {/* ========================================================================= */}
+      {activeLiveStreams.length > 0 && (
+        <div className="bg-gradient-to-r from-red-950/90 via-maroon-950/95 to-dark-950 p-5 rounded-3xl border-2 border-red-500/50 shadow-xl space-y-4 text-cream-50">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-red-500/30">
+            <div className="flex items-center gap-2.5">
+              <span className="w-3 h-3 rounded-full bg-red-500 animate-ping" />
+              <h3 className="text-base font-heading font-bold text-red-200">
+                Active Live Broadcasts Right Now ({activeLiveStreams.length} On-Air)
+              </h3>
+            </div>
+            <span className="text-xs font-body text-cream-300">
+              यदि कोई प्रसारण अधूरा या बिना कैमरे के चल रहा हो, तो नीचे दिए गए बटन से तुरंत बंद करें।
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {activeLiveStreams.map((stream) => (
+              <div
+                key={stream.roomName}
+                className="p-4 rounded-2xl bg-dark-900/90 border border-red-500/30 flex flex-col justify-between gap-3 shadow-md"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-600 text-white font-black text-[10px] uppercase tracking-wider">
+                      LIVE
+                    </span>
+                    <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      {stream.currentViewers || 0} Viewers
+                    </span>
+                  </div>
+                  <h4 className="font-heading font-bold text-sm text-gold-200 truncate">
+                    {stream.title || 'Maa Durga Maha Aarti'}
+                  </h4>
+                  <p className="text-xs text-cream-300 font-body truncate mt-0.5">
+                    Host: <strong className="text-white">{stream.hostName}</strong> • Room: <span className="font-mono text-[11px] text-gold-400">{stream.roomName}</span>
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2 border-t border-dark-700">
+                  <button
+                    type="button"
+                    onClick={() => handleForceEndActiveSession(stream.roomName, stream.title)}
+                    className="flex-1 py-1.5 px-3 rounded-xl bg-red-700 hover:bg-red-800 text-white font-bold text-xs shadow transition-all active:scale-95 flex items-center justify-center gap-1"
+                  >
+                    <StopCircle className="w-3.5 h-3.5" />
+                    <span>Force End (बंद करें)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleViewSessionLogs(stream.roomName)}
+                    className="py-1.5 px-3 rounded-xl bg-gold-500 hover:bg-gold-600 text-maroon-950 font-bold text-xs shadow transition-all active:scale-95 flex items-center justify-center gap-1"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Logs</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ======================================================== */}
-      {/* 1. ACTIVE LIVE BROADCAST STAGE                           */}
+      {/* 1. ACTIVE LIVE BROADCAST STAGE (Local Studio)            */}
       {/* ======================================================== */}
       {isBroadcasting && broadcastData ? (
         <div className="space-y-6">
@@ -572,7 +733,6 @@ export const AdminLiveBroadcast: React.FC = () => {
 
             {/* Live Counters & Toggles */}
             <div className="flex flex-wrap items-center gap-3 text-xs">
-              {/* Live Viewers Counter */}
               <div className="flex items-center gap-2 bg-dark-900/90 px-3.5 py-1.5 rounded-xl border border-gold-500/30">
                 <Users className="w-4 h-4 text-emerald-400" />
                 <span>
@@ -650,7 +810,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               <div className="flex items-center gap-2 pb-3 border-b border-cream-300">
                 <Heart className="w-4 h-4 text-maroon-700 fill-maroon-700" />
                 <h3 className="font-heading font-bold text-sm text-maroon-900">
-                  Live Aarti Offerings & Donations
+                  Live Aarti Offerings & Super Chats
                 </h3>
               </div>
 
@@ -793,7 +953,6 @@ export const AdminLiveBroadcast: React.FC = () => {
                 </div>
 
                 <div className="space-y-3 text-xs font-body">
-                  {/* Global Payment Toggle */}
                   <div className="flex items-center justify-between p-3 rounded-xl bg-dark-900 border border-dark-700">
                     <div>
                       <span className="font-bold text-cream-100 block">Global Donation Gateway</span>
@@ -813,7 +972,6 @@ export const AdminLiveBroadcast: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Global Chat Toggle */}
                   <div className="flex items-center justify-between p-3 rounded-xl bg-dark-900 border border-dark-700">
                     <div>
                       <span className="font-bold text-cream-100 block">Global Live Chat Feature</span>
@@ -899,7 +1057,7 @@ export const AdminLiveBroadcast: React.FC = () => {
       )}
 
       {/* ======================================================== */}
-      {/* 3. BROADCAST ANALYTICS & PEAK VIEWERS HISTORY            */}
+      {/* 3. BROADCAST HISTORY & PER-BROADCAST LOGS TABLE          */}
       {/* ======================================================== */}
       <div className="bg-cream-50 rounded-3xl p-6 sm:p-8 border border-cream-300 shadow-md space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-cream-300">
@@ -907,11 +1065,11 @@ export const AdminLiveBroadcast: React.FC = () => {
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-maroon-800" />
               <h3 className="font-heading font-bold text-lg text-maroon-950">
-                Broadcast History & Audience Analytics (Peak Viewers Overview)
+                Broadcast History & Session Logs (प्रसारण इतिहास एवं दान/चैट रिकॉर्ड)
               </h3>
             </div>
             <p className="text-xs text-muted font-body mt-0.5">
-              Historical viewer counts and peak devotee participation records.
+              प्रत्येक लाइव आरती का अलग-अलग दान व चैट विवरण देखने के लिए <strong>"View Logs (लॉग देखें)"</strong> पर क्लिक करें।
             </p>
           </div>
 
@@ -950,20 +1108,24 @@ export const AdminLiveBroadcast: React.FC = () => {
                 <th className="py-3 px-4">Date & Time</th>
                 <th className="py-3 px-4">Peak Viewers</th>
                 <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4 text-center">Session Records</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-cream-200">
               {history.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-muted">
+                  <td colSpan={6} className="py-8 text-center text-muted">
                     No previous broadcast records found.
                   </td>
                 </tr>
               ) : (
                 history.map((item) => (
                   <tr key={item._id} className="hover:bg-cream-100/80 transition-colors">
-                    <td className="py-3 px-4 font-bold text-maroon-950">{item.title}</td>
-                    <td className="py-3 px-4 text-dark-900">{item.hostName}</td>
+                    <td className="py-3 px-4 font-bold text-maroon-950">
+                      <div>{item.title}</div>
+                      <div className="text-[10px] text-muted font-mono">{item.roomName}</div>
+                    </td>
+                    <td className="py-3 px-4 text-dark-900 font-semibold">{item.hostName}</td>
                     <td className="py-3 px-4 text-muted font-mono">
                       {formatDate(item.startedAt)}
                     </td>
@@ -981,6 +1143,16 @@ export const AdminLiveBroadcast: React.FC = () => {
                         {item.status === 'live' ? 'Live' : 'Ended'}
                       </span>
                     </td>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleViewSessionLogs(item.roomName)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-maroon-900 text-gold-200 hover:bg-maroon-950 font-bold text-xs shadow-sm border border-gold-500/30 transition-all active:scale-95"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-gold-400" />
+                        <span>View Logs (लॉग देखें)</span>
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -988,6 +1160,201 @@ export const AdminLiveBroadcast: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* 📜 PER-BROADCAST SESSION LOGS MODAL (Donations + Chat Transcript)        */}
+      {/* ========================================================================= */}
+      <Modal
+        isOpen={Boolean(selectedRoomForLogs)}
+        onClose={() => {
+          setSelectedRoomForLogs(null);
+          setSessionLogsData(null);
+        }}
+        title="Broadcast Session Records & Logs (प्रसारण विवरण)"
+        maxWidth="2xl"
+      >
+        {isLoadingLogs ? (
+          <div className="py-12 flex flex-col items-center justify-center space-y-3">
+            <RefreshCw className="w-8 h-8 text-maroon-700 animate-spin" />
+            <span className="text-xs font-body text-muted">Loading broadcast transcript and donation records...</span>
+          </div>
+        ) : sessionLogsData ? (
+          <div className="space-y-5">
+            {/* Header Summary Card */}
+            <div className="bg-cream-100 p-4 rounded-2xl border border-gold-500/30 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-heading font-black text-base text-maroon-950">
+                    {sessionLogsData.session?.title || 'Live Aarti Session'}
+                  </h3>
+                  <p className="text-xs text-muted font-body mt-0.5">
+                    Host: <strong className="text-dark-900">{sessionLogsData.session?.hostName}</strong> • Room: <span className="font-mono text-gold-700">{sessionLogsData.session?.roomName}</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-cream-200 text-maroon-900 font-bold text-xs">
+                    👥 Peak: {sessionLogsData.session?.peakViewers || 0}
+                  </span>
+                  <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-bold text-xs">
+                    ₹{sessionLogsData.totalDonationAmount} Total Seva
+                  </span>
+                </div>
+              </div>
+
+              {/* Stats highlights */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                <div className="bg-cream-50 p-2.5 rounded-xl border border-cream-300 text-center">
+                  <span className="text-[10px] text-muted block uppercase">Total Donations</span>
+                  <span className="text-base font-black text-maroon-900">₹{sessionLogsData.totalDonationAmount}</span>
+                  <span className="text-[10px] text-gold-700 block">({sessionLogsData.totalDonationCount} offerings)</span>
+                </div>
+                <div className="bg-cream-50 p-2.5 rounded-xl border border-cream-300 text-center">
+                  <span className="text-[10px] text-muted block uppercase">Live Comments</span>
+                  <span className="text-base font-black text-maroon-900">{sessionLogsData.totalMessagesCount}</span>
+                  <span className="text-[10px] text-muted block">messages logged</span>
+                </div>
+                <div className="bg-cream-50 p-2.5 rounded-xl border border-cream-300 text-center col-span-2 sm:col-span-1">
+                  <span className="text-[10px] text-muted block uppercase">Stream Started</span>
+                  <span className="text-xs font-bold text-dark-800 block mt-1">
+                    {sessionLogsData.session?.startedAt ? formatDate(sessionLogsData.session.startedAt) : 'N/A'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="flex items-center gap-2 border-b border-cream-300 pb-2">
+              <button
+                type="button"
+                onClick={() => setActiveLogsTab('donations')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  activeLogsTab === 'donations'
+                    ? 'bg-maroon-900 text-gold-200 shadow-md'
+                    : 'bg-cream-100 text-dark-800 hover:bg-cream-200'
+                }`}
+              >
+                <Heart className="w-3.5 h-3.5" />
+                <span>Donations & Super Chats ({sessionLogsData.totalDonationCount})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveLogsTab('chat')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  activeLogsTab === 'chat'
+                    ? 'bg-maroon-900 text-gold-200 shadow-md'
+                    : 'bg-cream-100 text-dark-800 hover:bg-cream-200'
+                }`}
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Chat Transcript ({sessionLogsData.totalMessagesCount})</span>
+              </button>
+            </div>
+
+            {/* Tab 1: Donations List */}
+            {activeLogsTab === 'donations' && (
+              <div className="space-y-3">
+                {sessionLogsData.donations.length === 0 ? (
+                  <div className="py-10 text-center text-xs font-body text-muted bg-cream-50 rounded-2xl border border-cream-300">
+                    No devotee donations or Super Chats recorded during this live stream.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto max-h-80 overflow-y-auto">
+                    <table className="w-full text-left text-xs font-body">
+                      <thead className="bg-cream-200 text-dark-900 font-bold sticky top-0">
+                        <tr>
+                          <th className="py-2.5 px-3">Donor Name</th>
+                          <th className="py-2.5 px-3">Amount</th>
+                          <th className="py-2.5 px-3">Message / Prayer</th>
+                          <th className="py-2.5 px-3">Payment ID</th>
+                          <th className="py-2.5 px-3">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-cream-200">
+                        {sessionLogsData.donations.map((don) => (
+                          <tr key={don._id} className="hover:bg-cream-100">
+                            <td className="py-2.5 px-3 font-bold text-maroon-950">
+                              {don.isAnonymous ? 'गुप्त भक्त (Anonymous)' : don.donorName}
+                            </td>
+                            <td className="py-2.5 px-3 font-black text-emerald-800">
+                              ₹{don.amount}
+                            </td>
+                            <td className="py-2.5 px-3 text-dark-800 max-w-xs truncate">
+                              {don.message || '—'}
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-[10px] text-muted">
+                              {don.razorpayPaymentId || don.razorpayOrderId}
+                            </td>
+                            <td className="py-2.5 px-3 text-[11px] text-muted font-mono">
+                              {new Date(don.createdAt).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab 2: Live Chat Transcript */}
+            {activeLogsTab === 'chat' && (
+              <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                {sessionLogsData.messages.length === 0 ? (
+                  <div className="py-10 text-center text-xs font-body text-muted bg-cream-50 rounded-2xl border border-cream-300">
+                    No comments were sent in live chat during this broadcast.
+                  </div>
+                ) : (
+                  sessionLogsData.messages.map((msg) => (
+                    <div
+                      key={msg._id}
+                      className={`p-2.5 rounded-xl border text-xs flex items-start gap-2.5 ${
+                        msg.isSuperChat
+                          ? 'bg-amber-50 border-gold-400 text-amber-950 shadow-sm'
+                          : 'bg-cream-50 border-cream-300 text-dark-900'
+                      }`}
+                    >
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${
+                          msg.isSuperChat
+                            ? 'bg-gold-500 text-maroon-950 font-black'
+                            : 'bg-maroon-800 text-cream-100'
+                        }`}
+                      >
+                        {msg.name ? msg.name.charAt(0).toUpperCase() : 'भ'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-maroon-950">{msg.name}</span>
+                          {msg.isSuperChat && (
+                            <span className="px-1.5 py-0.2 rounded bg-gold-500 text-maroon-950 font-black text-[10px]">
+                              🪙 Super Chat ₹{msg.donationAmount}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-muted font-mono ml-auto">
+                            {new Date(msg.createdAt).toLocaleTimeString('en-US', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-dark-800 font-body mt-0.5 break-words leading-relaxed">
+                          {msg.message}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="py-8 text-center text-muted text-xs">No records available for this session.</div>
+        )}
+      </Modal>
 
       {/* Schedule Live Broadcast Modal */}
       <Modal
@@ -1091,4 +1458,5 @@ export const AdminLiveBroadcast: React.FC = () => {
     </div>
   );
 };
+
 export default AdminLiveBroadcast;

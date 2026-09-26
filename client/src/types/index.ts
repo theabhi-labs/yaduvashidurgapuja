@@ -39,6 +39,9 @@ export interface ChatComment {
   name: string;
   message: string;
   timestamp: string;
+  isSuperChat?: boolean;
+  amount?: number;
+  donationAmount?: number;
 }
 
 export interface CommitteeMember {
@@ -154,6 +157,33 @@ export interface LiveSessionStartResponse {
   isDonationEnabled?: boolean;
 }
 
+
+export interface SuperChatComment {
+  id: string;
+  name: string;
+  message: string;
+  amount?: number;
+  isSuperChat?: boolean;
+  timestamp: string;
+  roomName?: string;
+}
+
+export interface SessionLogsResponse {
+  session: BroadcastHistoryItem;
+  donations: Donation[];
+  totalDonationAmount: number;
+  totalDonationCount: number;
+  messages: {
+    _id: string;
+    roomName: string;
+    name: string;
+    message: string;
+    isSuperChat: boolean;
+    donationAmount?: number;
+    createdAt: string;
+  }[];
+  totalMessagesCount: number;
+}
 
 export type DonationStatus = 'created' | 'paid' | 'failed';
 

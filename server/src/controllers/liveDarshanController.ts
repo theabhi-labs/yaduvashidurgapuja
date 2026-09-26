@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { roomService, createAccessToken, LIVEKIT_WS_URL } from '../config/livekit';
 import { getCommentsFromRedis } from '../config/redis';
 import { LiveSession } from '../models/LiveSession';
+import { LiveMessage } from '../models/LiveMessage';
+import { Donation } from '../models/Donation';
 import { SystemSetting } from '../models/SystemSetting';
 import { emitChatStatusUpdate, emitDonationStatusUpdate } from '../socket';
 import { ApiError, sendResponse, PaginationMeta } from '../utils/apiResponse';
@@ -213,7 +215,6 @@ export const endLiveSession = async (req: Request, res: Response, next: NextFunc
 
     const session = await LiveSession.findOne({
       roomName,
-      ...(admin.role === 'SUPERADMIN' ? {} : { hostAdmin: admin._id }),
       status: 'live',
     });
 
@@ -244,9 +245,50 @@ export const endLiveSession = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+// ---- ADMIN / SUPER ADMIN: End ALL active live broadcasts with one click ----
+export const endAllLiveSessions = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const admin = req.user;
+    if (!admin) {
+      throw new ApiError(401, 'सत्र उपलब्ध नहीं है, कृपया लॉगिन करें');
+    }
+
+    const activeSessions = await LiveSession.find({ status: 'live' });
+    for (const session of activeSessions) {
+      if (roomService) {
+        try {
+          await roomService.deleteRoom(session.roomName);
+        } catch {
+          // quiet
+        }
+      }
+    }
+
+    const result = await LiveSession.updateMany(
+      { status: 'live' },
+      { status: 'ended', endedAt: new Date(), currentViewers: 0 }
+    );
+
+    return sendResponse(
+      res,
+      200,
+      `${result.modifiedCount} सक्रिय लाइव प्रसारण सफलतापूर्वक समाप्त किए गए`
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ---- PUBLIC: List all currently live sessions (Supports Multiple Streams) ----
 export const listLiveSessions = async (_req: Request, res: Response, next: NextFunction) => {
   try {
+    // Auto-expire zombie sessions running longer than 6 hours
+    const staleThreshold = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    await LiveSession.updateMany(
+      { status: 'live', startedAt: { $lt: staleThreshold } },
+      { status: 'ended', endedAt: new Date(), currentViewers: 0 }
+    );
+
     const [sessions, globalSetting] = await Promise.all([
       LiveSession.find({ status: 'live' })
         .select('title description roomName hostName startedAt currentViewers peakViewers isChatEnabled isDonationEnabled')
@@ -482,6 +524,39 @@ export const getBroadcastHistory = async (req: Request, res: Response, next: Nex
       },
       pagination
     );
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ---- ADMIN / AUDIT: Get Per-Broadcast Logs (Chat History & Donations Stream) ----
+export const getSessionLogs = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { roomName } = req.params;
+    if (!roomName) {
+      throw new ApiError(400, 'रूम नाम आवश्यक है');
+    }
+
+    const [session, donations, messages] = await Promise.all([
+      LiveSession.findOne({ roomName }).populate('hostAdmin', 'name email avatar').lean(),
+      Donation.find({ liveSessionRoomName: roomName, status: 'paid' }).sort({ createdAt: -1 }).lean(),
+      LiveMessage.find({ roomName }).sort({ createdAt: 1 }).lean(),
+    ]);
+
+    if (!session) {
+      throw new ApiError(404, 'लाइव सत्र नहीं मिला');
+    }
+
+    const totalDonationAmount = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+
+    return sendResponse(res, 200, 'सत्र लॉग्स, चैट एवं दान विवरण', {
+      session,
+      donations,
+      totalDonationAmount,
+      totalDonationCount: donations.length,
+      messages,
+      totalMessagesCount: messages.length,
+    });
   } catch (err) {
     next(err);
   }

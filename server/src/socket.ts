@@ -3,6 +3,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { ENV } from './config/env';
 import { pushCommentToRedis, ChatComment } from './config/redis';
 import { LiveSession } from './models/LiveSession';
+import { LiveMessage } from './models/LiveMessage';
 import { SystemSetting } from './models/SystemSetting';
 import { logger } from './utils/logger';
 
@@ -164,7 +165,16 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
           // 2.4 Push to Redis List with EXPIRE 3600 & LTRIM 0 199
           await pushCommentToRedis(roomName, comment);
 
-          // 2.5 Broadcast to all viewers in the live room
+          // 2.5 Persist to MongoDB for permanent per-broadcast logs
+          LiveMessage.create({
+            roomName,
+            liveSession: session?._id,
+            name: cleanName,
+            message: cleanMessage,
+            isSuperChat: false,
+          }).catch((e) => logger.warn(`[Socket.io] DB LiveMessage save error: ${e.message}`));
+
+          // 2.6 Broadcast to all viewers in the live room
           io?.to(roomName).emit('new-comment', comment);
         } catch (err: any) {
           logger.error(`[Socket.io] Error handling send-comment: ${err.message}`);
@@ -172,7 +182,18 @@ export const initSocket = (httpServer: HttpServer): SocketIOServer => {
       }
     );
 
-    // --- 3. DISCONNECT CLEANUP ---
+    // --- 3. LIVE DEVOTIONAL REACTIONS (Floating Hearts, Diyas, Conch, Bells) ---
+    socket.on('send-reaction', (data: { roomName: string; emoji: string }) => {
+      if (data?.roomName && data?.emoji) {
+        io?.to(data.roomName).emit('new-reaction', {
+          id: `react_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          emoji: String(data.emoji).slice(0, 8),
+          timestamp: Date.now(),
+        });
+      }
+    });
+
+    // --- 4. DISCONNECT CLEANUP ---
     socket.on('disconnect', () => {
       lastCommentTimestamp.delete(socket.id);
       const rooms = socketRooms.get(socket.id);
@@ -203,15 +224,43 @@ export interface DonationBroadcastPayload {
   timestamp: string;
 }
 
-export const emitDonation = (payload: DonationBroadcastPayload) => {
+export const emitDonation = async (payload: DonationBroadcastPayload) => {
   if (!io) {
     logger.warn('[Socket.io] Cannot emit donation event: Socket.io server not initialized');
     return;
   }
 
-  // If live session room is specified, broadcast to room viewers first
+  // If live session room is specified, broadcast to room viewers as Super Chat
   if (payload.roomName) {
+    const superChatPayload = {
+      id: `sc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      name: payload.donorName,
+      message: payload.message || 'माँ के चरणों में पावन समर्पण एवं दान',
+      amount: payload.amount,
+      isSuperChat: true,
+      timestamp: payload.timestamp || new Date().toISOString(),
+      roomName: payload.roomName,
+    };
+
+    // Broadcast both standard donation and Super Chat highlight
     io.to(payload.roomName).emit('donation', payload);
+    io.to(payload.roomName).emit('super-chat', superChatPayload);
+    io.to(payload.roomName).emit('new-comment', superChatPayload);
+
+    // Save Super Chat to MongoDB LiveMessage log
+    try {
+      const session = await LiveSession.findOne({ roomName: payload.roomName });
+      await LiveMessage.create({
+        roomName: payload.roomName,
+        liveSession: session?._id,
+        name: payload.donorName,
+        message: payload.message || 'पावन दान एवं समर्पण',
+        isSuperChat: true,
+        donationAmount: payload.amount,
+      });
+    } catch (e: any) {
+      logger.warn(`[Socket.io] Error saving Super Chat log: ${e.message}`);
+    }
   }
 
   // Also broadcast globally so homepage or other viewers can see devotion feeds

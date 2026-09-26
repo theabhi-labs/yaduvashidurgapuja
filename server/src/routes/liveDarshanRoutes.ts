@@ -7,6 +7,7 @@ import {
   deleteScheduledSession,
   startLiveSession,
   endLiveSession,
+  endAllLiveSessions,
   listLiveSessions,
   joinLiveSession,
   getRoomComments,
@@ -15,6 +16,7 @@ import {
   getGlobalSettings,
   updateGlobalSettings,
   getBroadcastHistory,
+  getSessionLogs,
 } from '../controllers/liveDarshanController';
 
 const router = Router();
@@ -26,14 +28,16 @@ router.get('/global-settings', getGlobalSettings);
 router.get('/:roomName/join', optionalAuthenticate, joinLiveSession);
 router.get('/:roomName/comments', getRoomComments);
 
-// ---- ADMIN PROTECTED BROADCASTING & SCHEDULING ----
+// ---- ADMIN PROTECTED BROADCASTING, CONTROLS & LOGS ----
 router.post('/start', authenticate, requireAdmin, startLiveSession);
+router.post('/end-all-live', authenticate, requireAdmin, endAllLiveSessions);
 router.post('/:roomName/end', authenticate, requireAdmin, endLiveSession);
 router.post('/schedule', authenticate, requireAdmin, scheduleLiveSession);
 router.delete('/schedule/:id', authenticate, requireAdmin, deleteScheduledSession);
 router.patch('/:roomName/toggle-chat', authenticate, requireAdmin, toggleLiveChat);
 router.patch('/:roomName/toggle-donation', authenticate, requireAdmin, toggleLiveDonation);
 router.get('/history', authenticate, requireAdmin, getBroadcastHistory);
+router.get('/session/:roomName/logs', authenticate, requireAdmin, getSessionLogs);
 
 // ---- SUPER ADMIN ONLY CONTROLS ----
 router.patch('/global-settings', authenticate, requireSuperAdmin, updateGlobalSettings);

@@ -102,6 +102,20 @@ export const liveDarshanService = {
     return res.data;
   },
 
+  // Admin / Super Admin: End ALL active live broadcasts
+  async endAllLiveSessions() {
+    const res = await api.post<ApiResponse<null>>('/live-darshan/end-all-live');
+    return res.data;
+  },
+
+  // Admin / Audit: Get per-broadcast transcript and donation log
+  async getSessionLogs(roomName: string) {
+    const res = await api.get<ApiResponse<import('../types').SessionLogsResponse>>(
+      `/live-darshan/session/${roomName}/logs`
+    );
+    return res.data;
+  },
+
   // Admin: Get broadcast analytics history and peak viewers
   async getBroadcastHistory(params?: { page?: number; limit?: number }) {
     const res = await api.get<
