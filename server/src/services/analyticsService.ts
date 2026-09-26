@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { VisitorSession } from '../models/VisitorSession';
+import { PageHit } from '../models/PageHit';
 import { logger } from '../utils/logger';
 
 export interface DailyStat {
@@ -37,6 +38,27 @@ export class AnalyticsService {
   }
 
   /**
+   * Normalize any client path to its canonical public route
+   */
+  public static normalizePath(rawPath: string): string {
+    if (!rawPath) return '/';
+    const clean = rawPath.split('?')[0].split('#')[0].trim();
+    if (!clean || clean === '/') return '/';
+    if (clean === '/live-darshan' || clean === '/live' || clean === '/darshan') return '/live-darshan';
+    if (clean.startsWith('/memories')) return '/memories';
+    if (clean === '/committee' || clean.startsWith('/committee')) return '/committee';
+    if (clean === '/about' || clean.startsWith('/about')) return '/about';
+    if (clean === '/contact' || clean.startsWith('/contact')) return '/contact';
+    if (clean === '/share-memory' || clean.startsWith('/share-memory')) return '/share-memory';
+    if (clean.startsWith('/privacy')) return '/privacy-policy';
+    if (clean.startsWith('/terms')) return '/terms-and-conditions';
+    if (clean.startsWith('/contribution')) return '/contribution-policy';
+    if (clean.startsWith('/disclaimer')) return '/disclaimer';
+    if (clean.startsWith('/admin') || clean.startsWith('/superadmin')) return '/admin';
+    return clean;
+  }
+
+  /**
    * Anonymize client IP using SHA-256 hash
    */
   public static hashIp(ip: string): string {
@@ -45,7 +67,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Record or update visitor heartbeat
+   * Record or update visitor heartbeat & per-page hits
    */
   public static async recordHeartbeat(
     visitorId: string,
@@ -56,9 +78,10 @@ export class AnalyticsService {
     try {
       const today = this.getTodayDateString(0);
       const ipHash = this.hashIp(rawIp);
-      const cleanPath = (path || '/').split('?')[0].trim().substring(0, 100);
+      const cleanPath = this.normalizePath(path);
       const cleanUa = (userAgent || '').substring(0, 150);
 
+      // 1. Update Visitor Session document
       await VisitorSession.findOneAndUpdate(
         { visitorId, date: today },
         {
@@ -75,6 +98,16 @@ export class AnalyticsService {
         },
         { upsert: true, new: true }
       );
+
+      // 2. Increment exact per-page hit counter
+      const isRealVisitor = !visitorId.startsWith('visitor_seed_');
+      if (isRealVisitor) {
+        await PageHit.findOneAndUpdate(
+          { date: today, path: cleanPath },
+          { $inc: { views: 1 } },
+          { upsert: true, new: true }
+        );
+      }
 
       return { success: true, visitorId };
     } catch (error) {
@@ -172,36 +205,107 @@ export class AnalyticsService {
       };
     });
 
-    // 6. Popular Pages
-    const popularAgg = await VisitorSession.aggregate([
-      {
-        $match: realVisitorFilter,
-      },
-      {
-        $group: {
-          _id: '$path',
-          views: { $sum: '$pageViews' },
+    // 6. Popular Pages - Aggregate from PageHit collection + VisitorSession
+    const internalAdminRoutes = [
+      '/admin',
+      '/superadmin',
+      '/login',
+      '/register',
+      '/forgot-password',
+      '/reset-password',
+      '/verify-otp',
+      '/verify-email',
+    ];
+
+    const [pageHitAgg, sessionAgg] = await Promise.all([
+      PageHit.aggregate([
+        {
+          $match: {
+            path: { $nin: internalAdminRoutes },
+          },
         },
-      },
-      { $sort: { views: -1 } },
-      { $limit: 6 },
+        {
+          $group: {
+            _id: '$path',
+            views: { $sum: '$views' },
+          },
+        },
+        { $sort: { views: -1 } },
+      ]),
+      VisitorSession.aggregate([
+        {
+          $match: {
+            ...realVisitorFilter,
+            path: { $nin: internalAdminRoutes },
+          },
+        },
+        {
+          $group: {
+            _id: '$path',
+            views: { $sum: '$pageViews' },
+          },
+        },
+        { $sort: { views: -1 } },
+      ]),
     ]);
+
+    // Merge view counts by path
+    const pathViewMap = new Map<string, number>();
+
+    // Seed session counts
+    sessionAgg.forEach((item) => {
+      const norm = AnalyticsService.normalizePath(item._id);
+      if (!internalAdminRoutes.includes(norm)) {
+        pathViewMap.set(norm, (pathViewMap.get(norm) || 0) + item.views);
+      }
+    });
+
+    // Blend PageHit counts
+    pageHitAgg.forEach((item) => {
+      const norm = AnalyticsService.normalizePath(item._id);
+      if (!internalAdminRoutes.includes(norm)) {
+        pathViewMap.set(norm, Math.max(pathViewMap.get(norm) || 0, item.views));
+      }
+    });
 
     const pathTitles: Record<string, string> = {
       '/': 'मुख्य पृष्ठ (Home)',
+      '/live-darshan': 'लाइव दर्शन (Live Darshan)',
       '/memories': 'स्मृतियाँ संचय (Memories Archive)',
       '/committee': 'समिति सदस्य (Committee)',
       '/about': 'हमारे बारे में (About)',
-      '/contact': 'संपर्क करें (Contact)',
       '/share-memory': 'स्मृति साझा करें (Share Memory)',
-      '/privacy': 'गोपनीयता नीति (Privacy Policy)',
-      '/terms': 'नियम व शर्तें (Terms)',
+      '/contact': 'संपर्क सूत्र (Contact)',
+      '/privacy-policy': 'गोपनीयता नीति (Privacy Policy)',
+      '/terms-and-conditions': 'नियम व शर्तें (Terms)',
+      '/contribution-policy': 'सहयोग नीति (Contribution Policy)',
+      '/disclaimer': 'अस्वीकरण (Disclaimer)',
     };
 
-    const popularPages: PopularPage[] = popularAgg.map((item) => ({
-      path: item._id || '/',
-      title: pathTitles[item._id] || item._id || 'अन्य पृष्ठ',
-      views: item.views,
+    // Ensure core pages are present in ranking
+    const defaultCorePaths = [
+      '/',
+      '/live-darshan',
+      '/memories',
+      '/committee',
+      '/about',
+      '/share-memory',
+      '/contact',
+    ];
+
+    defaultCorePaths.forEach((p) => {
+      if (!pathViewMap.has(p)) {
+        // Minimum baseline view for active telemetry
+        pathViewMap.set(p, 0);
+      }
+    });
+
+    const sortedEntries = Array.from(pathViewMap.entries()).sort((a, b) => b[1] - a[1]);
+
+    const popularPages: PopularPage[] = sortedEntries.slice(0, 7).map(([pathKey, count]) => ({
+      path: pathKey,
+      title: pathTitles[pathKey] || pathKey,
+      views: count,
     }));
 
     return {

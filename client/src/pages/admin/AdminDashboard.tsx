@@ -318,16 +318,16 @@ export const AdminDashboard: React.FC = () => {
                 </h3>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[290px] overflow-y-auto pr-1 scrollbar-thin">
                 {visitorsData?.popularPages && visitorsData.popularPages.length > 0 ? (
-                  visitorsData.popularPages.slice(0, 5).map((page) => {
+                  visitorsData.popularPages.slice(0, 7).map((page) => {
                     const totalViews = visitorsData.totalPageViews || 1;
                     const percent = Math.min(Math.round((page.views / totalViews) * 100), 100);
 
                     return (
                       <div key={page.path} className="space-y-1">
                         <div className="flex items-center justify-between text-xs font-body">
-                          <span className="font-medium text-dark-900 truncate max-w-[170px]" title={page.title}>
+                          <span className="font-medium text-dark-900 truncate max-w-[190px]" title={page.title}>
                             {page.title}
                           </span>
                           <span className="text-muted font-semibold">{page.views} views</span>
