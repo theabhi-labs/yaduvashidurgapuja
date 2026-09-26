@@ -15,7 +15,7 @@ import { User } from '../models/User';
 // ---- PUBLIC: Create a Razorpay donation order ----
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { amount, donorName, isAnonymous, liveSessionRoomName, message } = req.body;
+    const { amount, donorName, isAnonymous, liveSessionRoomName, message, type } = req.body;
 
     const parsedAmount = Number(amount);
     if (isNaN(parsedAmount) || parsedAmount < 1) {
@@ -23,15 +23,18 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
     }
 
     const effectiveDonorName = isAnonymous ? 'गुमनाम भक्त' : (donorName?.trim() || req.user?.name || 'श्रद्धालु');
+    const effectiveType: 'donation' | 'dakshina' = type === 'dakshina' || (!type && liveSessionRoomName) ? 'dakshina' : 'donation';
+
     let orderId: string;
 
     if (razorpayInstance) {
       const order = await razorpayInstance.orders.create({
         amount: Math.round(parsedAmount * 100), // in paise
         currency: 'INR',
-        receipt: `puja_${Date.now().toString().slice(-8)}`,
+        receipt: `${effectiveType === 'dakshina' ? 'dak' : 'puja'}_${Date.now().toString().slice(-8)}`,
         notes: {
           donorName: effectiveDonorName,
+          type: effectiveType,
           liveSessionRoomName: liveSessionRoomName || '',
           userId: req.user?._id?.toString() || '',
         },
@@ -49,18 +52,20 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
       currency: 'INR',
       razorpayOrderId: orderId,
       status: 'created',
+      type: effectiveType,
       liveSessionRoomName: liveSessionRoomName || undefined,
       user: req.user?._id,
       isAnonymous: Boolean(isAnonymous),
       message: message ? String(message).trim() : undefined,
     });
 
-    return sendResponse(res, 201, 'दान ऑर्डर तैयार किया गया', {
+    return sendResponse(res, 201, `${effectiveType === 'dakshina' ? 'पावन दक्षिणा' : 'दान'} ऑर्डर तैयार किया गया`, {
       orderId,
       amount: parsedAmount,
       currency: 'INR',
       keyId: RAZORPAY_KEY_ID,
       donorName: effectiveDonorName,
+      type: effectiveType,
       donationId: donation._id,
     });
   } catch (err) {
@@ -117,8 +122,9 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
     const finalDonorName = donation.isAnonymous ? 'गुमनाम भक्त' : (donation.donorName || userObj?.name || 'श्रद्धालु');
     const finalAvatar = donation.isAnonymous ? '' : (userObj?.avatar || '');
     const finalUsername = donation.isAnonymous ? '' : (userObj?.username || '');
+    const effectiveType = donation.type || (donation.liveSessionRoomName ? 'dakshina' : 'donation');
 
-    // Broadcast real-time donation event to viewers with avatar & username
+    // Broadcast real-time donation event to viewers with avatar & username & type
     emitDonation({
       donorName: finalDonorName,
       amount: donation.amount,
@@ -126,6 +132,7 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
       avatar: finalAvatar,
       username: finalUsername,
       roomName: donation.liveSessionRoomName,
+      type: effectiveType,
       timestamp: new Date().toISOString(),
     });
 
@@ -140,10 +147,14 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
         minute: '2-digit',
       });
 
+      const receiptSubject = effectiveType === 'dakshina'
+        ? `पावन दक्षिणा पावती रसीद (₹${donation.amount}) — श्री यदुवंशी दुर्गा पूजा कपूरिपुर`
+        : `पावन दान पावती रसीद (₹${donation.amount}) — श्री यदुवंशी दुर्गा पूजा कपूरिपुर`;
+
       sendEmail({
         to: recipientEmail,
         name: finalDonorName,
-        subject: `पावन दान पावती रसीद (₹${donation.amount}) — श्री यदुवंशी दुर्गा पूजा कपूरिपुर`,
+        subject: receiptSubject,
         htmlContent: getReceiptEmailHtml({
           donorName: finalDonorName,
           amount: donation.amount,
@@ -158,7 +169,9 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
     return sendResponse(
       res,
       200,
-      'माँ दुर्गा की कृपा से आपका दान सफलतापूर्वक प्राप्त हुआ! जय माता दी 🙏',
+      effectiveType === 'dakshina'
+        ? 'माँ दुर्गा की कृपा से आपकी पावन दक्षिणा सफलतापूर्वक प्राप्त हुई! जय माता दी 🙏'
+        : 'माँ दुर्गा की कृपा से आपका दान सफलतापूर्वक प्राप्त हुआ! जय माता दी 🙏',
       donation
     );
   } catch (err) {
@@ -167,16 +180,33 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
 };
 
 // ---- PUBLIC: Get Wall of Donors sorted descending by donation amount ----
-export const getPublicDonorsWall = async (_req: Request, res: Response, next: NextFunction) => {
+export const getPublicDonorsWall = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const { type } = req.query;
+    const matchFilter: any = { status: 'paid' };
+
+    if (type === 'dakshina') {
+      matchFilter.$or = [
+        { type: 'dakshina' },
+        { liveSessionRoomName: { $exists: true, $nin: [null, ''] } },
+      ];
+    } else if (type === 'donation') {
+      matchFilter.type = { $ne: 'dakshina' };
+      matchFilter.$or = [
+        { liveSessionRoomName: null },
+        { liveSessionRoomName: '' },
+        { liveSessionRoomName: { $exists: false } },
+      ];
+    }
+
     const [donors, stats] = await Promise.all([
-      Donation.find({ status: 'paid' })
+      Donation.find(matchFilter)
         .sort({ amount: -1, createdAt: -1 })
         .limit(200)
         .populate('user', 'name username avatar role')
         .lean(),
       Donation.aggregate([
-        { $match: { status: 'paid' } },
+        { $match: matchFilter },
         {
           $group: {
             _id: null,
@@ -198,6 +228,8 @@ export const getPublicDonorsWall = async (_req: Request, res: Response, next: Ne
         username: isAnon ? undefined : (user?.username || undefined),
         avatar: isAnon ? '' : (user?.avatar || ''),
         amount: d.amount,
+        type: d.type || (d.liveSessionRoomName ? 'dakshina' : 'donation'),
+        liveSessionRoomName: d.liveSessionRoomName,
         message: d.message,
         createdAt: d.createdAt,
         isAnonymous: isAnon,
@@ -242,41 +274,94 @@ export const getMyDonations = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-// ---- ADMIN ONLY: Get paginated donation history with stats ----
+// ---- ADMIN ONLY: Get paginated donation and dakshina logs with separated stats ----
 export const getDonations = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
     const skip = (page - 1) * limit;
 
-    const { status, liveSessionRoomName, search } = req.query;
+    const { status, liveSessionRoomName, search, type } = req.query;
 
-    const filter: any = {};
+    const queryConditions: any[] = [];
+
+    // Status filter
     if (status && ['created', 'paid', 'failed'].includes(String(status))) {
-      filter.status = status;
+      queryConditions.push({ status });
     }
+
+    // Specific live session room filter
     if (liveSessionRoomName) {
-      filter.liveSessionRoomName = liveSessionRoomName;
+      queryConditions.push({ liveSessionRoomName });
     }
+
+    // Type filter: 'donation' | 'dakshina' | 'all'
+    if (type === 'dakshina') {
+      queryConditions.push({
+        $or: [
+          { type: 'dakshina' },
+          { liveSessionRoomName: { $exists: true, $nin: [null, ''] } },
+        ],
+      });
+    } else if (type === 'donation') {
+      queryConditions.push({
+        type: { $ne: 'dakshina' },
+        $or: [
+          { liveSessionRoomName: null },
+          { liveSessionRoomName: '' },
+          { liveSessionRoomName: { $exists: false } },
+        ],
+      });
+    }
+
+    // Search filter
     if (search && typeof search === 'string') {
       const sanitizedSearch = escapeRegExp(search.trim());
       if (sanitizedSearch.length > 0) {
-        filter.$or = [
-          { donorName: { $regex: sanitizedSearch, $options: 'i' } },
-          { razorpayOrderId: { $regex: sanitizedSearch, $options: 'i' } },
-          { razorpayPaymentId: { $regex: sanitizedSearch, $options: 'i' } },
-        ];
+        queryConditions.push({
+          $or: [
+            { donorName: { $regex: sanitizedSearch, $options: 'i' } },
+            { razorpayOrderId: { $regex: sanitizedSearch, $options: 'i' } },
+            { razorpayPaymentId: { $regex: sanitizedSearch, $options: 'i' } },
+            { liveSessionRoomName: { $regex: sanitizedSearch, $options: 'i' } },
+            { message: { $regex: sanitizedSearch, $options: 'i' } },
+          ],
+        });
       }
     }
 
+    const filter = queryConditions.length > 0 ? { $and: queryConditions } : {};
+
     const [donations, total, stats] = await Promise.all([
-      Donation.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Donation.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('user', 'name username email avatar')
+        .lean(),
       Donation.countDocuments(filter),
       Donation.aggregate([
         { $match: { status: 'paid' } },
         {
           $group: {
-            _id: null,
+            _id: {
+              $cond: [
+                {
+                  $or: [
+                    { $eq: ['$type', 'dakshina'] },
+                    {
+                      $and: [
+                        { $ne: ['$liveSessionRoomName', null] },
+                        { $ne: ['$liveSessionRoomName', ''] },
+                        { $ifNull: ['$liveSessionRoomName', false] },
+                      ],
+                    },
+                  ],
+                },
+                'dakshina',
+                'donation',
+              ],
+            },
             totalAmount: { $sum: '$amount' },
             count: { $sum: 1 },
           },
@@ -294,18 +379,37 @@ export const getDonations = async (req: Request, res: Response, next: NextFuncti
       hasNextPage: page < totalPages,
     };
 
-    const totalCollected = stats.length > 0 ? stats[0].totalAmount : 0;
-    const paidCount = stats.length > 0 ? stats[0].count : 0;
+    let totalDonations = 0;
+    let donationsPaidCount = 0;
+    let totalDakshina = 0;
+    let dakshinaPaidCount = 0;
+
+    stats.forEach((item: any) => {
+      if (item._id === 'dakshina') {
+        totalDakshina = item.totalAmount || 0;
+        dakshinaPaidCount = item.count || 0;
+      } else {
+        totalDonations = item.totalAmount || 0;
+        donationsPaidCount = item.count || 0;
+      }
+    });
+
+    const totalCollected = totalDonations + totalDakshina;
+    const paidCount = donationsPaidCount + dakshinaPaidCount;
 
     return sendResponse(
       res,
       200,
-      'दान सूची प्राप्त हुई',
+      'दान एवं दक्षिणा रिकॉर्ड्स प्राप्त हुए',
       {
         donations,
         summary: {
           totalCollected,
           paidCount,
+          totalDonations,
+          donationsPaidCount,
+          totalDakshina,
+          dakshinaPaidCount,
         },
       },
       pagination
@@ -314,6 +418,7 @@ export const getDonations = async (req: Request, res: Response, next: NextFuncti
     next(err);
   }
 };
+
 
 /**
  * Razorpay Server-to-Server Webhook Handler

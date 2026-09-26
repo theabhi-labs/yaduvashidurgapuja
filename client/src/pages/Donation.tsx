@@ -198,8 +198,10 @@ export const Donation: React.FC = () => {
         amount: finalAmount,
         donorName: isAnonymous ? 'गुमनाम भक्त' : (donorName.trim() || user?.name || 'श्रद्धालु भक्त'),
         isAnonymous,
+        type: 'donation',
         message: `${sevaCategory ? `[${sevaCategory.toUpperCase()}] ` : ''}${message.trim()}`.trim() || undefined,
       });
+
 
       const orderData = res.data;
 

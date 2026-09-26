@@ -1,10 +1,11 @@
 import { api } from './api';
-import { ApiResponse, Donation, DonationOrderResponse } from '../types';
+import { ApiResponse, Donation, DonationOrderResponse, DonationType } from '../types';
 
 export interface CreateDonationOrderPayload {
   amount: number;
   donorName?: string;
   isAnonymous?: boolean;
+  type?: DonationType;
   liveSessionRoomName?: string;
   message?: string;
 }
@@ -13,6 +14,15 @@ export interface VerifyDonationPayload {
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
+}
+
+export interface DonationSummaryStats {
+  totalCollected: number;
+  paidCount: number;
+  totalDonations: number;
+  donationsPaidCount: number;
+  totalDakshina: number;
+  dakshinaPaidCount: number;
 }
 
 export const donationService = {
@@ -29,7 +39,7 @@ export const donationService = {
   },
 
   // Public: Get wall of donors sorted descending by amount with live summary stats
-  async getPublicWall() {
+  async getPublicWall(params?: { type?: DonationType | 'all' }) {
     const res = await api.get<
       ApiResponse<{
         donors: Array<{
@@ -38,6 +48,8 @@ export const donationService = {
           username?: string;
           avatar?: string;
           amount: number;
+          type?: DonationType;
+          liveSessionRoomName?: string;
           message?: string;
           createdAt: string;
           isAnonymous?: boolean;
@@ -48,7 +60,7 @@ export const donationService = {
           highestDonation: number;
         };
       }>
-    >('/donations/public-wall');
+    >('/donations/public-wall', { params });
     return res.data;
   },
 
@@ -64,14 +76,22 @@ export const donationService = {
     return res.data;
   },
 
-  // Admin: Get donation logs & metrics
-  async getDonations(params?: { page?: number; limit?: number; status?: string; search?: string }) {
+  // Admin: Get donation logs & metrics with separate Dakshina / Donation breakdown
+  async getDonations(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+    type?: DonationType | 'all';
+    liveSessionRoomName?: string;
+  }) {
     const res = await api.get<
       ApiResponse<{
         donations: Donation[];
-        summary: { totalCollected: number; paidCount: number };
+        summary: DonationSummaryStats;
       }>
     >('/donations', { params });
     return res.data;
   },
 };
+

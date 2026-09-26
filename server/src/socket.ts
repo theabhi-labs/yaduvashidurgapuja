@@ -231,6 +231,7 @@ export interface DonationBroadcastPayload {
   avatar?: string;
   username?: string;
   roomName?: string;
+  type?: 'donation' | 'dakshina';
   timestamp: string;
 }
 

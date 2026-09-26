@@ -1,6 +1,7 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 export type DonationStatus = 'created' | 'paid' | 'failed';
+export type DonationType = 'donation' | 'dakshina';
 
 export interface IDonation extends Document {
   donorName: string;
@@ -10,6 +11,7 @@ export interface IDonation extends Document {
   razorpayPaymentId?: string;
   razorpaySignature?: string;
   status: DonationStatus;
+  type: DonationType;
   liveSessionRoomName?: string;
   user?: Types.ObjectId;
   isAnonymous: boolean;
@@ -32,6 +34,12 @@ const donationSchema = new Schema<IDonation>(
       default: 'created',
       index: true,
     },
+    type: {
+      type: String,
+      enum: ['donation', 'dakshina'],
+      default: 'donation',
+      index: true,
+    },
     liveSessionRoomName: { type: String, index: true },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     isAnonymous: { type: Boolean, default: false },
@@ -42,3 +50,4 @@ const donationSchema = new Schema<IDonation>(
 
 export const Donation = model<IDonation>('Donation', donationSchema);
 export default Donation;
+

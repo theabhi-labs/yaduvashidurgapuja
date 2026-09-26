@@ -200,6 +200,7 @@ export interface SessionLogsResponse {
 }
 
 export type DonationStatus = 'created' | 'paid' | 'failed';
+export type DonationType = 'donation' | 'dakshina';
 
 export interface Donation {
   _id: string;
@@ -209,7 +210,15 @@ export interface Donation {
   razorpayOrderId: string;
   razorpayPaymentId?: string;
   status: DonationStatus;
+  type?: DonationType;
   liveSessionRoomName?: string;
+  user?: {
+    _id: string;
+    name: string;
+    username?: string;
+    email?: string;
+    avatar?: string;
+  };
   isAnonymous: boolean;
   message?: string;
   createdAt: string;
@@ -222,8 +231,10 @@ export interface DonationOrderResponse {
   currency: string;
   keyId: string;
   donorName: string;
+  type?: DonationType;
   donationId: string;
 }
+
 
 export interface PaginationMeta {
   page: number;

@@ -56,7 +56,9 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
         isAnonymous,
         message: message.trim() || undefined,
         liveSessionRoomName: roomName,
+        type: 'dakshina',
       });
+
 
       const options = {
         key: orderData.data.keyId,

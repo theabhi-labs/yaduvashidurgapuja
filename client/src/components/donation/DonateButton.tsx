@@ -63,9 +63,11 @@ export const DonateButton: React.FC<DonateButtonProps> = ({
         amount: finalAmount,
         donorName: isAnonymous ? 'Anonymous Devotee' : (donorName.trim() || 'Devotee'),
         isAnonymous,
+        type: liveSessionRoomName ? 'dakshina' : 'donation',
         liveSessionRoomName,
         message: message.trim() || undefined,
       });
+
 
       const orderData = res.data;
 
