@@ -171,6 +171,9 @@ export const AdminMemories: React.FC = () => {
                         src={getImageUrl(mem.thumbnailUrl || mem.imageUrl)}
                         alt=""
                         className="w-16 h-12 rounded-lg object-cover border border-cream-300"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+                        }}
                       />
                     </td>
                     <td className="p-4 max-w-xs">

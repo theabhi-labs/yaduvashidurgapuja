@@ -271,7 +271,7 @@ export class MemoryController {
   }
 
   /**
-   * Delete Memory (Owner or Admin)
+   * Delete Memory (Owner, Admin or SuperAdmin)
    * DELETE /api/memories/:id
    */
   public static async deleteMemory(req: Request, res: Response, next: NextFunction) {
@@ -283,23 +283,31 @@ export class MemoryController {
       const { id } = req.params;
       const memory = await Memory.findById(id);
       if (!memory) {
-        throw new ApiError(404, 'स्मृति नहीं मिली');
+        // If already deleted from DB, return success cleanly
+        return sendResponse(res, 200, 'स्मृति सफलतापूर्वक हटा दी गई');
       }
 
-      const isOwner = memory.userId.toString() === req.user._id.toString();
+      const isOwner = memory.userId ? memory.userId.toString() === req.user._id.toString() : false;
       const isAdmin = req.user.role === 'ADMIN' || req.user.role === 'SUPERADMIN';
 
       if (!isOwner && !isAdmin) {
         throw new ApiError(403, 'आप केवल अपनी ही स्मृति को हटा सकते हैं');
       }
 
-      // Clean up files from storage
-      await ImageService.deleteImageFiles([memory.imageUrl, memory.thumbnailUrl]);
+      // Safely clean up storage files without failing the DB deletion
+      try {
+        const filesToDelete = [memory.imageUrl, memory.thumbnailUrl].filter(Boolean) as string[];
+        if (filesToDelete.length > 0) {
+          await ImageService.deleteImageFiles(filesToDelete);
+        }
+      } catch (fileErr) {
+        logger.warn(`Storage file cleanup error for memory ${id}:`, fileErr);
+      }
 
-      // Remove record from database
+      // Remove record from database permanently
       await Memory.findByIdAndDelete(id);
 
-      logger.info(`Memory ${id} deleted by ${req.user.email}`);
+      logger.info(`Memory ${id} permanently deleted by ${req.user.email} (Role: ${req.user.role})`);
 
       return sendResponse(res, 200, 'स्मृति सफलतापूर्वक हटा दी गई');
     } catch (error) {

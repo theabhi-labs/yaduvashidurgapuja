@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { AdminController } from '../controllers/adminController';
+import { MemoryController } from '../controllers/memoryController';
 import { authenticate } from '../middleware/authMiddleware';
 import { requireAdmin, requireSuperAdmin } from '../middleware/adminMiddleware';
 import { validateRequest } from '../middleware/validateRequest';
@@ -25,6 +26,7 @@ router.patch('/users/:id/suspend', AdminController.toggleUserSuspension);
 // Memories moderation
 router.get('/memories', AdminController.getAllMemories);
 router.patch('/memories/:id/status', AdminController.updateMemoryStatus);
+router.delete('/memories/:id', MemoryController.deleteMemory);
 
 // Reports management
 router.get('/reports', AdminController.getReports);

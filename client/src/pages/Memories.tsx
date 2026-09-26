@@ -13,6 +13,7 @@ import { adService } from '../services/adService';
 import { Ad } from '../types';
 import { getImageUrl } from '../utils/helpers';
 import { useDebounce } from '../hooks/useDebounce';
+import { useToast } from '../context/ToastContext';
 import { 
   Search, 
   ChevronLeft, 
@@ -28,6 +29,7 @@ import {
 const AD_FREQUENCY = 8;
 
 export const Memories: React.FC = () => {
+  const toast = useToast();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [ads, setAds] = useState<Ad[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -36,6 +38,19 @@ export const Memories: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | undefined>(undefined);
   const [page, setPage] = useState<number>(1);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+
+  const handleDeleteMemory = async (id: string) => {
+    try {
+      await memoryService.deleteMemory(id);
+      toast.success('स्मृति सफलतापूर्वक हटा दी गई');
+      setMemories((prev) => prev.filter((m) => m._id !== id));
+      if (selectedModalMemory && selectedModalMemory._id === id) {
+        setSelectedModalMemory(null);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || 'स्मृति हटाने में समस्या आई');
+    }
+  };
 
   // Devotee member suggestions search
   const [memberSuggestions, setMemberSuggestions] = useState<MemberSearchResult[]>([]);
@@ -322,7 +337,7 @@ export const Memories: React.FC = () => {
                   <React.Fragment key={memory._id}>
                     <InstagramMemoryCard
                       memory={memory}
-                      onDelete={(id) => setMemories((prev) => prev.filter((m) => m._id !== id))}
+                      onDelete={handleDeleteMemory}
                     />
                     {/* Custom Direct Sponsor Ad */}
                     {showCustomAd && customAdToRender && (
@@ -352,6 +367,9 @@ export const Memories: React.FC = () => {
                     alt={memory.caption || 'Kapooripur Memory'}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+                    }}
                   />
                   {/* Subtle hover overlay */}
                   <div className="absolute inset-0 bg-dark-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2 text-cream-50">
@@ -409,10 +427,7 @@ export const Memories: React.FC = () => {
         isOpen={!!selectedModalMemory}
         memory={selectedModalMemory}
         onClose={() => setSelectedModalMemory(null)}
-        onDelete={(id) => {
-          setMemories((prev) => prev.filter((m) => m._id !== id));
-          setSelectedModalMemory(null);
-        }}
+        onDelete={handleDeleteMemory}
       />
     </div>
   );

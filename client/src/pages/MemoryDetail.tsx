@@ -177,6 +177,9 @@ export const MemoryDetail: React.FC = () => {
             src={getImageUrl(memory.imageUrl)}
             alt={memory.caption}
             className="w-full max-h-[700px] object-contain mx-auto"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+            }}
           />
 
           {/* Floating Year Tag */}

@@ -235,6 +235,9 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
           alt={memory.caption || 'Kapooripur Durga Puja Memory'}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.01]"
           loading="lazy"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+          }}
         />
 
         {/* Sacred Diya / Heart Double Tap Bloom Animation */}

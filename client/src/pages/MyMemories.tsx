@@ -112,6 +112,9 @@ export const MyMemories: React.FC = () => {
                     src={getImageUrl(mem.thumbnailUrl || mem.imageUrl)}
                     alt={mem.caption}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+                    }}
                   />
                 </Link>
                 <div className="absolute top-3 left-3 bg-dark-900/80 backdrop-blur-md text-gold-300 text-xs font-semibold px-2.5 py-1 rounded-full">

@@ -30,8 +30,9 @@ export const createOrder = async (req: Request, res: Response, next: NextFunctio
 
     let orderId: string;
 
-    if (razorpayInstance) {
-      const order = await razorpayInstance.orders.create({
+    const instance: any = razorpayInstance;
+    if (instance) {
+      const order = await instance.orders.create({
         amount: Math.round(parsedAmount * 100), // in paise
         currency: 'INR',
         receipt: `${effectiveType === 'dakshina' ? 'dak' : 'puja'}_${Date.now().toString().slice(-8)}`,

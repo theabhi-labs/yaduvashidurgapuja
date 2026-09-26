@@ -56,6 +56,9 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
             alt={memory.caption}
             loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = '/hero-durga.jpg';
+            }}
           />
         </Link>
         {/* Year Tag Badge */}
