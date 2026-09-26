@@ -152,17 +152,15 @@ export class AuthController {
   public static async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = req.body;
+      if (!email || !email.trim()) {
+        throw new ApiError(400, 'कृपया अपना ईमेल पता दर्ज करें');
+      }
+
       const normalizedEmail = email.toLowerCase().trim();
 
       const user = await User.findOne({ email: normalizedEmail });
       if (!user) {
-        // Prevent user enumeration: respond identically
-        return sendResponse(
-          res,
-          200,
-          'यदि यह ईमेल हमारे पास पंजीकृत है, तो 6 अंकों का OTP भेज दिया गया है।',
-          { email: normalizedEmail }
-        );
+        throw new ApiError(404, 'यह ईमेल पता हमारे डेटाबेस में पंजीकृत नहीं है। कृपया सही ईमेल दर्ज करें या नया खाता बनाएं।');
       }
 
       // Generate 6-digit numeric OTP (100000 to 999999)
@@ -179,22 +177,26 @@ export class AuthController {
 
       logger.info(`[Password Reset OTP Generated] User: ${user.email}`);
 
-      // Send OTP via Brevo Transactional Email (non-blocking)
-      sendEmail({
+      // Send OTP via Brevo Transactional Email
+      const emailSent = await sendEmail({
         to: user.email,
         name: user.name,
         subject: '॥ यदुवंशी दुर्गा पूजा ॥ पासवर्ड रीसेट हेतु OTP कोड',
         htmlContent: getOtpEmailHtml(user.name, otp),
-      }).catch((err) => logger.warn(`[OTP Email Error] ${err.message}`));
+      });
+
+      if (!emailSent && ENV.BREVO_API_KEY) {
+        logger.error(`[OTP Email] Brevo failed to deliver OTP to ${user.email}`);
+      }
 
       return sendResponse(
         res,
         200,
-        'यदि यह ईमेल हमारे पास पंजीकृत है, तो 6 अंकों का OTP भेज दिया गया है।',
+        `6-अंकों का OTP कोड ${user.email} पर भेज दिया गया है।`,
         { 
           email: normalizedEmail,
-          // Only in development simulation for quick testing if Brevo key is unset
-          ...(ENV.NODE_ENV !== 'production' && !ENV.BREVO_API_KEY ? { devOtp: otp } : {})
+          // In non-production or if brevo not configured, provide devOtp for testing
+          ...(!ENV.isProduction || !ENV.BREVO_API_KEY ? { devOtp: otp } : {})
         }
       );
     } catch (error) {

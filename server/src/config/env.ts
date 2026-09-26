@@ -23,7 +23,7 @@ export const ENV = {
   
   // Brevo Transactional Email
   BREVO_API_KEY: process.env.BREVO_API_KEY || '',
-  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL || 'contact@kapooripur.in',
+  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL || 'abhishekyadavcode@gmail.com',
   BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME || 'Yaduvashi Durga Puja Kapooripur',
 
   // LiveKit WebRTC Video Streaming
