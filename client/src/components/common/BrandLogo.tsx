@@ -41,12 +41,12 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     <div className={`flex items-center gap-2.5 sm:gap-3 group ${className}`}>
       {/* Sacred Emblem Logo with Favicon */}
       <div
-        className={`${currentSize.emblem} bg-maroon-800 p-1 flex items-center justify-center shadow-md border border-amber-400/40 group-hover:border-amber-400 group-hover:scale-105 group-hover:shadow-gold-glow transition-all duration-300 relative overflow-hidden shrink-0`}
+        className={`${currentSize.emblem} bg-maroon-900/90 p-0.5 flex items-center justify-center shadow-md border border-amber-400/50 group-hover:border-amber-400 group-hover:scale-105 group-hover:shadow-gold-glow transition-all duration-300 relative overflow-hidden shrink-0`}
       >
         <img
           src="/favicon.svg"
-          alt="यदुवंशी दुर्गा पूजा"
-          className="w-full h-full object-contain filter drop-shadow"
+          alt="यदुवंशी दुर्गा पूजा कपूरिपुर"
+          className="w-full h-full object-contain filter drop-shadow-sm"
         />
       </div>
 

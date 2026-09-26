@@ -1,48 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
   <defs>
-    <!-- Sacred Background Gradient -->
-    <radialGradient id="bgGrad" cx="50%" cy="40%" r="65%">
-      <stop offset="0%" stop-color="#4A050B"/>
-      <stop offset="60%" stop-color="#2D0206"/>
-      <stop offset="100%" stop-color="#140103"/>
-    </radialGradient>
-
     <!-- Flame Gradient -->
-    <linearGradient id="favFlameGrad" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="0%" stop-color="#FF7A00"/>
-      <stop offset="50%" stop-color="#FF4D00"/>
-      <stop offset="100%" stop-color="#D90429"/>
+    <linearGradient id="durgaFlameGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FF5722"/>
+      <stop offset="45%" stop-color="#FF8A00"/>
+      <stop offset="100%" stop-color="#E63946"/>
     </linearGradient>
 
     <!-- Lip Gradient -->
-    <linearGradient id="favLipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#E63946"/>
-      <stop offset="100%" stop-color="#9E1B32"/>
+    <linearGradient id="durgaLipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#B21E35"/>
+      <stop offset="100%" stop-color="#850E23"/>
     </linearGradient>
 
     <!-- Gold Bead Gradient -->
-    <radialGradient id="favGoldBead" cx="35%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#FFEAA7"/>
-      <stop offset="60%" stop-color="#F5B041"/>
-      <stop offset="100%" stop-color="#B8860B"/>
+    <radialGradient id="goldBead" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFE29F"/>
+      <stop offset="60%" stop-color="#D49A3D"/>
+      <stop offset="100%" stop-color="#8C5814"/>
     </radialGradient>
 
     <!-- Red Bead Gradient -->
-    <radialGradient id="favRedBead" cx="35%" cy="35%" r="65%">
+    <radialGradient id="redBead" cx="35%" cy="35%" r="65%">
       <stop offset="0%" stop-color="#FF6B6B"/>
-      <stop offset="70%" stop-color="#C92A2A"/>
-      <stop offset="100%" stop-color="#7A0000"/>
+      <stop offset="70%" stop-color="#A61C1C"/>
+      <stop offset="100%" stop-color="#660000"/>
     </radialGradient>
   </defs>
 
-  <!-- Sacred Rounded Shield Badge -->
-  <rect width="500" height="500" rx="110" fill="url(#bgGrad)"/>
-  <rect x="12" y="12" width="476" height="476" rx="100" fill="none" stroke="#D4AF37" stroke-width="6" opacity="0.65"/>
-  <rect x="22" y="22" width="456" height="456" rx="90" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.3"/>
-
-  <g id="durga-face" transform="translate(0, 5)">
-    <!-- 1. FOREHEAD FLAME TILAK -->
-    <g fill="#FFD700" opacity="0.95">
+  <g id="durga-emblem" transform="translate(0, 0)">
+    <!-- 1. FOREHEAD FLAME TILAK (Trinetra Flame) -->
+    <!-- Halo dots around flame -->
+    <g fill="#D49A3D" opacity="0.9">
       <circle cx="250" cy="85" r="2.5" />
       <circle cx="240" cy="92" r="2.5" />
       <circle cx="260" cy="92" r="2.5" />
@@ -70,7 +59,7 @@
              C 226,192 237,204 250,204 
              C 263,204 274,192 274,170 
              C 274,145 256,115 250,96 Z" 
-          fill="url(#favFlameGrad)"/>
+          fill="url(#durgaFlameGrad)"/>
 
     <!-- Inner White Droplet -->
     <path d="M 250,138 
@@ -78,7 +67,7 @@
              C 237,192 243,197 250,197 
              C 257,197 263,192 263,180 
              C 263,166 254,149 250,138 Z" 
-          fill="#FFFDF7"/>
+          fill="#FFFFFF"/>
 
     <!-- Inner Black Core -->
     <path d="M 250,154 
@@ -86,45 +75,51 @@
              C 243,187 246,190 250,190 
              C 254,190 257,187 257,180 
              C 257,172 252,162 250,154 Z" 
-          fill="#111111"/>
+          fill="#1A1A1A"/>
 
     <!-- 2. SACRED RED BINDI -->
-    <circle cx="250" cy="229" r="10" fill="#E63946"/>
+    <circle cx="250" cy="229" r="10" fill="#C41E3A"/>
 
     <!-- 3. EYEBROWS -->
+    <!-- Left Eyebrow -->
     <path d="M 238,260 
              C 226,242 195,206 142,192 
              C 114,184 104,170 104,170 
              C 104,170 120,188 152,203 
              C 188,220 220,250 238,260 Z" 
-          fill="#FFFFFF"/>
+          fill="#111111"/>
 
+    <!-- Right Eyebrow -->
     <path d="M 262,260 
              C 274,242 305,206 358,192 
              C 386,184 396,170 396,170 
              C 396,170 380,188 348,203 
              C 312,220 280,250 262,260 Z" 
-          fill="#FFFFFF"/>
+          fill="#111111"/>
 
     <!-- 4. DIVINE EYES -->
     <!-- Left Eye -->
     <g id="left-eye">
+      <!-- White Sclera Background -->
       <path d="M 230,266 
                C 210,238 162,232 116,218 
                C 134,250 172,284 230,266 Z" 
-            fill="#FFFDF7"/>
+            fill="#FFFFFF"/>
 
+      <!-- Upper Thick Eyeliner & Wing -->
       <path d="M 232,267 
                C 210,234 158,227 114,217 
                C 114,217 148,238 184,245 
                C 206,249 224,260 232,267 Z" 
-            fill="#FFFFFF"/>
+            fill="#111111"/>
 
+      <!-- Lower Eyeliner -->
       <path d="M 232,267 
                C 182,285 142,254 114,217 
                C 144,248 186,276 232,267 Z" 
-            fill="#FFFFFF"/>
+            fill="#111111"/>
 
+      <!-- Pupil & Iris -->
       <ellipse cx="184" cy="250" rx="15" ry="17" fill="#111111"/>
       <ellipse cx="184" cy="250" rx="9" ry="10" fill="#FFFFFF"/>
       <circle cx="184" cy="250" r="6" fill="#111111"/>
@@ -133,22 +128,26 @@
 
     <!-- Right Eye -->
     <g id="right-eye">
+      <!-- White Sclera Background -->
       <path d="M 270,266 
                C 290,238 338,232 384,218 
                C 366,250 328,284 270,266 Z" 
-            fill="#FFFDF7"/>
+            fill="#FFFFFF"/>
 
+      <!-- Upper Thick Eyeliner & Wing -->
       <path d="M 268,267 
                C 290,234 342,227 386,217 
                C 386,217 352,238 316,245 
                C 294,249 276,260 268,267 Z" 
-            fill="#FFFFFF"/>
+            fill="#111111"/>
 
+      <!-- Lower Eyeliner -->
       <path d="M 268,267 
                C 318,285 358,254 386,217 
                C 356,248 314,276 268,267 Z" 
-            fill="#FFFFFF"/>
+            fill="#111111"/>
 
+      <!-- Pupil & Iris -->
       <ellipse cx="316" cy="250" rx="15" ry="17" fill="#111111"/>
       <ellipse cx="316" cy="250" rx="9" ry="10" fill="#FFFFFF"/>
       <circle cx="316" cy="250" r="6" fill="#111111"/>
@@ -162,27 +161,29 @@
              C 256,324 262,336 270,332 
              C 280,328 278,318 270,306" 
           fill="none" 
-          stroke="#FFFFFF" 
-          stroke-width="4.5" 
+          stroke="#111111" 
+          stroke-width="4" 
           stroke-linecap="round" 
           stroke-linejoin="round"/>
 
     <!-- 6. SACRED NATH (Nose Ring with Pearl Chain) -->
+    <!-- Main Ring Arc -->
     <path d="M 266,324 
              C 285,302 314,320 312,348 
              C 310,368 288,382 262,365 
              C 255,360 260,352 266,357" 
           fill="none" 
-          stroke="#FFD700" 
+          stroke="#111111" 
           stroke-width="3" 
           stroke-linecap="round"/>
 
-    <g id="fav-nath-beads">
-      <circle cx="282" cy="369" r="4.5" fill="url(#favRedBead)" stroke="#550000" stroke-width="0.5"/>
-      <circle cx="293" cy="367" r="4" fill="url(#favGoldBead)" stroke="#8C5814" stroke-width="0.5"/>
-      <circle cx="304" cy="361" r="4" fill="url(#favRedBead)" stroke="#550000" stroke-width="0.5"/>
-      <circle cx="311" cy="351" r="3.8" fill="url(#favGoldBead)" stroke="#8C5814" stroke-width="0.5"/>
-      <circle cx="313" cy="339" r="3.5" fill="url(#favRedBead)" stroke="#550000" stroke-width="0.5"/>
+    <!-- Pearl & Ruby Beads on the Nath Chain -->
+    <g id="nath-beads">
+      <circle cx="282" cy="369" r="4.5" fill="url(#redBead)" stroke="#550000" stroke-width="0.5"/>
+      <circle cx="293" cy="367" r="4" fill="url(#goldBead)" stroke="#8C5814" stroke-width="0.5"/>
+      <circle cx="304" cy="361" r="4" fill="url(#redBead)" stroke="#550000" stroke-width="0.5"/>
+      <circle cx="311" cy="351" r="3.8" fill="url(#goldBead)" stroke="#8C5814" stroke-width="0.5"/>
+      <circle cx="313" cy="339" r="3.5" fill="url(#redBead)" stroke="#550000" stroke-width="0.5"/>
     </g>
 
     <!-- 7. DIVINE LIPS (Adhara) -->
@@ -192,8 +193,9 @@
              C 262,343 274,346 289,353 
              C 278,368 266,378 250,378 
              C 234,378 222,368 211,353 Z" 
-          fill="url(#favLipGrad)"/>
+          fill="url(#durgaLipGrad)"/>
     
+    <!-- Lip Separation Smile Line -->
     <path d="M 214,353 
              C 232,357 244,352 250,357 
              C 256,352 268,357 286,353" 
