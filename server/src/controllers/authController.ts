@@ -178,15 +178,19 @@ export class AuthController {
       logger.info(`[Password Reset OTP Generated] User: ${user.email}`);
 
       // Send OTP via Brevo Transactional Email
-      const emailSent = await sendEmail({
+      const emailResult = await sendEmail({
         to: user.email,
         name: user.name,
         subject: '॥ यदुवंशी दुर्गा पूजा ॥ पासवर्ड रीसेट हेतु OTP कोड',
         htmlContent: getOtpEmailHtml(user.name, otp),
       });
 
-      if (!emailSent && ENV.BREVO_API_KEY) {
-        logger.error(`[OTP Email] Brevo failed to deliver OTP to ${user.email}`);
+      if (!emailResult.success) {
+        logger.error(`[OTP Email Error] Failed to send OTP to ${user.email}: ${emailResult.error}`);
+        throw new ApiError(
+          500,
+          `ईमेल डिलीवरी त्रुटि: ${emailResult.error || 'Brevo मेल सर्वर से संपर्क नहीं हो सका'}`
+        );
       }
 
       return sendResponse(
