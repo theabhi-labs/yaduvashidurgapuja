@@ -173,18 +173,25 @@ export class MemoryController {
         throw new ApiError(401, 'कृपया लॉगिन करें');
       }
 
-      // Extract all uploaded files (supports both array 'images' and single 'image')
+      // Extract all uploaded files (supports 'images' array, 'image' single, or upload.any())
       let files: Express.Multer.File[] = [];
 
       if (req.files) {
         if (Array.isArray(req.files)) {
-          files = req.files;
+          const imagesList = req.files.filter((f) => f.fieldname === 'images');
+          if (imagesList.length > 0) {
+            files = imagesList;
+          } else {
+            files = req.files;
+          }
         } else {
           const filesObj = req.files as { [fieldname: string]: Express.Multer.File[] };
           if (filesObj['images'] && filesObj['images'].length > 0) {
             files = filesObj['images'];
           } else if (filesObj['image'] && filesObj['image'].length > 0) {
             files = filesObj['image'];
+          } else {
+            files = Object.values(filesObj).flat();
           }
         }
       } else if (req.file) {

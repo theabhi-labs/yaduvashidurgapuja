@@ -158,8 +158,6 @@ export const ShareMemory: React.FC = () => {
       selectedFiles.forEach((file) => {
         formData.append('images', file);
       });
-      // Also append first photo as 'image' for backwards compatibility
-      formData.append('image', selectedFiles[0]);
       formData.append('caption', caption.trim());
       formData.append('year', year.toString());
 

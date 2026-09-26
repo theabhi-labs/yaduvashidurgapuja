@@ -26,10 +26,7 @@ router.post(
   '/',
   authenticate,
   uploadLimiter,
-  upload.fields([
-    { name: 'images', maxCount: 10 },
-    { name: 'image', maxCount: 1 },
-  ]),
+  upload.any(),
   validateRequest(createMemorySchema),
   MemoryController.createMemory
 );
