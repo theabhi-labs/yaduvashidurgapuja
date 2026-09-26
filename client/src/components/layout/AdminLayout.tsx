@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
+
 import {
   LayoutDashboard,
   Images,
@@ -26,6 +26,11 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
 
   // If standard ADMIN attempts to open /admin (Overview), /admin/ads, or /admin/users, redirect them to /admin/memories
   useEffect(() => {
@@ -72,7 +77,7 @@ export const AdminLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-cream-200 flex flex-col md:flex-row">
       {/* Mobile Admin Header */}
-      <div className="md:hidden bg-maroon-900 text-cream-100 p-4 flex items-center justify-between border-b border-maroon-800">
+      <div className="md:hidden bg-maroon-900 text-cream-100 p-4 flex items-center justify-between border-b border-maroon-800 sticky top-0 z-30 shadow-sm">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-maroon-800 p-1 flex items-center justify-center border border-amber-400/40 shadow-sm overflow-hidden">
             <img
@@ -99,23 +104,18 @@ export const AdminLayout: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile Backdrop Overlay - closes sidebar when touched anywhere outside */}
-      <AnimatePresence>
-        {isSidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsSidebarOpen(false)}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 md:hidden"
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
+      {/* Mobile Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-black/60 z-40 md:hidden transition-opacity"
+          aria-hidden="true"
+        />
+      )}
 
       {/* Sidebar for Desktop & Mobile Overlay */}
       <aside
-        className={`fixed md:sticky top-0 z-40 h-screen w-64 bg-dark-900 text-cream-100 flex flex-col justify-between p-5 border-r border-dark-700 transition-transform duration-300 shadow-2xl md:shadow-none ${
+        className={`fixed md:sticky top-0 z-50 h-screen w-64 bg-dark-900 text-cream-100 flex flex-col justify-between p-5 border-r border-dark-700 transition-transform duration-300 shadow-2xl md:shadow-none ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
@@ -204,6 +204,7 @@ export const AdminLayout: React.FC = () => {
 
           <Link
             to="/"
+            onClick={() => setIsSidebarOpen(false)}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs text-gold-400 hover:bg-dark-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -221,22 +222,12 @@ export const AdminLayout: React.FC = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full"
-          >
-            <Outlet />
-          </motion.div>
-        </AnimatePresence>
+      <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl w-full">
+        <Outlet />
       </main>
     </div>
   );
 };
 
 export default AdminLayout;
+
