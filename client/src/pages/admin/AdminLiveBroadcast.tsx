@@ -24,8 +24,8 @@ import {
   LiveKitRoom,
   RoomAudioRenderer,
   VideoTrack,
-  ConnectionQualityIndicator,
   useLocalParticipant,
+  useConnectionState,
   useTracks,
   isTrackReference,
 } from '@livekit/components-react';
@@ -67,6 +67,7 @@ const BroadcasterStage: React.FC<BroadcasterStageProps> = ({
   peakViewers,
 }) => {
   const { localParticipant, isCameraEnabled, isMicrophoneEnabled } = useLocalParticipant();
+  const connectionState = useConnectionState();
   const tracks = useTracks([{ source: Track.Source.Camera, withPlaceholder: false }]);
   const localCameraTrack = tracks.find(
     (t) => isTrackReference(t) && t.participant.isLocal && t.source === Track.Source.Camera
@@ -76,6 +77,22 @@ const BroadcasterStage: React.FC<BroadcasterStageProps> = ({
   const [duration, setDuration] = useState<number>(0);
   const [isTogglingCam, setIsTogglingCam] = useState<boolean>(false);
   const [isTogglingMic, setIsTogglingMic] = useState<boolean>(false);
+
+  // Auto-request camera on broadcaster mount
+  useEffect(() => {
+    if (localParticipant) {
+      if (!localParticipant.isCameraEnabled) {
+        localParticipant.setCameraEnabled(true).catch((err) => {
+          console.warn('Initial camera enable error:', err);
+        });
+      }
+      if (!localParticipant.isMicrophoneEnabled) {
+        localParticipant.setMicrophoneEnabled(true).catch((err) => {
+          console.warn('Initial mic enable error:', err);
+        });
+      }
+    }
+  }, [localParticipant]);
 
   // Broadcast duration timer
   useEffect(() => {
@@ -181,7 +198,18 @@ const BroadcasterStage: React.FC<BroadcasterStageProps> = ({
         </div>
 
         <div className="pointer-events-auto">
-          <ConnectionQualityIndicator />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-dark-900/80 text-xs backdrop-blur-md border border-gold-500/30">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                connectionState === 'connected'
+                  ? 'bg-emerald-400 animate-pulse'
+                  : 'bg-amber-400 animate-ping'
+              }`}
+            />
+            <span className="text-cream-100 font-bold text-[11px]">
+              {connectionState === 'connected' ? 'HD Stream' : 'Connecting...'}
+            </span>
+          </div>
         </div>
       </div>
 
