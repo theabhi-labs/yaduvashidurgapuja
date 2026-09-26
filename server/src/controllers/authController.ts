@@ -10,6 +10,13 @@ import { getWelcomeEmailHtml } from '../emails/welcomeEmail';
 import { getOtpEmailHtml } from '../emails/otpEmail';
 import { ENV } from '../config/env';
 import { logger } from '../utils/logger';
+import { ImageService } from '../services/imageService';
+import {
+  slugifyUsername,
+  generateAvailableUsername,
+  checkUsernameAvailability,
+} from '../utils/usernameHelper';
+import escapeRegExp from 'lodash.escaperegexp';
 
 interface ResetTokenPayload {
   userId: string;
@@ -23,12 +30,28 @@ export class AuthController {
    */
   public static async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password, username } = req.body;
 
       // Check if user already exists
       const existingUser = await User.findOne({ email: email.toLowerCase() });
       if (existingUser) {
         throw new ApiError(400, 'यह ईमेल पहले से पंजीकृत है। कृपया लॉगिन करें।');
+      }
+
+      // Determine clean unique username
+      let finalUsername: string;
+      if (username && typeof username === 'string' && username.trim().length >= 3) {
+        const cleanRequested = slugifyUsername(username);
+        const availability = await checkUsernameAvailability(cleanRequested);
+        if (!availability.available) {
+          throw new ApiError(400, `यूजरनेम '@${cleanRequested}' पहले से लिया जा चुका है।`, {
+            suggestions: availability.suggestions,
+          });
+        }
+        finalUsername = cleanRequested;
+      } else {
+        // Auto-assign clean unique username from name
+        finalUsername = await generateAvailableUsername(name);
       }
 
       // Hash password
@@ -44,6 +67,7 @@ export class AuthController {
 
       const user = await User.create({
         name,
+        username: finalUsername,
         email: email.toLowerCase(),
         passwordHash,
         role,
@@ -375,24 +399,179 @@ export class AuthController {
   }
 
   /**
-   * Resend Verification Email
+   * Resend Email Verification Token
    * POST /api/auth/resend-verification
    */
   public static async resendVerification(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
-        throw new ApiError(401, 'सत्र उपलब्ध नहीं है');
+        throw new ApiError(401, 'कृपया लॉगिन करें');
       }
 
-      if (req.user.isEmailVerified) {
-        return sendResponse(res, 200, 'आपका ईमेल पहले से ही सत्यापित है।');
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        throw new ApiError(404, 'उपयोगकर्ता नहीं मिला');
+      }
+
+      if (user.isEmailVerified) {
+        return sendResponse(res, 200, 'आपका ईमेल पहले से सत्यापित है');
       }
 
       const verificationToken = crypto.randomBytes(32).toString('hex');
-      req.user.emailVerificationToken = verificationToken;
-      await req.user.save();
+      user.emailVerificationToken = verificationToken;
+      await user.save();
 
-      return sendResponse(res, 200, 'नया सत्यापन कोड भेज दिया गया है।', { verificationToken });
+      return sendResponse(res, 200, 'सत्यापन लिंक पुनः भेज दिया गया है', {
+        verificationToken,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Check username availability and return recommendations
+   * GET /api/auth/check-username?username=...&name=...
+   */
+  public static async checkUsername(req: Request, res: Response, next: NextFunction) {
+    try {
+      const username = ((req.query.username as string) || '').trim();
+      const name = ((req.query.name as string) || '').trim();
+      const target = username || name;
+
+      if (!target) {
+        return sendResponse(res, 200, 'यूजरनेम दर्ज करें', {
+          available: false,
+          username: '',
+          suggestions: ['devotee_01', 'kapooripur_bhakt'],
+        });
+      }
+
+      const result = await checkUsernameAvailability(
+        target,
+        req.user ? req.user._id.toString() : undefined
+      );
+
+      return sendResponse(res, 200, 'यूजरनेम स्थिति', result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Update Profile (Name & Username)
+   * PATCH /api/auth/profile
+   */
+  public static async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        throw new ApiError(401, 'कृपया लॉगिन करें');
+      }
+
+      const { name, username } = req.body;
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        throw new ApiError(404, 'उपयोगकर्ता नहीं मिला');
+      }
+
+      if (name && typeof name === 'string' && name.trim().length >= 2) {
+        user.name = name.trim();
+      }
+
+      if (username && typeof username === 'string' && username.trim().length >= 3) {
+        const clean = slugifyUsername(username);
+        if (clean !== user.username) {
+          const availability = await checkUsernameAvailability(clean, user._id.toString());
+          if (!availability.available) {
+            throw new ApiError(400, `यूजरनेम '@${clean}' पहले से मौजूद है`, {
+              suggestions: availability.suggestions,
+            });
+          }
+          user.username = clean;
+        }
+      }
+
+      await user.save();
+
+      return sendResponse(res, 200, 'प्रोफ़ाइल सफलतापूर्वक अपडेट हो गई', { user });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Upload Profile Photo (Avatar)
+   * POST /api/auth/avatar
+   */
+  public static async uploadAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        throw new ApiError(401, 'कृपया लॉगिन करें');
+      }
+
+      if (!req.file) {
+        throw new ApiError(400, 'कृपया एक वैध प्रोफ़ाइल फ़ोटो चुनें (JPG, PNG, WebP)');
+      }
+
+      const avatarUrl = await ImageService.processPortrait(req.file.buffer, 'avatars');
+
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { avatar: avatarUrl },
+        { new: true }
+      );
+
+      logger.info(`Avatar updated for user: ${user?.email}`);
+
+      return sendResponse(res, 200, 'प्रोफ़ाइल फ़ोटो सफलतापूर्वक अपलोड हो गई', { user });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Remove Profile Photo (Avatar)
+   * DELETE /api/auth/avatar
+   */
+  public static async removeAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        throw new ApiError(401, 'कृपया लॉगिन करें');
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { avatar: '' },
+        { new: true }
+      );
+
+      return sendResponse(res, 200, 'प्रोफ़ाइल फ़ोटो हटा दी गई', { user });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Search Devotees / Members by Name or Username (for feed discovery)
+   * GET /api/auth/members/search?q=...
+   */
+  public static async searchMembers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const q = ((req.query.q as string) || '').trim();
+      if (!q || q.length < 1) {
+        return sendResponse(res, 200, 'सदस्य सूची', []);
+      }
+
+      const regex = new RegExp(escapeRegExp(q), 'i');
+      const users = await User.find({
+        isSuspended: { $ne: true },
+        $or: [{ name: regex }, { username: regex }],
+      })
+        .select('_id name username avatar role createdAt')
+        .limit(20)
+        .lean();
+
+      return sendResponse(res, 200, 'सदस्य खोज परिणाम', users);
     } catch (error) {
       next(error);
     }

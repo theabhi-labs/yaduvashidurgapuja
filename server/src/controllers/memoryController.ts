@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Memory, IMemory } from '../models/Memory';
+import { User } from '../models/User';
 import { ApiError, sendResponse } from '../utils/apiResponse';
 import { ImageService } from '../services/imageService';
 import { logger } from '../utils/logger';
@@ -28,11 +29,26 @@ export class MemoryController {
         }
       }
 
-      // Optional search by caption (ReDoS-safe via escapeRegExp)
+      // Optional search by caption or contributor name/@username
       if (req.query.search && typeof req.query.search === 'string') {
-        const searchStr = escapeRegExp(req.query.search.trim());
+        const rawSearch = req.query.search.trim();
+        const cleanSearch = rawSearch.startsWith('@') ? rawSearch.slice(1) : rawSearch;
+        const searchStr = escapeRegExp(cleanSearch);
+
         if (searchStr.length > 0) {
-          query.caption = { $regex: searchStr, $options: 'i' };
+          const matchingUsers = await User.find({
+            $or: [
+              { name: { $regex: searchStr, $options: 'i' } },
+              { username: { $regex: searchStr, $options: 'i' } },
+            ],
+          }).select('_id');
+
+          const userIds = matchingUsers.map((u: any) => u._id);
+
+          query.$or = [
+            { caption: { $regex: searchStr, $options: 'i' } },
+            { userId: { $in: userIds } },
+          ];
         }
       }
 
@@ -41,7 +57,7 @@ export class MemoryController {
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .populate('userId', 'name avatar')
+          .populate('userId', 'name username avatar')
           .lean(),
         Memory.countDocuments(query),
       ]);
@@ -75,7 +91,7 @@ export class MemoryController {
     try {
       const { id } = req.params;
 
-      const memory = await Memory.findById(id).populate('userId', 'name avatar');
+      const memory = await Memory.findById(id).populate('userId', 'name username avatar');
 
       if (!memory || memory.status === 'deleted') {
         throw new ApiError(404, 'स्मृति नहीं मिली या हटा दी गई है');
@@ -175,7 +191,7 @@ export class MemoryController {
         status: 'published',
       });
 
-      const populatedMemory = await Memory.findById(memory._id).populate('userId', 'name avatar');
+      const populatedMemory = await Memory.findById(memory._id).populate('userId', 'name username avatar');
 
       logger.info(`New memory uploaded by user: ${req.user.email} (Year: ${year})`);
 
@@ -205,7 +221,7 @@ export class MemoryController {
         status: { $ne: 'deleted' },
       })
         .sort({ createdAt: -1 })
-        .populate('userId', 'name avatar');
+        .populate('userId', 'name username avatar');
 
       return sendResponse(res, 200, 'आपकी स्मृतियाँ', memories);
     } catch (error) {

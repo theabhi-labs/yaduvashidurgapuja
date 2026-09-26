@@ -204,9 +204,16 @@ export const MemoryDetail: React.FC = () => {
               </div>
 
               <div>
-                <h2 className="text-base sm:text-lg font-body font-bold text-dark-950">
-                  {memory.userId?.name || 'Devotee'}
-                </h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-base sm:text-lg font-body font-bold text-dark-950">
+                    {memory.userId?.name || 'Devotee'}
+                  </h2>
+                  {memory.userId?.username && (
+                    <span className="text-xs sm:text-sm font-mono font-bold text-maroon-800 bg-maroon-900/10 px-2.5 py-0.5 rounded-full border border-maroon-800/20">
+                      @{memory.userId.username}
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-3 text-xs font-body text-muted mt-0.5">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-gold-600 shrink-0" />

@@ -1,8 +1,8 @@
 import { api } from './api';
-import { ApiResponse, User } from '../types';
+import { ApiResponse, User, MemberSearchResult } from '../types';
 
 export const authService = {
-  async register(data: { name: string; email: string; password: string }) {
+  async register(data: { name: string; email: string; password: string; username?: string }) {
     const res = await api.post<ApiResponse<{ user: User; token: string }>>('/auth/register', data);
     return res.data;
   },
@@ -19,6 +19,43 @@ export const authService = {
 
   async getMe() {
     const res = await api.get<ApiResponse<{ user: User }>>('/auth/me');
+    return res.data;
+  },
+
+  async checkUsername(username: string, name?: string) {
+    const res = await api.get<
+      ApiResponse<{ available: boolean; username: string; suggestions: string[] }>
+    >('/auth/check-username', {
+      params: { username, name },
+    });
+    return res.data;
+  },
+
+  async updateProfile(data: { name?: string; username?: string }) {
+    const res = await api.patch<ApiResponse<{ user: User }>>('/auth/profile', data);
+    return res.data;
+  },
+
+  async uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const res = await api.post<ApiResponse<{ user: User }>>('/auth/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data;
+  },
+
+  async removeAvatar() {
+    const res = await api.delete<ApiResponse<{ user: User }>>('/auth/avatar');
+    return res.data;
+  },
+
+  async searchMembers(query: string) {
+    const res = await api.get<ApiResponse<MemberSearchResult[]>>('/auth/members/search', {
+      params: { q: query },
+    });
     return res.data;
   },
 

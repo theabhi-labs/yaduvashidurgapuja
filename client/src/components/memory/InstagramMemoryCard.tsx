@@ -42,6 +42,8 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
   const [showBloom, setShowBloom] = useState<boolean>(false);
 
   const uploaderName = memory.userId?.name || 'Devotee';
+  const uploaderUsername = memory.userId?.username;
+  const uploaderAvatar = memory.userId?.avatar;
   const uploaderInitial = uploaderName.charAt(0).toUpperCase();
   const isOwner = user && memory.userId && user._id === memory.userId._id;
 
@@ -135,18 +137,33 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
       ref={cardRef as any}
       className="bg-cream-100 rounded-3xl border border-cream-300/80 shadow-soft overflow-hidden mb-6 max-w-lg mx-auto transition-all hover:border-cream-400"
     >
-      {/* 1. Header: User Avatar, Name, Location, Options */}
+      {/* 1. Header: User Avatar, Name, @Username, Location, Options */}
       <div className="flex items-center justify-between p-3.5 sm:p-4">
         <div className="flex items-center gap-3">
-          <div className="p-[2px] rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-amber-400">
-            <div className="w-10 h-10 rounded-full bg-maroon-800 text-cream-50 flex items-center justify-center font-bold text-sm border-2 border-cream-100">
-              {uploaderInitial}
-            </div>
+          <div className="p-[2px] rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-amber-400 shrink-0">
+            {uploaderAvatar ? (
+              <img
+                src={getImageUrl(uploaderAvatar)}
+                alt={uploaderName}
+                className="w-10 h-10 rounded-full object-cover border-2 border-cream-100"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-maroon-800 text-cream-50 flex items-center justify-center font-bold text-sm border-2 border-cream-100">
+                {uploaderInitial}
+              </div>
+            )}
           </div>
           <div>
-            <h3 className="font-heading font-bold text-dark-900 text-sm leading-tight">
-              {uploaderName}
-            </h3>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h3 className="font-heading font-bold text-dark-900 text-sm leading-tight">
+                {uploaderName}
+              </h3>
+              {uploaderUsername && (
+                <span className="text-xs font-mono font-bold text-maroon-700 bg-maroon-900/5 px-1.5 py-0.5 rounded-md border border-maroon-800/10">
+                  @{uploaderUsername}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-1.5 text-xs text-muted font-body mt-0.5">
               <MapPin className="w-3 h-3 text-maroon-700 shrink-0" />
               <span>Kapooripur, Durga Puja</span>
@@ -288,7 +305,9 @@ export const InstagramMemoryCard: React.FC<InstagramMemoryCardProps> = ({
 
         {/* 4. Caption & Details */}
         <div className="mt-2 font-body text-sm text-dark-900 leading-relaxed">
-          <span className="font-bold text-maroon-900 mr-2">{uploaderName}</span>
+          <span className="font-bold text-maroon-900 mr-2">
+            {uploaderUsername ? `@${uploaderUsername}` : uploaderName}
+          </span>
           <span className={!isCaptionExpanded && memory.caption?.length > 120 ? 'line-clamp-2 inline' : 'inline'}>
             {memory.caption || 'Sacred memory of Durga Puja'}
           </span>

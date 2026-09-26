@@ -3,6 +3,7 @@ export type Role = 'USER' | 'ADMIN' | 'SUPERADMIN';
 export interface User {
   _id: string;
   name: string;
+  username?: string;
   email: string;
   avatar?: string;
   authProvider: 'local' | 'google';
@@ -14,6 +15,15 @@ export interface User {
   updatedAt: string;
 }
 
+export interface MemberSearchResult {
+  _id: string;
+  name: string;
+  username?: string;
+  avatar?: string;
+  role: Role;
+  createdAt: string;
+}
+
 export type MemoryStatus = 'published' | 'hidden' | 'deleted';
 
 export interface Memory {
@@ -21,6 +31,7 @@ export interface Memory {
   userId: {
     _id: string;
     name: string;
+    username?: string;
     avatar?: string;
     email?: string;
   };

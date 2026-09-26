@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Compass, PlusSquare, Users, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { getImageUrl } from '../../utils/helpers';
 
 export const MobileBottomNav: React.FC = () => {
   const { user, isAuthenticated, isAdmin } = useAuth();
@@ -135,12 +136,20 @@ export const MobileBottomNav: React.FC = () => {
             <>
               <div className="relative">
                 {isAuthenticated ? (
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold ${
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold overflow-hidden ${
                     isActive 
                       ? 'ring-2 ring-maroon-700 bg-maroon-800 text-cream-50' 
                       : 'bg-maroon-100 text-maroon-900 ring-1 ring-cream-400'
                   }`}>
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                    {user?.avatar ? (
+                      <img
+                        src={getImageUrl(user.avatar)}
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      user?.name?.charAt(0).toUpperCase() || 'U'
+                    )}
                   </div>
                 ) : (
                   <UserIcon className={`w-6 h-6 transition-transform ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} />

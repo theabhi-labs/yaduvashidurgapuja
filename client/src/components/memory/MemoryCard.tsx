@@ -82,9 +82,16 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ memory }) => {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-1">
-                <p className="text-xs sm:text-sm font-body font-semibold text-dark-900 truncate">
-                  {memory.userId?.name || 'Devotee'}
-                </p>
+                <div className="min-w-0 truncate">
+                  <p className="text-xs sm:text-sm font-body font-semibold text-dark-900 truncate">
+                    {memory.userId?.name || 'Devotee'}
+                  </p>
+                  {memory.userId?.username && (
+                    <p className="text-[10px] font-mono text-maroon-700 font-semibold truncate">
+                      @{memory.userId.username}
+                    </p>
+                  )}
+                </div>
                 {/* Impressions Counter (No Likes, No Comments) */}
                 <span className="inline-flex items-center gap-1 text-[11px] font-body text-maroon-800 bg-maroon-900/5 px-2 py-0.5 rounded-full border border-maroon-800/15 font-medium shrink-0">
                   <Eye className="w-3 h-3 text-maroon-700" />

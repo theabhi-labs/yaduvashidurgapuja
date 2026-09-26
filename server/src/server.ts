@@ -4,10 +4,21 @@ import { connectDB } from './config/db';
 import { ENV } from './config/env';
 import { initSocket } from './socket';
 import { logger } from './utils/logger';
+import { ensureAllUsersHaveUsernames } from './utils/usernameHelper';
 
 const startServer = async () => {
   // Connect to Database
   await connectDB();
+
+  // Ensure all existing users have usernames
+  try {
+    const backfilledCount = await ensureAllUsersHaveUsernames();
+    if (backfilledCount > 0) {
+      logger.info(`[Migration] Auto-assigned usernames for ${backfilledCount} existing users.`);
+    }
+  } catch (err: any) {
+    logger.warn(`[Migration] Username auto-migration warning: ${err.message}`);
+  }
 
   // Create HTTP server and attach Socket.io
   const httpServer = http.createServer(app);

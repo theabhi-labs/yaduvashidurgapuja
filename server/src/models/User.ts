@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
   name: string;
+  username?: string;
   email: string;
   passwordHash: string;
   avatar?: string;
@@ -31,6 +32,16 @@ const UserSchema = new Schema<IUser>(
       trim: true,
       minlength: [2, 'नाम कम से कम 2 अक्षरों का होना चाहिए'],
       maxlength: [70, 'नाम 70 अक्षरों से अधिक नहीं हो सकता'],
+    },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+      minlength: [3, 'यूजरनेम कम से कम 3 अक्षरों का होना चाहिए'],
+      maxlength: [30, 'यूजरनेम 30 अक्षरों से अधिक नहीं हो सकता'],
+      index: true,
     },
     email: {
       type: String,

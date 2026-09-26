@@ -10,9 +10,10 @@ interface AuthContextType {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   login: (email: string, password: string) => Promise<User>;
-  register: (name: string, email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, username?: string) => Promise<User>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateUserState: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -39,6 +40,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const updateUserState = useCallback((updatedUser: User) => {
+    setUser(updatedUser);
+  }, []);
+
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
@@ -61,10 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<User> => {
+  const register = async (name: string, email: string, password: string, username?: string): Promise<User> => {
     setIsLoading(true);
     try {
-      const res = await authService.register({ name, email, password });
+      const res = await authService.register({ name, email, password, username });
       if (res.data.token) {
         localStorage.setItem('auth_token', res.data.token);
       }
@@ -104,6 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         refreshUser,
+        updateUserState,
       }}
     >
       {children}

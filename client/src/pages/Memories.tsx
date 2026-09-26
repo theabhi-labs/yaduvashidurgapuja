@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { memoryService } from '../services/memoryService';
-import { Memory, PaginationMeta } from '../types';
+import { authService } from '../services/authService';
+import { Memory, PaginationMeta, MemberSearchResult } from '../types';
 import { SectionHeading } from '../components/common/SectionHeading';
 import { Button } from '../components/common/Button';
 import { YearStoriesBar } from '../components/memory/YearStoriesBar';
@@ -19,7 +20,9 @@ import {
   RotateCcw, 
   LayoutGrid, 
   SquareSplitVertical, 
-  Sparkles
+  Sparkles,
+  Users,
+  X
 } from 'lucide-react';
 
 const AD_FREQUENCY = 8;
@@ -34,11 +37,45 @@ export const Memories: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
 
+  // Devotee member suggestions search
+  const [memberSuggestions, setMemberSuggestions] = useState<MemberSearchResult[]>([]);
+  const [showMemberDropdown, setShowMemberDropdown] = useState<boolean>(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
   // View Mode: 'feed' (Single Instagram Cards) or 'grid' (3x3 Explore Grid)
   const [viewMode, setViewMode] = useState<'feed' | 'grid'>('feed');
   const [selectedModalMemory, setSelectedModalMemory] = useState<Memory | null>(null);
 
-  const debouncedSearch = useDebounce(searchTerm, 400);
+  const debouncedSearch = useDebounce(searchTerm, 350);
+
+  // Fetch member suggestions on search input change
+  useEffect(() => {
+    const query = debouncedSearch.trim();
+    if (query.length >= 2) {
+      authService.searchMembers(query)
+        .then((res) => {
+          if (res.success && Array.isArray(res.data)) {
+            setMemberSuggestions(res.data);
+            setShowMemberDropdown(res.data.length > 0);
+          }
+        })
+        .catch(() => setMemberSuggestions([]));
+    } else {
+      setMemberSuggestions([]);
+      setShowMemberDropdown(false);
+    }
+  }, [debouncedSearch]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowMemberDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Fetch active ads in parallel
   useEffect(() => {
@@ -110,23 +147,83 @@ export const Memories: React.FC = () => {
 
       {/* 2. Top Controls: Search Bar & Feed/Grid Toggle */}
       <div className="bg-cream-100 p-3 sm:p-4 rounded-2xl border border-cream-300/80 shadow-soft mb-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
-        {/* Search Input */}
-        <div className="relative w-full sm:w-80">
+        {/* Search Input with Devotee Autocomplete Dropdown */}
+        <div ref={searchContainerRef} className="relative w-full sm:w-96">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" />
           <input
             type="text"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search memories (e.g. Aarti, 2024)..."
-            className="w-full pl-10 pr-8 py-2 rounded-xl border border-cream-300 bg-cream-50 text-xs sm:text-sm font-body text-dark-900 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon-600"
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              if (e.target.value.trim().length >= 2) {
+                setShowMemberDropdown(true);
+              }
+            }}
+            onFocus={() => {
+              if (memberSuggestions.length > 0) setShowMemberDropdown(true);
+            }}
+            placeholder="खोजें: सदस्य का नाम, @username या कैप्शन..."
+            className="w-full pl-10 pr-8 py-2.5 rounded-xl border border-cream-300 bg-cream-50 text-xs sm:text-sm font-body text-dark-900 placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 shadow-inner"
           />
           {searchTerm && (
             <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-dark-900"
+              onClick={() => {
+                setSearchTerm('');
+                setShowMemberDropdown(false);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-dark-900 p-0.5 rounded-full hover:bg-cream-200"
+              title="Clear search"
             >
-              ✕
+              <X className="w-4 h-4" />
             </button>
+          )}
+
+          {/* Member Dropdown Suggestions */}
+          {showMemberDropdown && memberSuggestions.length > 0 && (
+            <div className="absolute left-0 right-0 top-full mt-1.5 bg-cream-50 rounded-2xl shadow-xl border border-cream-300 py-2 z-40 max-h-64 overflow-y-auto divide-y divide-cream-200">
+              <div className="px-3 py-1 text-[11px] font-bold text-maroon-800 uppercase tracking-wider flex items-center gap-1">
+                <Users className="w-3.5 h-3.5" />
+                <span>भक्त एवं सदस्य (Devotees)</span>
+              </div>
+              {memberSuggestions.map((member) => (
+                <button
+                  key={member._id}
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm(member.username ? `@${member.username}` : member.name);
+                    setShowMemberDropdown(false);
+                  }}
+                  className="w-full px-3.5 py-2 text-left hover:bg-gold-50/60 flex items-center justify-between transition-colors group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-maroon-800 text-cream-50 flex items-center justify-center font-bold text-xs overflow-hidden border border-cream-300 shrink-0">
+                      {member.avatar ? (
+                        <img
+                          src={getImageUrl(member.avatar)}
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span>{member.name.charAt(0).toUpperCase()}</span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-xs font-heading font-bold text-dark-900 group-hover:text-maroon-900">
+                        {member.name}
+                      </p>
+                      {member.username && (
+                        <p className="text-[11px] font-mono text-maroon-700 font-semibold">
+                          @{member.username}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-body font-semibold text-muted bg-cream-200 group-hover:bg-gold-200/80 px-2 py-0.5 rounded-full">
+                    फ़ीड देखें →
+                  </span>
+                </button>
+              ))}
+            </div>
           )}
         </div>
 
