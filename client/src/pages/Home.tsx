@@ -368,9 +368,9 @@ export const Home: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* 5. TRANSPARENCY & TRUST SECTION                                           */}
+      {/* 5. TRANSPARENCY & TRUST SECTION (Desktop only, hidden on mobile)           */}
       {/* ========================================================================= */}
-      <section className="py-14 sm:py-20 bg-cream-200 border-t border-cream-300">
+      <section className="hidden md:block py-14 sm:py-20 bg-cream-200 border-t border-cream-300">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-8">
           <div className="text-center space-y-2 max-w-2xl mx-auto">
             <span className="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase">
