@@ -6,7 +6,7 @@ import { Memory } from '../types';
 import { Button } from '../components/common/Button';
 import { Modal } from '../components/common/Modal';
 import { Link } from 'react-router-dom';
-import { formatDate, getImageUrl } from '../utils/helpers';
+import { getImageUrl } from '../utils/helpers';
 import { InstagramPostModal } from '../components/memory/InstagramPostModal';
 import { useToast } from '../context/ToastContext';
 import {
@@ -200,22 +200,38 @@ export const Profile: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="py-6 sm:py-12 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto min-h-[85vh] space-y-6">
-      {/* 1. Instagram Profile Header Card */}
-      <div className="bg-cream-100 rounded-3xl border border-cream-300 shadow-soft p-5 sm:p-8">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          {/* Avatar with sacred gradient ring & upload button */}
-          <div className="relative group shrink-0">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleAvatarSelect}
-              accept="image/jpeg,image/png,image/webp,image/jpg"
-              className="hidden"
-            />
+    <div className="py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto min-h-[85vh] space-y-6">
+      {/* 1. Professional Instagram Profile Card */}
+      <div className="relative bg-cream-100/90 backdrop-blur-md rounded-3xl border border-cream-300 shadow-soft p-6 sm:p-8 overflow-hidden">
+        {/* Corner Log Out Button */}
+        <button
+          onClick={logout}
+          className="absolute top-4 right-4 sm:top-6 sm:right-6 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200 transition-all hover:scale-105 active:scale-95 shadow-sm"
+          title="लॉग आउट करें (Log Out)"
+        >
+          <LogOut className="w-3.5 h-3.5 text-rose-600" />
+          <span>Log Out</span>
+        </button>
 
+        {/* Hidden File Input for Avatar */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleAvatarSelect}
+          accept="image/jpeg,image/png,image/webp,image/jpg"
+          className="hidden"
+        />
+
+        {/* Centered Profile Layout */}
+        <div className="flex flex-col items-center text-center">
+          {/* 1. Profile Avatar with Camera Trigger */}
+          <div className="relative mb-3.5">
             <div className="p-[3.5px] rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-gold-400 shadow-md">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-maroon-800 text-cream-50 flex items-center justify-center font-bold text-3xl sm:text-4xl border-4 border-cream-100 overflow-hidden shadow-inner">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-maroon-800 text-cream-50 flex items-center justify-center font-bold text-3xl sm:text-4xl border-4 border-cream-100 overflow-hidden shadow-inner cursor-pointer group"
+                title="फ़ोटो बदलें (Change Photo)"
+              >
                 {isUploadingAvatar ? (
                   <div className="w-full h-full bg-black/60 flex flex-col items-center justify-center">
                     <Loader2 className="w-8 h-8 text-gold-300 animate-spin" />
@@ -224,135 +240,98 @@ export const Profile: React.FC = () => {
                   <img
                     src={getImageUrl(user.avatar)}
                     alt={user.name}
-                    className="w-full h-full object-cover rounded-full"
+                    className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
                   <span>{user.name.charAt(0).toUpperCase()}</span>
                 )}
-
-                {/* Hover overlay to change avatar */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploadingAvatar}
-                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[11px] font-bold gap-1 cursor-pointer"
-                  title="फोटो बदलें (Change Photo)"
-                >
-                  <Camera className="w-5 h-5 text-gold-300" />
-                  <span>बदलें</span>
-                </button>
               </div>
             </div>
 
-            {/* Mobile quick camera icon trigger */}
+            {/* Camera Badge Icon Button at bottom-right */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingAvatar}
-              className="sm:hidden absolute bottom-0 right-0 p-1.5 rounded-full bg-maroon-900 text-gold-300 border-2 border-cream-100 shadow-md"
-              title="Change Photo"
+              className="absolute bottom-0 right-0 p-2 rounded-full bg-maroon-900 text-gold-300 border-2 border-cream-100 shadow-md hover:bg-maroon-950 hover:scale-110 active:scale-95 transition-all cursor-pointer"
+              title="फ़ोटो बदलें (Upload Profile Photo)"
+              aria-label="Upload Profile Photo"
             >
-              <Camera className="w-3.5 h-3.5" />
+              <Camera className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Profile Bio & Stats */}
-          <div className="flex-1 text-center sm:text-left space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
-              <div>
-                <h1 className="text-2xl font-heading font-bold text-dark-950 flex items-center justify-center sm:justify-start gap-2">
-                  <span>{user.name}</span>
-                  <span title="Verified Devotee">
-                    <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                  </span>
-                </h1>
+          {/* 2. Devotee Name */}
+          <h1 className="text-xl sm:text-2xl font-heading font-bold text-dark-950 flex items-center justify-center gap-1.5 leading-tight">
+            <span>{user.name}</span>
+            <span title="सत्यापित भक्त (Verified Devotee)">
+              <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+            </span>
+          </h1>
 
-                {/* Instagram @username badge */}
-                <div className="flex items-center justify-center sm:justify-start gap-1.5 mt-0.5">
-                  <span className="text-xs sm:text-sm font-mono font-bold text-maroon-800 bg-maroon-900/10 px-2.5 py-0.5 rounded-full border border-gold-600/20">
-                    @{user.username || 'devotee'}
-                  </span>
-                  <span className="text-xs text-muted font-body">• {user.email}</span>
-                </div>
+          {/* 3. @username & Email */}
+          <div className="flex items-center justify-center gap-2 flex-wrap mt-1.5">
+            <span className="text-xs sm:text-sm font-mono font-bold text-maroon-800 bg-maroon-900/10 px-2.5 py-0.5 rounded-full border border-maroon-800/15">
+              @{user.username || 'devotee'}
+            </span>
+            <span className="text-xs text-muted font-body">
+              • {user.email}
+            </span>
+          </div>
 
-                <p className="text-[11px] text-muted font-body mt-1">
-                  सदस्यता: {formatDate(user.createdAt)}
-                </p>
-              </div>
+          {/* 4. Action Buttons: Edit Profile & Share Memory */}
+          <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditModalOpen(true)}
+              leftIcon={<Edit3 className="w-3.5 h-3.5" />}
+              className="border-gold-600 text-maroon-950 hover:bg-gold-50 font-bold px-4 py-2"
+            >
+              Edit Profile
+            </Button>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-center sm:justify-end gap-2 pt-2 sm:pt-0 flex-wrap">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditModalOpen(true)}
-                  leftIcon={<Edit3 className="w-3.5 h-3.5" />}
-                  className="border-gold-600 text-maroon-900 hover:bg-gold-50 font-bold"
-                >
-                  Edit Profile
-                </Button>
-
-                <Link to="/share-memory">
-                  <Button size="sm" leftIcon={<PlusSquare className="w-4 h-4" />}>
-                    Share Memory
-                  </Button>
-                </Link>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={logout}
-                  leftIcon={<LogOut className="w-4 h-4" />}
-                  className="text-rose-700 border-rose-200 hover:bg-rose-50"
-                >
-                  Log Out
-                </Button>
-              </div>
-            </div>
-
-            {/* Badges & Avatar Actions */}
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-              <span className="text-xs font-body font-semibold px-3 py-1 rounded-full bg-cream-200 text-dark-900 border border-cream-300">
-                📍 कपूरीपुर, सुरियावां, भदोही
-              </span>
-
-              {isSuperAdmin ? (
-                <span className="text-xs font-body font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5 text-amber-700" />
-                  Super Administrator
-                </span>
-              ) : isAdmin ? (
-                <span className="text-xs font-body font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1">
-                  <Shield className="w-3.5 h-3.5 text-emerald-700" />
-                  Mandap Committee Admin
-                </span>
-              ) : (
-                <span className="text-xs font-body font-semibold px-3 py-1 rounded-full bg-gold-100 text-maroon-900 border border-gold-300">
-                  🙏 पावन भक्त (Verified Devotee)
-                </span>
-              )}
-
-              {/* Quick photo buttons */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="text-xs text-maroon-800 hover:text-maroon-950 font-bold underline ml-1"
+            <Link to="/share-memory">
+              <Button 
+                size="sm" 
+                leftIcon={<PlusSquare className="w-4 h-4" />}
+                className="bg-maroon-900 hover:bg-maroon-950 text-gold-100 px-4 py-2 font-bold shadow-sm"
               >
-                फोटो बदलें
-              </button>
+                Share Memory
+              </Button>
+            </Link>
+          </div>
 
-              {user.avatar && (
-                <button
-                  type="button"
-                  onClick={handleRemoveAvatar}
-                  disabled={isRemovingAvatar}
-                  className="text-xs text-rose-700 hover:text-rose-900 font-bold underline flex items-center gap-0.5 ml-1"
+          {/* 5. Role Badge & Admin Panel Clickable Button */}
+          <div className="mt-4 flex items-center justify-center gap-3 flex-wrap">
+            {isSuperAdmin ? (
+              <Link to="/admin">
+                <button 
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-gold-500/20 hover:from-amber-500/30 hover:to-gold-500/30 text-amber-950 border border-amber-400/80 font-heading font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-105 active:scale-95"
+                  title="सुपर एडमिन डैशबोर्ड खोलें"
                 >
-                  <Trash2 className="w-3 h-3" />
-                  <span>फोटो हटाएं</span>
+                  <Shield className="w-4 h-4 text-amber-700" />
+                  <span>Super Admin Panel</span>
+                  <span className="text-amber-800 font-bold">→</span>
                 </button>
-              )}
-            </div>
+              </Link>
+            ) : isAdmin ? (
+              <Link to="/admin">
+                <button 
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-950 border border-emerald-400/80 font-heading font-bold text-xs sm:text-sm shadow-sm transition-all hover:scale-105 active:scale-95"
+                  title="समिति एडमिन डैशबोर्ड खोलें"
+                >
+                  <Shield className="w-4 h-4 text-emerald-700" />
+                  <span>Mandap Admin Panel</span>
+                  <span className="text-emerald-800 font-bold">→</span>
+                </button>
+              </Link>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs font-body font-semibold px-3.5 py-1 rounded-full bg-gold-100/80 text-maroon-900 border border-gold-300 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span>🙏 पावन भक्त (Verified Devotee)</span>
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -488,6 +467,48 @@ export const Profile: React.FC = () => {
         maxWidth="md"
       >
         <form onSubmit={handleSaveProfile} className="space-y-4">
+          {/* Avatar Section inside Modal */}
+          <div className="flex items-center gap-4 p-3 rounded-2xl bg-cream-200/60 border border-cream-300">
+            <div className="w-14 h-14 rounded-full bg-maroon-800 text-cream-50 flex items-center justify-center font-bold text-lg border-2 border-cream-100 overflow-hidden shrink-0 shadow-sm">
+              {isUploadingAvatar ? (
+                <Loader2 className="w-5 h-5 text-gold-300 animate-spin" />
+              ) : user.avatar ? (
+                <img
+                  src={getImageUrl(user.avatar)}
+                  alt={user.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{user.name.charAt(0).toUpperCase()}</span>
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-xs font-bold text-dark-900 font-body">प्रोफ़ाइल फ़ोटो</p>
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                  className="px-2.5 py-1 rounded-lg bg-maroon-900 text-cream-50 text-xs font-semibold hover:bg-maroon-950 flex items-center gap-1 transition-all"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>फ़ोटो बदलें</span>
+                </button>
+                {user.avatar && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveAvatar}
+                    disabled={isRemovingAvatar}
+                    className="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 text-xs font-semibold hover:bg-rose-100 flex items-center gap-1 transition-all"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>हटाएं</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Display Name Input */}
           <div>
             <label className="block text-xs font-semibold text-dark-900 mb-1 font-body">
