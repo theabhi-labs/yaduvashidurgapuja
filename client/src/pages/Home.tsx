@@ -17,8 +17,8 @@ import {
   HeartHandshake,
   ShieldCheck,
   Flame,
-  Sparkles,
   Radio,
+  Users,
 } from 'lucide-react';
 
 export const Home: React.FC = () => {
@@ -91,9 +91,8 @@ export const Home: React.FC = () => {
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-body font-semibold mb-4 sm:mb-6 tracking-wide shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-body font-semibold mb-4 sm:mb-6 tracking-wide shadow-sm"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
             <span>॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर ॥</span>
           </motion.div>
 
@@ -176,6 +175,18 @@ export const Home: React.FC = () => {
 
           {/* Sacred Animated Imagery Showcase & Dynamic Slideshow */}
           <HeroSlider />
+
+          {/* Committee Quick Action Button directly below the Hero photo */}
+          <div className="mt-4 sm:mt-5 text-center">
+            <Link
+              to="/committee"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-maroon-900/90 hover:bg-maroon-800 text-amber-300 hover:text-amber-200 border border-amber-400/50 text-xs sm:text-sm font-heading font-semibold shadow-md transition-all active:scale-95 group cursor-pointer"
+            >
+              <Users className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span>पूजा समिति सदस्य देखें (Committee)</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
 
           {/* Value Pillars */}
           <div className="mt-12 sm:mt-16 pt-8 border-t border-maroon-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-left">
@@ -276,8 +287,7 @@ export const Home: React.FC = () => {
       {/* ========================================================================= */}
       <section className="py-10 sm:py-16 bg-gradient-to-r from-maroon-950 via-maroon-900 to-maroon-950 text-cream-50 border-y-2 border-amber-500/40">
         <div className="max-w-5xl mx-auto px-4 sm:px-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold font-body border border-amber-400/40">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold font-body border border-amber-400/40">
             <span>माँ दुर्गा पूजा सेवा एवं महाप्रसाद</span>
           </div>
           <h2 className="text-xl sm:text-3xl font-heading font-bold text-cream-50">

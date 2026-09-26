@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Pause, Play, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { heroBannerService } from '../../services/heroBannerService';
 import { getImageUrl } from '../../utils/helpers';
 
@@ -150,7 +150,7 @@ export const HeroSlider: React.FC = () => {
               >
                 {currentBanner.badge && (
                   <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold px-3 py-1 rounded-full bg-amber-500 text-dark-950 font-body uppercase tracking-wider mb-2.5 shadow-md shadow-amber-500/20 border border-amber-300/40">
-                    <Sparkles className="w-3 h-3 text-dark-950" />
+                    <span>🪔</span>
                     {currentBanner.badge}
                   </span>
                 )}

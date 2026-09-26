@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { donationService } from '../services/donationService';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   ArrowRight,
   HandHeart,
+  X,
 } from 'lucide-react';
 
 interface DonorItem {
@@ -40,6 +41,7 @@ const SEVA_CATEGORIES = [
 export const Donation: React.FC = () => {
   const { user } = useAuth();
   const toast = useToast();
+  const rzpInstanceRef = useRef<any>(null);
 
   // Modals state
   const [isDonateModalOpen, setIsDonateModalOpen] = useState<boolean>(false);
@@ -137,6 +139,18 @@ export const Donation: React.FC = () => {
     }
   };
 
+  // Close & Cancel payment process cleanly
+  const handleCloseDonateModal = () => {
+    if (rzpInstanceRef.current) {
+      try {
+        rzpInstanceRef.current.close();
+      } catch {}
+      rzpInstanceRef.current = null;
+    }
+    setIsSubmitting(false);
+    setIsDonateModalOpen(false);
+  };
+
   // Process Donation via Razorpay
   const handleDonate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,32 +203,39 @@ export const Donation: React.FC = () => {
             });
 
             toast.success('माँ दुर्गा की कृपा से आपका दान सफलतापूर्वक समर्पित हुआ! जय माता दी 🙏');
-            setIsDonateModalOpen(false);
+            handleCloseDonateModal();
             setMessage('');
             fetchPublicWall();
           } catch (err: any) {
             toast.error(err.message || 'भुगतान सत्यापन में समस्या आई');
           } finally {
             setIsSubmitting(false);
+            rzpInstanceRef.current = null;
           }
         },
         modal: {
           ondismiss: () => {
             setIsSubmitting(false);
+            rzpInstanceRef.current = null;
             toast.info('दान भुगतान प्रक्रिया रद्द कर दी गई');
           },
         },
       };
 
       const rzp = new (window as any).Razorpay(options);
+      rzpInstanceRef.current = rzp;
+
       rzp.on('payment.failed', (failRes: any) => {
         toast.error(failRes.error?.description || 'भुगतान प्रक्रिया पूरी नहीं हो सकी');
         setIsSubmitting(false);
+        rzpInstanceRef.current = null;
       });
+
       rzp.open();
     } catch (err: any) {
       toast.error(err.message || 'दान प्रक्रिया शुरू करने में त्रुटि आई');
       setIsSubmitting(false);
+      rzpInstanceRef.current = null;
     }
   };
 
@@ -222,6 +243,21 @@ export const Donation: React.FC = () => {
 
   return (
     <div className="min-h-screen py-6 sm:py-10 px-3 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 font-body">
+      {/* Floating High Z-Index Cancel/Close Button during active Payment */}
+      {isSubmitting && (
+        <div className="fixed top-4 right-4 z-[99999] animate-fade-in">
+          <button
+            type="button"
+            onClick={handleCloseDonateModal}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-heading font-bold text-xs sm:text-sm shadow-2xl border-2 border-white/90 active:scale-95 transition-all cursor-pointer"
+            title="भुगतान रद्द करें"
+          >
+            <X className="w-4 h-4" />
+            <span>✕ रद्द करें (Close)</span>
+          </button>
+        </div>
+      )}
+
       {/* 1. Header & Shloka Section */}
       <div className="text-center space-y-2 sm:space-y-3">
         <motion.div
@@ -393,7 +429,7 @@ export const Donation: React.FC = () => {
       {/* 6. Donation Modal */}
       <Modal
         isOpen={isDonateModalOpen}
-        onClose={() => !isSubmitting && setIsDonateModalOpen(false)}
+        onClose={handleCloseDonateModal}
         title="माँ दुर्गा के चरणों में दान समर्पण"
         maxWidth="md"
       >
@@ -417,7 +453,7 @@ export const Donation: React.FC = () => {
                     key={amt}
                     type="button"
                     onClick={() => handleSelectPreset(amt)}
-                    className={`py-2 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all border flex items-center justify-center gap-1 active:scale-95 ${
+                    className={`py-2 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all border flex items-center justify-center gap-1 active:scale-95 cursor-pointer ${
                       isSelected
                         ? 'bg-gradient-to-r from-maroon-800 to-maroon-950 text-gold-200 border-amber-400 shadow-md scale-[1.02]'
                         : 'bg-cream-50 text-dark-800 border-cream-300 hover:border-amber-400/60'
@@ -526,14 +562,14 @@ export const Donation: React.FC = () => {
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="pt-2">
+          {/* Submit & Cancel Buttons */}
+          <div className="pt-2 space-y-2">
             <Button
               type="submit"
               variant="gold"
               size="md"
               isLoading={isSubmitting}
-              className="w-full py-3 text-sm font-bold shadow-gold-glow flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 text-maroon-950"
+              className="w-full py-3 text-sm font-bold shadow-gold-glow flex items-center justify-center gap-2 bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 text-maroon-950 cursor-pointer"
             >
               <HandHeart className="w-4 h-4 text-maroon-950" />
               <span>
@@ -541,6 +577,17 @@ export const Donation: React.FC = () => {
               </span>
               <ArrowRight className="w-4 h-4 text-maroon-950 ml-1" />
             </Button>
+
+            {isSubmitting && (
+              <button
+                type="button"
+                onClick={handleCloseDonateModal}
+                className="w-full py-2 rounded-xl text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>भुगतान प्रक्रिया रद्द करें (Cancel Payment)</span>
+              </button>
+            )}
 
             <div className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-muted font-body">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />

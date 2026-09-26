@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { donationService } from '../../services/donationService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -123,8 +123,8 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
             <X className="w-4 h-4" />
           </button>
 
-          <div className="w-12 h-12 rounded-2xl bg-gold-500/20 border border-gold-400 flex items-center justify-center mx-auto mb-2 text-gold-300 shadow-lg">
-            <Sparkles className="w-6 h-6 text-gold-400 animate-pulse" />
+          <div className="w-12 h-12 rounded-2xl bg-gold-500/20 border border-gold-400 flex items-center justify-center mx-auto mb-2 text-gold-300 text-2xl shadow-lg">
+            🪔
           </div>
 
           <h3 className="font-heading font-black text-lg text-cream-50 tracking-wide">
@@ -245,8 +245,7 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
               isLoading={isLoading}
               className="flex-[2] bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-400/60 shadow-xl font-bold flex items-center justify-center gap-1.5"
             >
-              <Sparkles className="w-4 h-4 text-gold-400" />
-              <span>₹{amount || 0} दक्षिणा अर्पित करें</span>
+              <span>🪔 ₹{amount || 0} दक्षिणा अर्पित करें</span>
             </Button>
           </div>
         </form>

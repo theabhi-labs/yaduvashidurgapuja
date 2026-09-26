@@ -115,7 +115,7 @@ export const MobileBottomNav: React.FC = () => {
                 )}
               </div>
               <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-amber-900' : 'font-medium'}`}>
-                सहयोगी
+                Contributors
               </span>
             </>
           )}
