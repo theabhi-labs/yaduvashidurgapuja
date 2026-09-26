@@ -287,16 +287,17 @@ export const Home: React.FC = () => {
             कपूरिपुर दुर्गा पूजा के पावन अनुष्ठानों, महाआरती, प्रसाद वितरण और भव्य आयोजन में सभी भक्त ऑनलाइन दान देकर पुण्य के भागीदार बन सकते हैं।
           </p>
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/donate">
+            <Link to="/contributors">
               <Button
                 variant="gold"
                 size="md"
                 leftIcon={<HeartHandshake className="w-4 h-4 text-dark-950" />}
                 className="font-bold shadow-gold-glow"
               >
-                दान सेवा में सहयोग करें (Donate)
+                पावन सहयोगी बनें (Contributors)
               </Button>
             </Link>
+
             <Link to="/about">
               <Button
                 variant="outline"

@@ -95,9 +95,9 @@ export const MobileBottomNav: React.FC = () => {
           </span>
         </button>
 
-        {/* 4. Donate / दान सेवा */}
+        {/* 4. Contributors / सहयोगी */}
         <NavLink
-          to="/donate"
+          to="/contributors"
           className={({ isActive }) =>
             `flex flex-col items-center justify-center flex-1 py-1 transition-all ${
               isActive
@@ -115,11 +115,12 @@ export const MobileBottomNav: React.FC = () => {
                 )}
               </div>
               <span className={`text-[10px] font-body mt-0.5 ${isActive ? 'font-bold text-amber-900' : 'font-medium'}`}>
-                दान (Donate)
+                सहयोगी
               </span>
             </>
           )}
         </NavLink>
+
 
         {/* 5. User Profile or Login */}
         <NavLink

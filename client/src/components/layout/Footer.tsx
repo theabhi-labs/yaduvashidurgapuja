@@ -63,10 +63,11 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/donate" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">
-                  Donate
+                <Link to="/contributors" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">
+                  Contributors (सहयोगी)
                 </Link>
               </li>
+
               <li>
                 <Link to="/share-memory" className="text-gold-400 hover:text-gold-300 font-medium transition-colors block pt-1">
                   Share a Memory +

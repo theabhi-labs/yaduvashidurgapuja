@@ -47,10 +47,10 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Memories', path: '/memories' },
+    { name: 'Contributors', path: '/contributors' },
     { name: 'Committee', path: '/committee' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
-    { name: 'Donate', path: '/donate' },
   ];
 
   const handleLogout = async () => {
@@ -58,13 +58,9 @@ export const Navbar: React.FC = () => {
     navigate('/');
   };
 
-  const isHomePage = location.pathname === '/';
-
   return (
     <header
       className={`sticky top-0 z-40 transition-all duration-300 ${
-        !isHomePage ? 'hidden md:block ' : ''
-      }${
         isScrolled
           ? 'bg-cream-100/95 backdrop-blur-md shadow-sm border-b border-cream-300/80 py-2.5 sm:py-3'
           : 'bg-cream-200 border-b border-cream-300/50 py-3 sm:py-4'
@@ -97,8 +93,8 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Right Action Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {/* 1-Click App Install Shortcut */}
-            <PWAInstallButton variant="badge" />
+            {/* 1-Click App Install Download Icon */}
+            <PWAInstallButton variant="icon" />
 
             {/* Share CTA button */}
             <Link to="/share-memory">
@@ -108,6 +104,7 @@ export const Navbar: React.FC = () => {
                 leftIcon={<PlusCircle className="w-4 h-4" />}
                 className="font-semibold"
               >
+
                 Share Memory
               </Button>
             </Link>
@@ -231,12 +228,13 @@ export const Navbar: React.FC = () => {
             {/* Secondary Informational Links */}
             <div className="bg-cream-100/90 rounded-2xl border border-cream-300 p-2 divide-y divide-cream-200/80">
               <Link
-                to="/donate"
+                to="/contributors"
                 className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-amber-900 bg-amber-500/10 hover:bg-amber-500/20 rounded-xl transition-colors"
               >
                 <Heart className="w-4 h-4 text-amber-600 fill-amber-500/30" />
-                <span>माँ दुर्गा पूजा दान सेवा (Donate)</span>
+                <span>पावन सहयोगी (Contributors)</span>
               </Link>
+
 
               <Link
                 to="/about"

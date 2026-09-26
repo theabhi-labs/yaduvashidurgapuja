@@ -140,9 +140,12 @@ export const AppRoutes: React.FC = () => {
           <Route path="/live-darshan" element={<LiveDarshan />} />
           <Route path="/live darshan" element={<LiveDarshan />} />
           <Route path="/live%20darshan" element={<LiveDarshan />} />
-          <Route path="/live" element={<LiveDarshan />} />
+          <Route path="/contributors" element={<Donation />} />
+          <Route path="/contributor" element={<Donation />} />
           <Route path="/donate" element={<Donation />} />
           <Route path="/donation" element={<Donation />} />
+          <Route path="/donations" element={<Donation />} />
+
           <Route path="/memories" element={<Memories />} />
           <Route path="/memories/:id" element={<MemoryDetail />} />
           <Route path="/committee" element={<Committee />} />

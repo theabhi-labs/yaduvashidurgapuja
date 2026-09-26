@@ -83,11 +83,11 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
       {variant === 'icon' && (
         <button
           onClick={handleInstallClick}
-          className={`relative p-2 rounded-xl text-maroon-900 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/50 transition-all active:scale-95 shadow-xs flex items-center justify-center group ${className}`}
+          className={`relative p-2 sm:p-2.5 rounded-xl text-maroon-900 bg-gradient-to-r from-amber-400/20 via-gold-400/25 to-amber-500/20 hover:from-amber-400/35 hover:to-gold-400/35 border border-amber-400/70 transition-all active:scale-95 shadow-xs flex items-center justify-center group ${className}`}
           title="KapooripurPuja ऐप डाउनलोड / इंस्टॉल करें"
-          aria-label="Install App"
+          aria-label="KapooripurPuja ऐप इंस्टॉल करें"
         >
-          <Download className="w-4 h-4 text-maroon-800 group-hover:scale-110 transition-transform" />
+          <Download className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-maroon-900 group-hover:scale-110 transition-transform stroke-[2.5]" />
           <span className="sr-only">Install KapooripurPuja App</span>
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-ping" />
         </button>
@@ -96,10 +96,13 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
       {variant === 'badge' && (
         <button
           onClick={handleInstallClick}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-heading font-bold text-amber-950 bg-gradient-to-r from-amber-400/20 to-gold-400/20 hover:from-amber-400/30 hover:to-gold-400/30 border border-amber-400 shadow-xs transition-all active:scale-95 ${className}`}
+          className={`relative p-2 sm:p-2.5 rounded-xl text-maroon-900 bg-gradient-to-r from-amber-400/20 via-gold-400/25 to-amber-500/20 hover:from-amber-400/35 hover:to-gold-400/35 border border-amber-400/70 transition-all active:scale-95 shadow-xs flex items-center justify-center group ${className}`}
+          title="KapooripurPuja ऐप डाउनलोड / इंस्टॉल करें"
+          aria-label="KapooripurPuja ऐप इंस्टॉल करें"
         >
-          <Download className="w-3.5 h-3.5 text-maroon-800" />
-          <span>ऐप इंस्टॉल करें</span>
+          <Download className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-maroon-900 group-hover:scale-110 transition-transform stroke-[2.5]" />
+          <span className="sr-only">Install KapooripurPuja App</span>
+          <span className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-ping" />
         </button>
       )}
 
@@ -114,6 +117,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
           Install KapooripurPuja
         </Button>
       )}
+
 
       {/* iOS & Manual Installation Instruction Modal */}
       <Modal
