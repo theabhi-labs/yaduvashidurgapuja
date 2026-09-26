@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { LegalPageLayout, TocItem } from '../components/legal/LegalPageLayout';
 import { LegalSection } from '../components/legal/LegalSection';
-import { CONTACT_EMAIL, OFFICIAL_PHONE, LEGAL_ENTITY_NAME, LOCATION_TEXT } from '../utils/constants';
+import { CONTACT_EMAIL, LEGAL_ENTITY_NAME, LOCATION_TEXT } from '../utils/constants';
 
 export const ContributionPolicy: React.FC = () => {
   const tocItems: TocItem[] = [
@@ -153,12 +153,6 @@ export const ContributionPolicy: React.FC = () => {
             Email:{' '}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-maroon-800 underline font-mono">
               {CONTACT_EMAIL}
-            </a>
-          </p>
-          <p>
-            Phone:{' '}
-            <a href={`tel:${OFFICIAL_PHONE}`} className="text-maroon-800 underline font-mono">
-              {OFFICIAL_PHONE}
             </a>
           </p>
           <p className="pt-1">

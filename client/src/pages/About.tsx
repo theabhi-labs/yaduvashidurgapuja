@@ -5,7 +5,6 @@ import { Button } from '../components/common/Button';
 import {
   Users,
   Mail,
-  Calendar,
 } from 'lucide-react';
 import { LEGAL_ENTITY_NAME } from '../utils/constants';
 
@@ -185,11 +184,6 @@ export const About: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link to="/events">
-            <Button variant="outline" size="sm" leftIcon={<Calendar className="w-3.5 h-3.5" />}>
-              View Events
-            </Button>
-          </Link>
           <Link to="/contact">
             <Button variant="primary" size="sm" leftIcon={<Mail className="w-3.5 h-3.5" />}>
               Contact the Samiti

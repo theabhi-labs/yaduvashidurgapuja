@@ -47,7 +47,6 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
-    { name: 'Events', path: '/events' },
     { name: 'Support', path: '/support' },
     { name: 'Memories', path: '/memories' },
     { name: 'Committee', path: '/committee' },
@@ -232,14 +231,6 @@ export const Navbar: React.FC = () => {
               >
                 <Heart className="w-4 h-4 text-amber-600 fill-amber-500/30" />
                 <span>Support Durga Puja (सहयोग करें)</span>
-              </Link>
-
-              <Link
-                to="/events"
-                className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
-              >
-                <Info className="w-4 h-4 text-maroon-700" />
-                <span>Events & Schedule</span>
               </Link>
 
               <Link

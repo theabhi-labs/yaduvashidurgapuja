@@ -5,70 +5,26 @@ import { Clock, Flame, Sparkles, Radio, ChevronRight, Bell } from 'lucide-react'
 import { PujaSchedule } from '../../types';
 import { pujaScheduleService } from '../../services/pujaScheduleService';
 
-const FALLBACK_SCHEDULES: PujaSchedule[] = [
-  {
-    _id: '1',
-    title: 'प्रातः मंगला आरती',
-    time: '06:30 AM',
-    description: 'माँ भगवती का पावन अभिषेक एवं मंगला स्तुति',
-    isSpecial: false,
-    order: 1,
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    _id: '2',
-    title: 'मध्याह्न भोग व आरती',
-    time: '12:00 PM',
-    description: 'माँ को नैवेद्य अर्पण एवं मध्याह्न पावन आरती',
-    isSpecial: false,
-    order: 2,
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    _id: '3',
-    title: 'संध्या दिव्य महाआरती',
-    time: '07:30 PM',
-    description: 'कपूरिपुर प्रांगण में भव्य 108 दीप महाआरती व शंखनाद',
-    isSpecial: true,
-    order: 3,
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
-  },
-  {
-    _id: '4',
-    title: 'शयन आरती व वंदना',
-    time: '10:00 PM',
-    description: 'रात्रि विश्राम पूर्व माँ की पावन क्षमा प्रार्थना व आरती',
-    isSpecial: false,
-    order: 4,
-    isActive: true,
-    createdAt: '',
-    updatedAt: '',
-  },
-];
-
 interface AartiTimingsCardProps {
   isLiveActive?: boolean;
 }
 
 export const AartiTimingsCard: React.FC<AartiTimingsCardProps> = ({ isLiveActive = false }) => {
-  const [schedules, setSchedules] = useState<PujaSchedule[]>(FALLBACK_SCHEDULES);
+  const [schedules, setSchedules] = useState<PujaSchedule[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     let isMounted = true;
     const fetchSchedules = async () => {
       try {
         const res = await pujaScheduleService.getSchedules();
-        if (isMounted && res.success && Array.isArray(res.data) && res.data.length > 0) {
+        if (isMounted && res.success && Array.isArray(res.data)) {
           setSchedules(res.data);
         }
       } catch {
         // Quiet fallback
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
     fetchSchedules();
@@ -77,8 +33,12 @@ export const AartiTimingsCard: React.FC<AartiTimingsCardProps> = ({ isLiveActive
     };
   }, []);
 
+  if (!isLoading && schedules.length === 0) {
+    return null; // Don't show card if admin deleted all schedules
+  }
+
   return (
-    <section className="py-12 sm:py-16 bg-gradient-to-b from-cream-100 via-cream-200 to-cream-100 border-y border-amber-300/40 relative overflow-hidden">
+    <section className="py-12 sm:py-16 bg-gradient-to-b from-cream-100 via-cream-200 to-cream-100 border-y border-amber-300/40 relative overflow-hidden font-body">
       {/* Decorative subtle background elements */}
       <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-maroon-800/5 rounded-full blur-3xl pointer-events-none" />
@@ -86,17 +46,17 @@ export const AartiTimingsCard: React.FC<AartiTimingsCardProps> = ({ isLiveActive
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Title Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-maroon-100 border border-maroon-300/60 text-maroon-900 text-xs font-bold font-body">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-maroon-100 border border-maroon-300/60 text-maroon-900 text-xs font-bold">
             <Bell className="w-3.5 h-3.5 text-maroon-800 animate-bounce" />
-            <span>दैनिक पूजा व महाआरती समय</span>
+            <span>पूजा समय सारणी (Schedule)</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-dark-950">
-            माँ दुर्गा नित्य पूजन व <span className="text-maroon-800">आरती समय सारणी</span>
+            माँ दुर्गा नित्य पूजन व <span className="text-maroon-800">समय सारणी (Schedule)</span>
           </h2>
 
-          <p className="text-xs sm:text-sm font-body text-dark-700 max-w-lg mx-auto leading-relaxed">
-            कपूरिपुर दुर्गा पूजा प्रांगण में प्रतिदिन निर्धारित समय पर आयोजित होने वाले पावन अनुष्ठान एवं आरती।
+          <p className="text-xs sm:text-sm text-dark-700 max-w-lg mx-auto leading-relaxed">
+            कपूरिपुर दुर्गा पूजा प्रांगण में प्रतिदिन निर्धारित समय पर आयोजित होने वाले पावन अनुष्ठान एवं समय सारणी।
           </p>
         </div>
 

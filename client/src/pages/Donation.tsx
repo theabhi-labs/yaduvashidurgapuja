@@ -288,8 +288,14 @@ export const Donation: React.FC = () => {
           Community members and well-wishers may make voluntary contributions to support the organization of Durga Puja and related community activities.
         </p>
 
-        <div className="bg-amber-50/90 p-3.5 rounded-2xl border border-amber-300/80 text-xs text-amber-950 max-w-2xl mx-auto leading-relaxed">
-          These contributions are intended to support the <strong>आयोजन</strong> (puja rituals, pandal arrangements, prasad distribution, and community cultural activities) organized by the Samiti. Voluntary contributions do not constitute a purchase of products, services, investment, or commercial transaction.
+        <div className="bg-amber-500/15 border-2 border-amber-500/60 p-4 rounded-2xl text-amber-950 max-w-2xl mx-auto space-y-1 text-center shadow-sm">
+          <div className="font-bold text-sm text-maroon-950 flex items-center justify-center gap-1.5">
+            <span>⚠️</span>
+            <span>सूचना (Notice)</span>
+          </div>
+          <p className="text-xs text-maroon-900 font-medium">
+            वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily off by Administrator) है।
+          </p>
         </div>
       </div>
 
@@ -309,7 +315,10 @@ export const Donation: React.FC = () => {
           <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0 justify-center">
             {/* Make a Contribution Button */}
             <button
-              onClick={() => setIsDonateModalOpen(true)}
+              onClick={() => {
+                toast.info('वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily off by Administrator) है।');
+                setIsDonateModalOpen(true);
+              }}
               className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 via-gold-400 to-amber-500 hover:from-amber-500 hover:to-gold-500 text-maroon-950 font-heading font-bold text-xs sm:text-sm border border-gold-300 shadow-sm transition-all active:scale-95 cursor-pointer"
             >
               <HandHeart className="w-4 h-4 text-maroon-950" />

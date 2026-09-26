@@ -56,9 +56,6 @@ const Committee = React.lazy(() =>
 const About = React.lazy(() =>
   import('../pages/About').then((m) => ({ default: m.About }))
 );
-const Events = React.lazy(() =>
-  import('../pages/Events').then((m) => ({ default: m.Events }))
-);
 const Contact = React.lazy(() =>
   import('../pages/Contact').then((m) => ({ default: m.Contact }))
 );
@@ -158,11 +155,6 @@ export const AppRoutes: React.FC = () => {
           <Route path="/donate" element={<Donation />} />
           <Route path="/donation" element={<Donation />} />
           <Route path="/donations" element={<Donation />} />
-
-          {/* Events & Puja Schedule Routes */}
-          <Route path="/events" element={<Events />} />
-          <Route path="/schedule" element={<Events />} />
-          <Route path="/puja-schedule" element={<Events />} />
 
           <Route path="/memories" element={<Memories />} />
           <Route path="/memories/:id" element={<MemoryDetail />} />

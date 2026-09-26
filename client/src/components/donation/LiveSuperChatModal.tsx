@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { donationService } from '../../services/donationService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Button } from '../common/Button';
@@ -8,7 +7,7 @@ import { Button } from '../common/Button';
 interface LiveSuperChatModalProps {
   isOpen: boolean;
   onClose: () => void;
-  roomName: string;
+  roomName?: string;
   streamTitle?: string;
 }
 
@@ -24,8 +23,6 @@ const PRESET_AMOUNTS = [
 export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
   isOpen,
   onClose,
-  roomName,
-  streamTitle,
 }) => {
   const { user } = useAuth();
   const toast = useToast();
@@ -34,79 +31,12 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
   const [donorName, setDonorName] = useState<string>(user?.name || '');
   const [message, setMessage] = useState<string>('जय माता दी! माँ के चरणों में पावन समर्पण 🙏');
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
   const handleDonate = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (amount < 1) {
-      toast.error('कृपया न्यूनतम ₹1 का दान दर्ज करें');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const effectiveName = isAnonymous ? 'गुप्त भक्त' : (donorName.trim() || user?.name || 'श्रद्धालु');
-
-      const orderData = await donationService.createOrder({
-        amount,
-        donorName: effectiveName,
-        isAnonymous,
-        message: message.trim() || undefined,
-        liveSessionRoomName: roomName,
-        type: 'dakshina',
-      });
-
-
-      const options = {
-        key: orderData.data.keyId,
-        amount: orderData.data.amount,
-        currency: orderData.data.currency,
-        name: 'यदुवंशी दुर्गा पूजा कपूरीपुर',
-        description: `पावन दक्षिणा — ${streamTitle || 'माँ दुर्गा महाआरती'}`,
-        image: '/favicon.svg',
-        order_id: orderData.data.orderId,
-        handler: async (response: any) => {
-          try {
-            await donationService.verifyPayment({
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            });
-
-            toast.success('माँ के चरणों में आपकी पावन दक्षिणा सफलतापूर्वक समर्पित हुई! 🌸');
-            onClose();
-          } catch (err: any) {
-            toast.error(err.message || 'भुगतान सत्यापन में समस्या आई');
-          }
-        },
-        prefill: {
-          name: effectiveName,
-          email: user?.email || '',
-        },
-        theme: {
-          color: '#700c0c',
-        },
-        modal: {
-          ondismiss: () => {
-            setIsLoading(false);
-            toast.info('दक्षिणा भुगतान प्रक्रिया रद्द कर दी गई');
-          },
-        },
-      };
-
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', (response: any) => {
-        toast.error(`भुगतान विफल: ${response.error?.description || 'त्रुटि'}`);
-        setIsLoading(false);
-      });
-      rzp.open();
-    } catch (err: any) {
-      toast.error(err.message || 'ऑर्डर बनाने में समस्या आई');
-      setIsLoading(false);
-    }
+    toast.info('वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily off by Administrator) है।');
   };
 
   return (
@@ -233,7 +163,6 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
               variant="outline"
               size="md"
               onClick={onClose}
-              disabled={isLoading}
               className="flex-1 border-cream-400 text-dark-800 hover:bg-cream-200"
             >
               वापस जाएँ (Cancel)
@@ -242,7 +171,6 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
               type="submit"
               variant="primary"
               size="md"
-              isLoading={isLoading}
               className="flex-[2] bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-400/60 shadow-xl font-bold flex items-center justify-center gap-1.5"
             >
               <span>🪔 ₹{amount || 0} दक्षिणा अर्पित करें</span>

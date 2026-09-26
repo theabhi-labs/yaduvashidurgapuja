@@ -15,6 +15,9 @@ import { User } from '../models/User';
 // ---- PUBLIC: Create a Razorpay donation order ----
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Donations/Dakshina temporarily disabled by administrator
+    throw new ApiError(403, 'वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily disabled by Administrator) है।');
+    
     const { amount, donorName, isAnonymous, liveSessionRoomName, message, type } = req.body;
 
     const parsedAmount = Number(amount);

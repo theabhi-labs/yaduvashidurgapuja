@@ -40,22 +40,14 @@ const DEFAULT_SCHEDULES = [
 
 export class PujaScheduleController {
   /**
-   * Get all active puja and aarti timings (Public)
+   * Get all active puja and aarti schedules (Public)
    * GET /api/puja-schedules
    */
   public static async getSchedules(_req: Request, res: Response, next: NextFunction) {
     try {
-      let schedules = await PujaSchedule.find({ isActive: true })
+      const schedules = await PujaSchedule.find({ isActive: true })
         .sort({ order: 1, createdAt: 1 })
         .lean();
-
-      // Auto-seed defaults if database table is empty
-      if (schedules.length === 0) {
-        await PujaSchedule.insertMany(DEFAULT_SCHEDULES);
-        schedules = await PujaSchedule.find({ isActive: true })
-          .sort({ order: 1, createdAt: 1 })
-          .lean();
-      }
 
       return sendResponse(res, 200, 'Puja and aarti schedules retrieved successfully', schedules);
     } catch (error) {
@@ -69,16 +61,9 @@ export class PujaScheduleController {
    */
   public static async getAllSchedules(_req: Request, res: Response, next: NextFunction) {
     try {
-      let schedules = await PujaSchedule.find()
+      const schedules = await PujaSchedule.find()
         .sort({ order: 1, createdAt: 1 })
         .lean();
-
-      if (schedules.length === 0) {
-        await PujaSchedule.insertMany(DEFAULT_SCHEDULES);
-        schedules = await PujaSchedule.find()
-          .sort({ order: 1, createdAt: 1 })
-          .lean();
-      }
 
       return sendResponse(res, 200, 'All schedules retrieved successfully', schedules);
     } catch (error) {

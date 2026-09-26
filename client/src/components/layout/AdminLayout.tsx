@@ -51,7 +51,7 @@ export const AdminLayout: React.FC = () => {
         { name: 'Overview', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
         { name: 'Donations & Seva', path: '/admin/donations', icon: <HeartHandshake className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
-        { name: 'Aarti Timings', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
+        { name: 'Schedule (समय सारणी)', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
         { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'In-Feed Ads', path: '/admin/ads', icon: <Megaphone className="w-5 h-5" /> },
@@ -62,7 +62,7 @@ export const AdminLayout: React.FC = () => {
     : [
         { name: 'Donations & Seva', path: '/admin/donations', icon: <HeartHandshake className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
-        { name: 'Aarti Timings', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
+        { name: 'Schedule (समय सारणी)', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
         { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },

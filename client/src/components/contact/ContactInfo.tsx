@@ -1,6 +1,6 @@
 import React from 'react';
-import { CONTACT_EMAIL, OFFICIAL_PHONE, LOCATION_TEXT, SITE_DOMAIN, LEGAL_ENTITY_NAME } from '../../utils/constants';
-import { Mail, Phone, MapPin, Globe, ShieldCheck, Sparkles, Clock } from 'lucide-react';
+import { CONTACT_EMAIL, LOCATION_TEXT, SITE_DOMAIN, LEGAL_ENTITY_NAME } from '../../utils/constants';
+import { Mail, MapPin, Globe, ShieldCheck, Sparkles, Clock } from 'lucide-react';
 
 export const ContactInfo: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ export const ContactInfo: React.FC = () => {
             {LEGAL_ENTITY_NAME}
           </h2>
           <p className="text-xs sm:text-sm text-muted mt-2 leading-relaxed">
-            For questions regarding Durga Puja, community activities, voluntary contributions, or website information, please contact the Samiti.
+            For questions regarding Durga Puja, community activities, or website information, please contact the Samiti.
           </p>
         </div>
 
@@ -32,24 +32,6 @@ export const ContactInfo: React.FC = () => {
               <span className="font-medium text-dark-950 block leading-relaxed">
                 {LOCATION_TEXT}
               </span>
-            </div>
-          </div>
-
-          {/* Phone */}
-          <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-cream-50 border border-cream-200">
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
-              <Phone className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-[11px] font-bold text-muted uppercase tracking-wider block">
-                Official Phone
-              </span>
-              <a
-                href={`tel:${OFFICIAL_PHONE.replace(/\s+/g, '')}`}
-                className="font-semibold text-dark-950 hover:text-maroon-700 transition-colors"
-              >
-                {OFFICIAL_PHONE}
-              </a>
             </div>
           </div>
 

@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MapPin, Mail, Phone, Globe, Sparkles, ShieldCheck } from 'lucide-react';
+import { Heart, MapPin, Mail, Globe, Sparkles, ShieldCheck } from 'lucide-react';
 import {
   LEGAL_ENTITY_NAME,
   SITE_DOMAIN,
   CONTACT_EMAIL,
-  OFFICIAL_PHONE,
   LOCATION_TEXT,
   CURRENT_YEAR,
 } from '../../utils/constants';
@@ -51,11 +50,6 @@ export const Footer: React.FC = () => {
               <li>
                 <Link to="/about" className="text-cream-300 hover:text-gold-300 transition-colors">
                   About the Samiti
-                </Link>
-              </li>
-              <li>
-                <Link to="/events" className="text-cream-300 hover:text-gold-300 transition-colors">
-                  Events & Schedule
                 </Link>
               </li>
               <li>
@@ -130,15 +124,6 @@ export const Footer: React.FC = () => {
                 <span className="text-[11px] leading-relaxed text-cream-300">
                   {LOCATION_TEXT}
                 </span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs text-cream-200">
-                <Phone className="w-4 h-4 text-gold-400 shrink-0" />
-                <a
-                  href={`tel:${OFFICIAL_PHONE.replace(/\s+/g, '')}`}
-                  className="text-[11px] text-cream-300 hover:text-gold-300 transition-colors"
-                >
-                  {OFFICIAL_PHONE}
-                </a>
               </div>
               <div className="flex items-center gap-2.5 text-xs text-cream-200">
                 <Mail className="w-4 h-4 text-gold-400 shrink-0" />

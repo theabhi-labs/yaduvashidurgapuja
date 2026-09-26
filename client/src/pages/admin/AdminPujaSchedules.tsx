@@ -145,10 +145,10 @@ export const AdminPujaSchedules: React.FC = () => {
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30">
             <Bell className="w-3.5 h-3.5" />
-            Puja & Aarti Timetable
+            Puja & Aarti Schedule
           </div>
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-cream-50">
-            Daily Puja & Maha Aarti Timings
+            Puja Schedule (पूजा समय सारणी)
           </h1>
           <p className="text-xs md:text-sm font-body text-cream-200/80 max-w-2xl">
             Configure the daily puja schedule, Mangala Aarti, Bhog, and evening Maha Aarti timings displayed on the website and mobile views.
@@ -161,7 +161,7 @@ export const AdminPujaSchedules: React.FC = () => {
           leftIcon={<Plus className="w-4 h-4" />}
           className="relative z-10 shrink-0 font-bold"
         >
-          Add New Aarti Time
+          Add New Schedule
         </Button>
       </div>
 
