@@ -84,34 +84,49 @@ export class AnalyticsService {
   }
 
   /**
-   * Get real-time live active users count
+   * Get real-time live active users count (strictly real human visitors)
    */
   public static async getLiveActiveCount(): Promise<number> {
     const activeThreshold = new Date(Date.now() - 2.5 * 60 * 1000); // active in last 2.5 minutes
     const count = await VisitorSession.countDocuments({
+      visitorId: { $not: /^visitor_seed_/ },
       lastActive: { $gte: activeThreshold },
     });
     return count;
   }
 
   /**
-   * Get comprehensive visitor analytics for admin dashboard
+   * Get comprehensive visitor analytics for admin dashboard (100% authentic data)
    */
   public static async getVisitorAnalytics(): Promise<VisitorAnalyticsData> {
+    // Purge any legacy dummy seed data if present
+    try {
+      await VisitorSession.deleteMany({ visitorId: { $regex: /^visitor_seed_/ } });
+    } catch {
+      // ignore
+    }
+
     const today = this.getTodayDateString(0);
+    const realVisitorFilter = { visitorId: { $not: /^visitor_seed_/ } };
 
     // 1. Live Active Visitors (last 2.5 minutes)
     const liveActive = await this.getLiveActiveCount();
 
     // 2. Today's unique visitors
-    const todayVisitors = await VisitorSession.countDocuments({ date: today });
+    const todayVisitors = await VisitorSession.countDocuments({
+      ...realVisitorFilter,
+      date: today,
+    });
 
     // 3. All-time unique visitors (distinct visitorId)
-    const distinctVisitors = await VisitorSession.distinct('visitorId');
+    const distinctVisitors = await VisitorSession.distinct('visitorId', realVisitorFilter);
     const totalVisitors = Math.max(distinctVisitors.length, todayVisitors);
 
     // 4. Total Page Views aggregation
     const viewsAgg = await VisitorSession.aggregate([
+      {
+        $match: realVisitorFilter,
+      },
       {
         $group: {
           _id: null,
@@ -130,6 +145,7 @@ export class AnalyticsService {
     const dailyAgg = await VisitorSession.aggregate([
       {
         $match: {
+          ...realVisitorFilter,
           date: { $in: past7Days },
         },
       },
@@ -158,6 +174,9 @@ export class AnalyticsService {
 
     // 6. Popular Pages
     const popularAgg = await VisitorSession.aggregate([
+      {
+        $match: realVisitorFilter,
+      },
       {
         $group: {
           _id: '$path',

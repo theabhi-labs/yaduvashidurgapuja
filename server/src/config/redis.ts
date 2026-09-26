@@ -129,4 +129,52 @@ export async function getCommentsFromRedis(roomName: string): Promise<ChatCommen
   return [];
 }
 
+// In-memory fallback map for impression deduplication
+const inMemoryDedupStore = new Map<string, number>();
+
+/**
+ * Atomically checks and registers a unique view/impression.
+ * Returns true if this is a new unique view (not seen in the last 24 hours),
+ * false if this viewer already viewed this entity recently.
+ */
+export async function registerUniqueImpression(
+  namespace: string,
+  id: string,
+  viewerKey: string,
+  ttlSeconds: number = 86400
+): Promise<boolean> {
+  if (!namespace || !id || !viewerKey) return false;
+  const key = `dedup:${namespace}:${id}:${viewerKey}`;
+
+  if (redisClient && isRedisConnected) {
+    try {
+      // SET key 1 EX ttlSeconds NX sets key only if it doesn't already exist
+      const res = await redisClient.set(key, '1', 'EX', ttlSeconds, 'NX');
+      return res === 'OK';
+    } catch (err: any) {
+      logger.warn(`[Redis] NX SET impression failed, falling back to memory: ${err.message}`);
+    }
+  }
+
+  // Fallback in-memory deduplication with timestamp
+  const now = Date.now();
+  const existingExpiry = inMemoryDedupStore.get(key);
+  if (existingExpiry && existingExpiry > now) {
+    return false; // Already viewed in cooldown window
+  }
+
+  inMemoryDedupStore.set(key, now + ttlSeconds * 1000);
+
+  // Periodic cleanup if map grows large
+  if (inMemoryDedupStore.size > 8000) {
+    for (const [k, exp] of inMemoryDedupStore.entries()) {
+      if (exp <= now) {
+        inMemoryDedupStore.delete(k);
+      }
+    }
+  }
+
+  return true;
+}
+
 export { redisClient };

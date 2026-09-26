@@ -3,6 +3,8 @@ import { Ad } from '../models/Ad';
 import { ApiError, sendResponse } from '../utils/apiResponse';
 import { ImageService } from '../services/imageService';
 import { logger } from '../utils/logger';
+import { registerUniqueImpression } from '../config/redis';
+import { AnalyticsService } from '../services/analyticsService';
 
 export class AdController {
   /**
@@ -67,21 +69,33 @@ export class AdController {
   }
 
   /**
-   * Record Ad impression counter (public, fire-and-forget)
+   * Record Ad impression counter (public, deduplicated per viewer)
    * POST /api/ads/:id/impression
    */
   public static async recordImpression(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+      const visitorId = (req.body && req.body.visitorId) || (req.headers['x-visitor-id'] as string);
+      const clientIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '127.0.0.1';
+      const userId = req.user ? req.user._id.toString() : '';
 
       if (!id) {
         throw new ApiError(400, 'Ad ID is required');
       }
 
-      // Fire and forget increment
-      Ad.findByIdAndUpdate(id, { $inc: { impressions: 1 } })
-        .exec()
-        .catch((err) => logger.warn(`Failed to track ad impression for ${id}:`, err));
+      const viewerKey = userId
+        ? `u_${userId}`
+        : visitorId && visitorId.length > 5
+        ? `v_${visitorId}`
+        : `ip_${AnalyticsService.hashIp(clientIp)}`;
+
+      const isNewUnique = await registerUniqueImpression('ad', id, viewerKey, 86400);
+
+      if (isNewUnique) {
+        Ad.findByIdAndUpdate(id, { $inc: { impressions: 1 } })
+          .exec()
+          .catch((err) => logger.warn(`Failed to track ad impression for ${id}:`, err));
+      }
 
       return sendResponse(res, 200, 'Impression recorded', null);
     } catch (error) {

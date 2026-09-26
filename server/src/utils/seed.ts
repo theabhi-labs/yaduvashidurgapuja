@@ -302,36 +302,9 @@ export const seedDatabase = async () => {
     await CommitteeMember.insertMany(committeeData);
     logger.info(`Inserted ${committeeData.length} committee members.`);
 
-    // Seed Visitor Sessions for realistic 7-day traffic & live test
-    await VisitorSession.deleteMany({});
-    const visitorSessions = [];
-    const paths = ['/', '/memories', '/committee', '/about', '/contact', '/share-memory'];
-    const now = new Date();
-
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      const visitorsCount = i === 0 ? 42 : Math.floor(25 + Math.random() * 35);
-
-      for (let v = 1; v <= visitorsCount; v++) {
-        const isLive = i === 0 && v <= 5; // 5 live active users right now
-        const lastActive = isLive ? new Date(now.getTime() - Math.floor(Math.random() * 60) * 1000) : d;
-        visitorSessions.push({
-          visitorId: `visitor_seed_${i}_${v}`,
-          ipHash: `hash_${i}_${v}`,
-          date: dateStr,
-          path: paths[v % paths.length],
-          lastActive,
-          firstSeen: d,
-          pageViews: Math.floor(1 + Math.random() * 4),
-          userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        });
-      }
-    }
-
-    await VisitorSession.insertMany(visitorSessions);
-    logger.info(`Inserted ${visitorSessions.length} visitor traffic records.`);
+    // Clean up any old dummy visitor test records
+    await VisitorSession.deleteMany({ visitorId: { $regex: /^visitor_seed_/ } });
+    logger.info('Cleaned up dummy visitor seed records. Real visitor analytics active.');
 
     logger.info('✅ Database seeding successfully completed!');
     logger.info('===============================================');

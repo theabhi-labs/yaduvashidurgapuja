@@ -4,6 +4,8 @@ import { ApiError, sendResponse } from '../utils/apiResponse';
 import { ImageService } from '../services/imageService';
 import { logger } from '../utils/logger';
 import escapeRegExp from 'lodash.escaperegexp';
+import { registerUniqueImpression } from '../config/redis';
+import { AnalyticsService } from '../services/analyticsService';
 
 export class MemoryController {
   /**
@@ -73,11 +75,7 @@ export class MemoryController {
     try {
       const { id } = req.params;
 
-      const memory = await Memory.findByIdAndUpdate(
-        id,
-        { $inc: { impressions: 1 } },
-        { new: true }
-      ).populate('userId', 'name avatar');
+      const memory = await Memory.findById(id).populate('userId', 'name avatar');
 
       if (!memory || memory.status === 'deleted') {
         throw new ApiError(404, 'स्मृति नहीं मिली या हटा दी गई है');
@@ -100,23 +98,50 @@ export class MemoryController {
   }
 
   /**
-   * Record memory card impression (from feed or list)
+   * Record memory card impression (deduplicated per user/visitor/IP with 24h window)
    * POST /api/memories/:id/impression
    */
   public static async recordImpression(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const memory = await Memory.findByIdAndUpdate(
-        id,
-        { $inc: { impressions: 1 } },
-        { new: true, select: '_id impressions' }
-      );
+      const visitorId = (req.body && req.body.visitorId) || (req.headers['x-visitor-id'] as string);
+      const clientIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '127.0.0.1';
+      const userId = req.user ? req.user._id.toString() : '';
 
-      if (!memory) {
+      const memory = await Memory.findById(id);
+      if (!memory || memory.status === 'deleted') {
         throw new ApiError(404, 'स्मृति नहीं मिली');
       }
 
-      return sendResponse(res, 200, 'अवलोकन दर्ज किया गया', { impressions: memory.impressions });
+      // Check if current user is the uploader (author views are not counted towards public views)
+      const isAuthor = Boolean(userId && memory.userId && memory.userId.toString() === userId);
+
+      let currentImpressions = memory.impressions || 0;
+
+      if (!isAuthor) {
+        // Unique viewer identifier: user ID > visitor token > IP hash
+        const viewerKey = userId
+          ? `u_${userId}`
+          : visitorId && visitorId.length > 5
+          ? `v_${visitorId}`
+          : `ip_${AnalyticsService.hashIp(clientIp)}`;
+
+        // Check if this viewer has already viewed this memory in the last 24 hours
+        const isNewUniqueView = await registerUniqueImpression('memory', id, viewerKey, 86400);
+
+        if (isNewUniqueView) {
+          const updated = await Memory.findByIdAndUpdate(
+            id,
+            { $inc: { impressions: 1 } },
+            { new: true, select: '_id impressions' }
+          );
+          if (updated) {
+            currentImpressions = updated.impressions;
+          }
+        }
+      }
+
+      return sendResponse(res, 200, 'अवलोकन दर्ज किया गया', { impressions: currentImpressions });
     } catch (error) {
       next(error);
     }

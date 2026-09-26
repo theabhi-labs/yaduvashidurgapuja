@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { memoryService } from '../services/memoryService';
+import { memoryService, trackMemoryView } from '../services/memoryService';
 import { Memory } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
@@ -56,6 +56,9 @@ export const MemoryDetail: React.FC = () => {
           setMemory(res.data);
           setEditCaption(res.data.caption);
           setEditYear(res.data.year);
+          trackMemoryView(id, (newCount) => {
+            setMemory((prev) => (prev ? { ...prev, impressions: newCount } : null));
+          });
         }
       } catch (err: any) {
         setError(err.message || 'Unable to load memory details.');
