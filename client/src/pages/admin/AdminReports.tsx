@@ -86,7 +86,7 @@ export const AdminReports: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none">
         {[
           { label: 'Pending Review', value: 'pending' },
           { label: 'Reviewed / Actioned', value: 'reviewed' },
@@ -99,7 +99,7 @@ export const AdminReports: React.FC = () => {
               setStatusFilter(tab.value);
               setPage(1);
             }}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-body font-medium transition-all ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-body font-medium transition-all shrink-0 ${
               statusFilter === tab.value
                 ? 'bg-maroon-700 text-white font-bold shadow-sm'
                 : 'bg-cream-100 text-dark-800 hover:bg-cream-300 border border-cream-300'

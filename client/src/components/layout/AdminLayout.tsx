@@ -51,7 +51,7 @@ export const AdminLayout: React.FC = () => {
         { name: 'Overview', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
         { name: 'Donations & Seva', path: '/admin/donations', icon: <HeartHandshake className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
-        { name: 'Schedule (समय सारणी)', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
+        { name: 'Puja Schedule', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
         { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'In-Feed Ads', path: '/admin/ads', icon: <Megaphone className="w-5 h-5" /> },
@@ -62,7 +62,7 @@ export const AdminLayout: React.FC = () => {
     : [
         { name: 'Donations & Seva', path: '/admin/donations', icon: <HeartHandshake className="w-5 h-5" /> },
         { name: 'Live Broadcast', path: '/admin/live-darshan', icon: <Radio className="w-5 h-5" /> },
-        { name: 'Schedule (समय सारणी)', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
+        { name: 'Puja Schedule', path: '/admin/aarti-timings', icon: <Bell className="w-5 h-5" /> },
         { name: 'Hero Posters', path: '/admin/banners', icon: <Sparkles className="w-5 h-5" /> },
         { name: 'Memories', path: '/admin/memories', icon: <Images className="w-5 h-5" /> },
         { name: 'Reports', path: '/admin/reports', icon: <Flag className="w-5 h-5" /> },
@@ -77,30 +77,30 @@ export const AdminLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-cream-200 flex flex-col md:flex-row">
       {/* Mobile Admin Header */}
-      <div className="md:hidden bg-maroon-900 text-cream-100 p-4 flex items-center justify-between border-b border-maroon-800 sticky top-0 z-30 shadow-sm">
+      <div className="md:hidden bg-maroon-950/95 backdrop-blur-md text-cream-100 px-4 py-3.5 flex items-center justify-between border-b border-amber-500/20 sticky top-0 z-30 shadow-md">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-maroon-800 p-1 flex items-center justify-center border border-amber-400/40 shadow-sm overflow-hidden">
+          <div className="w-9 h-9 rounded-xl bg-maroon-800 p-1 flex items-center justify-center border border-amber-400/40 shadow-sm overflow-hidden shrink-0">
             <img
               src="/favicon.svg"
               alt="यदुवंशी दुर्गा पूजा"
               className="w-full h-full object-contain"
             />
           </div>
-          <div className="flex flex-col">
-            <span className="font-heading font-bold text-sm">
+          <div className="flex flex-col min-w-0">
+            <span className="font-heading font-bold text-sm tracking-tight truncate text-cream-50">
               {isSuperAdmin ? 'Super Admin Panel' : 'Moderator Panel'}
             </span>
-            <span className="text-[10px] text-gold-400 font-body">
+            <span className="text-[10px] text-gold-400 font-semibold font-body uppercase tracking-wider">
               {isSuperAdmin ? 'Super Admin' : 'Admin'}
             </span>
           </div>
         </div>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-1.5 rounded-lg text-cream-200 hover:bg-maroon-800"
+          className="p-2 rounded-xl text-cream-200 bg-maroon-900/80 border border-gold-500/20 hover:bg-maroon-800 active:scale-95 transition-all"
           aria-label="Toggle sidebar"
         >
-          {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
@@ -108,7 +108,7 @@ export const AdminLayout: React.FC = () => {
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="fixed inset-0 bg-black/60 z-40 md:hidden transition-opacity"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden transition-opacity"
           aria-hidden="true"
         />
       )}

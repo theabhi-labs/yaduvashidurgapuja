@@ -575,31 +575,31 @@ export const AdminLiveBroadcast: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-6 sm:space-y-8 pb-16">
       {/* Top Banner & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-cream-300">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="p-1.5 rounded-lg bg-maroon-900/10 text-maroon-800">
+      <div className="bg-cream-50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-cream-300 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="p-1.5 rounded-lg bg-maroon-900/10 text-maroon-800 shrink-0">
               <Radio className="w-5 h-5" />
             </span>
-            <h1 className="text-2xl font-heading font-bold text-maroon-950">
+            <h1 className="text-xl sm:text-2xl font-heading font-bold text-maroon-950 tracking-tight">
               Live Broadcast Studio & Logs
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-muted font-body">
+          <p className="text-xs sm:text-sm text-muted font-body leading-relaxed">
             Start live Aarti streams, monitor real-time devotee offerings, inspect per-broadcast chat & donation logs, and manage active sessions.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap w-full sm:w-auto">
           {activeLiveStreams.length > 0 && (
             <Button
               variant="outline"
               size="sm"
               onClick={handleEndAllStreams}
               isLoading={isTerminatingAll}
-              className="border-red-600 text-red-600 hover:bg-red-50 flex items-center gap-1.5 font-bold"
+              className="border-red-600 text-red-600 hover:bg-red-50 flex items-center justify-center gap-1.5 font-bold flex-1 sm:flex-initial"
             >
               <ShieldAlert className="w-4 h-4" />
               <span>End All Live ({activeLiveStreams.length})</span>
@@ -611,7 +611,7 @@ export const AdminLiveBroadcast: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => setIsScheduleModalOpen(true)}
-              className="border-gold-600 text-maroon-900 hover:bg-gold-50 flex items-center gap-1.5 font-bold"
+              className="border-gold-600 text-maroon-900 hover:bg-gold-50 flex items-center justify-center gap-1.5 font-bold flex-1 sm:flex-initial"
             >
               <Plus className="w-4 h-4 text-gold-600" />
               <span>Schedule Aarti</span>
@@ -619,8 +619,8 @@ export const AdminLiveBroadcast: React.FC = () => {
           )}
 
           {isBroadcasting && (
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-600 text-white font-bold text-xs shadow-md animate-pulse">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 text-white font-bold text-xs shadow-md animate-pulse shrink-0">
                 <span className="w-2 h-2 rounded-full bg-white" />
                 Live On-Air
               </span>
@@ -628,7 +628,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowEndModal(true)}
-                className="border-red-600 text-red-600 hover:bg-red-50 flex items-center gap-1.5"
+                className="border-red-600 text-red-600 hover:bg-red-50 flex items-center justify-center gap-1.5 flex-1 sm:flex-initial"
               >
                 <StopCircle className="w-4 h-4" />
                 <span>End Broadcast</span>
@@ -639,7 +639,7 @@ export const AdminLiveBroadcast: React.FC = () => {
       </div>
 
       {/* Realtime Donation Overlay Banner */}
-      <div className="fixed top-20 right-6 z-50 pointer-events-none">
+      <div className="fixed top-20 right-4 sm:right-6 z-50 pointer-events-none">
         <DonationCard
           donation={latestDonation}
           onDismiss={clearLatestDonation}
@@ -850,26 +850,26 @@ export const AdminLiveBroadcast: React.FC = () => {
         /* ======================================================== */
         /* 2. BROADCAST LAUNCHPAD (Start Instant or Pick Schedule)  */
         /* ======================================================== */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Quick Go Live Card */}
-          <div className="lg:col-span-7 bg-cream-50 rounded-3xl p-6 sm:p-8 border border-gold-500/30 shadow-lg space-y-5">
+          <div className="lg:col-span-7 bg-cream-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-gold-500/30 shadow-lg space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-maroon-900 text-gold-300 flex items-center justify-center shadow-md">
-                <Video className="w-6 h-6" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-maroon-900 text-gold-300 flex items-center justify-center shadow-md shrink-0">
+                <Video className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div>
-                <h2 className="text-xl font-heading font-bold text-maroon-950">
+                <h2 className="text-lg sm:text-xl font-heading font-bold text-maroon-950">
                   Start Live Broadcast (Go Live Now)
                 </h2>
-                <p className="text-xs text-muted font-body">
+                <p className="text-xs text-muted font-body leading-relaxed">
                   Multiple admins can broadcast simultaneously from various angles (Pandal, Aarti, Hawan).
                 </p>
               </div>
             </div>
 
-            <div className="space-y-4 pt-2">
+            <div className="space-y-4 pt-1">
               <div>
-                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-body uppercase">
+                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-body uppercase tracking-wider">
                   Broadcast / Aarti Title *
                 </label>
                 <input
@@ -877,12 +877,12 @@ export const AdminLiveBroadcast: React.FC = () => {
                   value={broadcastTitle}
                   onChange={(e) => setBroadcastTitle(e.target.value)}
                   placeholder="e.g., Evening Maha Aarti, Durga Saptashati Recitation, Hawan Darshan..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-semibold font-body"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-semibold font-body shadow-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-body uppercase">
+                <label className="block text-xs font-semibold text-dark-800 mb-1.5 font-body uppercase tracking-wider">
                   Short Description (Optional)
                 </label>
                 <input
@@ -890,36 +890,60 @@ export const AdminLiveBroadcast: React.FC = () => {
                   value={broadcastDesc}
                   onChange={(e) => setBroadcastDesc(e.target.value)}
                   placeholder="e.g., Sacred live darshan from Kapooripur main pandal..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-body"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-cream-300 bg-cream-100/70 text-dark-900 text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700/20 focus:border-maroon-700 font-body shadow-sm"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-cream-100 border border-cream-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <label
+                  htmlFor="enableChat"
+                  className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer select-none ${
+                    isChatEnabled
+                      ? 'bg-amber-50/80 border-gold-500/70 shadow-sm'
+                      : 'bg-cream-100/70 border-cream-300'
+                  }`}
+                >
                   <input
                     type="checkbox"
                     id="enableChat"
                     checked={isChatEnabled}
                     onChange={(e) => setIsChatEnabled(e.target.checked)}
-                    className="w-4 h-4 text-maroon-800 rounded"
+                    className="w-4 h-4 text-maroon-800 rounded mt-0.5"
                   />
-                  <label htmlFor="enableChat" className="text-xs font-semibold text-dark-800 cursor-pointer font-body">
-                    Enable Live Chat
-                  </label>
-                </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-dark-900 block font-heading">
+                      Enable Live Chat
+                    </span>
+                    <span className="text-[11px] text-muted block font-body">
+                      Devotees can chant & send live comments
+                    </span>
+                  </div>
+                </label>
 
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-cream-100 border border-cream-300">
+                <label
+                  htmlFor="enableDonation"
+                  className={`flex items-start gap-3 p-3.5 rounded-2xl border transition-all cursor-pointer select-none ${
+                    isDonationEnabled
+                      ? 'bg-amber-50/80 border-gold-500/70 shadow-sm'
+                      : 'bg-cream-100/70 border-cream-300'
+                  }`}
+                >
                   <input
                     type="checkbox"
                     id="enableDonation"
                     checked={isDonationEnabled}
                     onChange={(e) => setIsDonationEnabled(e.target.checked)}
-                    className="w-4 h-4 text-maroon-800 rounded"
+                    className="w-4 h-4 text-maroon-800 rounded mt-0.5"
                   />
-                  <label htmlFor="enableDonation" className="text-xs font-semibold text-dark-800 cursor-pointer font-body">
-                    Enable Devotee Donations
-                  </label>
-                </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-dark-900 block font-heading">
+                      Enable Devotee Donations
+                    </span>
+                    <span className="text-[11px] text-muted block font-body">
+                      Devotees can offer Dakshina & Super Chats
+                    </span>
+                  </div>
+                </label>
               </div>
 
               <Button
@@ -927,7 +951,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                 size="lg"
                 onClick={() => handleStartBroadcast()}
                 isLoading={isLoading}
-                className="w-full py-3.5 bg-gradient-to-r from-maroon-800 to-maroon-950 text-gold-200 border border-gold-500/40 shadow-lg text-base font-bold flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-500/40 shadow-lg text-base font-bold flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 transition-all"
               >
                 <Play className="w-5 h-5 fill-gold-400 text-gold-400" />
                 <span>Go Live Now</span>
@@ -939,12 +963,12 @@ export const AdminLiveBroadcast: React.FC = () => {
           <div className="lg:col-span-5 space-y-6">
             {/* Super Admin Master Controls Card */}
             {isSuperAdmin && globalSettings && (
-              <div className="bg-gradient-to-br from-dark-950 via-maroon-950 to-dark-900 text-cream-50 p-5 rounded-3xl border border-gold-500/50 shadow-xl space-y-4">
+              <div className="bg-gradient-to-br from-dark-950 via-maroon-950 to-dark-900 text-cream-50 p-5 rounded-2xl sm:rounded-3xl border border-gold-500/50 shadow-xl space-y-4">
                 <div className="flex items-center gap-2.5 pb-2 border-b border-gold-500/30">
-                  <Settings className="w-5 h-5 text-gold-400" />
+                  <Settings className="w-5 h-5 text-gold-400 shrink-0" />
                   <div>
                     <h3 className="text-sm font-heading font-bold text-gold-300">
-                      Super Admin Master Controls (Global Controls)
+                      Super Admin Master Controls (Global)
                     </h3>
                     <p className="text-[11px] text-cream-300 font-body">
                       Toggle donation payments or live chat globally across all website streams
@@ -1059,21 +1083,21 @@ export const AdminLiveBroadcast: React.FC = () => {
       {/* ======================================================== */}
       {/* 3. BROADCAST HISTORY & PER-BROADCAST LOGS TABLE          */}
       {/* ======================================================== */}
-      <div className="bg-cream-50 rounded-3xl p-6 sm:p-8 border border-cream-300 shadow-md space-y-6">
+      <div className="bg-cream-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-cream-300 shadow-md space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-cream-300">
           <div>
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-maroon-800" />
-              <h3 className="font-heading font-bold text-lg text-maroon-950">
-                Broadcast History & Session Logs (प्रसारण इतिहास एवं दान/चैट रिकॉर्ड)
+              <h3 className="font-heading font-bold text-base sm:text-lg text-maroon-950">
+                Broadcast History & Session Logs
               </h3>
             </div>
             <p className="text-xs text-muted font-body mt-0.5">
-              प्रत्येक लाइव आरती का अलग-अलग दान व चैट विवरण देखने के लिए <strong>"View Logs (लॉग देखें)"</strong> पर क्लिक करें।
+              Click <strong>"View Logs"</strong> on any broadcast to inspect per-session donation offerings and chat transcripts.
             </p>
           </div>
 
-          <span className="text-xs font-bold text-maroon-900 bg-maroon-100 px-3 py-1 rounded-full border border-maroon-200">
+          <span className="text-xs font-bold text-maroon-900 bg-maroon-100 px-3 py-1 rounded-full border border-maroon-200 self-start sm:self-auto">
             Total Sessions: {historyTotal}
           </span>
         </div>
@@ -1098,8 +1122,62 @@ export const AdminLiveBroadcast: React.FC = () => {
           </div>
         )}
 
-        {/* History Table */}
-        <div className="overflow-x-auto">
+        {/* Mobile History Cards View (Visible on Mobile) */}
+        <div className="block sm:hidden space-y-3">
+          {history.length === 0 ? (
+            <div className="py-8 text-center text-xs text-muted font-body">
+              No previous broadcast records found.
+            </div>
+          ) : (
+            history.map((item) => (
+              <div
+                key={item._id}
+                className="p-3.5 rounded-2xl bg-cream-100/90 border border-cream-300 space-y-2.5 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h4 className="font-heading font-bold text-sm text-maroon-950 truncate">
+                      {item.title || 'Maa Durga Aarti'}
+                    </h4>
+                    <p className="text-[11px] text-muted font-body mt-0.5">
+                      Host: <strong className="text-dark-900">{item.hostName}</strong>
+                    </p>
+                  </div>
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                      item.status === 'live'
+                        ? 'bg-red-500 text-white animate-pulse'
+                        : 'bg-cream-300 text-dark-800'
+                    }`}
+                  >
+                    {item.status === 'live' ? 'Live' : 'Ended'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-muted font-mono pt-1 border-t border-cream-200">
+                  <span className="text-[11px]">
+                    {formatDate(item.startedAt)}
+                  </span>
+                  <span className="font-bold text-emerald-800">
+                    👥 {item.peakViewers || 0} Peak
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleViewSessionLogs(item.roomName)}
+                  className="w-full mt-1 py-2 px-3 rounded-xl bg-maroon-900 text-gold-200 hover:bg-maroon-950 font-bold text-xs shadow-sm border border-gold-500/30 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5 text-gold-400" />
+                  <span>View Logs</span>
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop History Table (Visible on Tablet & Desktop) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left text-xs font-body">
             <thead className="bg-cream-200/80 text-dark-800 font-bold uppercase tracking-wider border-b border-cream-300">
               <tr>
@@ -1150,7 +1228,7 @@ export const AdminLiveBroadcast: React.FC = () => {
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-maroon-900 text-gold-200 hover:bg-maroon-950 font-bold text-xs shadow-sm border border-gold-500/30 transition-all active:scale-95"
                       >
                         <FileText className="w-3.5 h-3.5 text-gold-400" />
-                        <span>View Logs (लॉग देखें)</span>
+                        <span>View Logs</span>
                       </button>
                     </td>
                   </tr>
@@ -1170,7 +1248,7 @@ export const AdminLiveBroadcast: React.FC = () => {
           setSelectedRoomForLogs(null);
           setSessionLogsData(null);
         }}
-        title="Broadcast Session Records & Logs (प्रसारण विवरण)"
+        title="Broadcast Session Records & Logs"
         maxWidth="2xl"
       >
         {isLoadingLogs ? (

@@ -139,18 +139,18 @@ export const AdminPujaSchedules: React.FC = () => {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="p-3.5 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-dark-900 text-cream-100 p-6 md:p-8 rounded-3xl border border-dark-700 shadow-xl relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-dark-900 text-cream-100 p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-dark-700 shadow-xl relative overflow-hidden">
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold border border-amber-500/30">
             <Bell className="w-3.5 h-3.5" />
             Puja & Aarti Schedule
           </div>
-          <h1 className="text-2xl md:text-3xl font-heading font-bold text-cream-50">
-            Puja Schedule (पूजा समय सारणी)
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-bold text-cream-50">
+            Puja Schedule
           </h1>
-          <p className="text-xs md:text-sm font-body text-cream-200/80 max-w-2xl">
+          <p className="text-xs sm:text-sm font-body text-cream-200/80 max-w-2xl">
             Configure the daily puja schedule, Mangala Aarti, Bhog, and evening Maha Aarti timings displayed on the website and mobile views.
           </p>
         </div>
@@ -159,7 +159,7 @@ export const AdminPujaSchedules: React.FC = () => {
           onClick={openAddModal}
           variant="primary"
           leftIcon={<Plus className="w-4 h-4" />}
-          className="relative z-10 shrink-0 font-bold"
+          className="relative z-10 shrink-0 font-bold w-full sm:w-auto"
         >
           Add New Schedule
         </Button>
