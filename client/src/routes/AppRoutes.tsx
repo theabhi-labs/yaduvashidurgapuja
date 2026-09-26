@@ -152,10 +152,21 @@ export const AppRoutes: React.FC = () => {
           <Route path="/terms" element={<TermsConditions />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/signup" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/forget-password" element={<ForgotPassword />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/forgetpassword" element={<ForgotPassword />} />
+          <Route path="/forgot%20password" element={<ForgotPassword />} />
+          <Route path="/forget%20password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/verifyotp" element={<VerifyOtp />} />
+          <Route path="/verify%20otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
+          <Route path="/reset%20password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/verifyemail" element={<VerifyEmail />} />
 
           {/* Protected Devotee Actions */}
           <Route
