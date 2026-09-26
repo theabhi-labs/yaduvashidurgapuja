@@ -9,9 +9,9 @@ interface AdSenseInFeedUnitProps {
 }
 
 export const AdSenseInFeedUnit: React.FC<AdSenseInFeedUnitProps> = ({
-  clientId = import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-XXXXXXXXXXXXXXXX',
-  slotId = import.meta.env.VITE_ADSENSE_INFEED_SLOT_ID || 'XXXXXXXXXX',
-  layoutKey = '-fb+5w+4e-db+86',
+  clientId = import.meta.env.VITE_ADSENSE_CLIENT_ID || 'ca-pub-3665660136451799',
+  slotId = import.meta.env.VITE_ADSENSE_INFEED_SLOT_ID || '2751192891',
+  layoutKey = import.meta.env.VITE_ADSENSE_LAYOUT_KEY || '-6t+ed+2i-1n-4w',
   className = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);

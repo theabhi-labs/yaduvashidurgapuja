@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_SERVER_URL?: string;
   readonly VITE_ADSENSE_CLIENT_ID?: string;
   readonly VITE_ADSENSE_INFEED_SLOT_ID?: string;
+  readonly VITE_ADSENSE_LAYOUT_KEY?: string;
 }
 
 interface ImportMeta {
