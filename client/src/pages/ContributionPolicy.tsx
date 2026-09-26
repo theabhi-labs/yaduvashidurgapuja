@@ -76,7 +76,7 @@ export const ContributionPolicy: React.FC = () => {
       {/* 4. Payment Processing */}
       <LegalSection id="processing" number="4" title="Payment Processing & Security">
         <p>
-          Online contributions are processed securely through authorized, RBI-compliant third-party payment aggregators (e.g., Razorpay). Supported payment channels include UPI, Net Banking, Debit Cards, and Credit Cards.
+          Online contributions, when enabled, are processed securely through authorized, RBI-compliant third-party payment aggregators. Supported payment channels include UPI, Net Banking, Debit Cards, and Credit Cards.
         </p>
         <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-300 text-xs text-dark-900 space-y-1">
           <p className="font-bold text-maroon-900">Important Security Clarification:</p>
@@ -115,7 +115,7 @@ export const ContributionPolicy: React.FC = () => {
         <ul className="list-disc list-inside space-y-1 pl-2 text-xs">
           <li>Contributor Name and Email address</li>
           <li>Payment Date and Exact Amount</li>
-          <li>Razorpay Payment ID / Bank Reference Number</li>
+          <li>Transaction ID / Bank Reference Number</li>
           <li>Reason for the correction request</li>
         </ul>
         <p className="text-xs text-muted pt-1">

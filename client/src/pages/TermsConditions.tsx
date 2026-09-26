@@ -83,7 +83,7 @@ export const TermsConditions: React.FC = () => {
       {/* 6. Payment Processing */}
       <LegalSection id="payment" number="6" title="Payment Gateway Processing">
         <p>
-          Online voluntary contributions are handled by third-party payment aggregators (e.g., Razorpay). The website does not store sensitive card data, CVVs, or bank credentials. All transactions are subject to the terms and privacy regulations of the payment provider and your issuing bank.
+          Online voluntary contributions, when enabled, are handled by authorized third-party payment aggregators. The website does not store sensitive card data, CVVs, or bank credentials. All transactions are subject to the terms and privacy regulations of the payment provider and your issuing bank.
         </p>
       </LegalSection>
 
@@ -118,7 +118,7 @@ export const TermsConditions: React.FC = () => {
       {/* 11. Third-Party Services */}
       <LegalSection id="third-party" number="11" title="Third-Party Services & Links">
         <p>
-          The portal may integrate cloud services (e.g., Cloudflare, MongoDB, Razorpay) to provide functionality. The Samiti is not responsible for the independent operations, outages, or terms of third-party platforms.
+          The portal may integrate cloud services (e.g., Cloudflare, MongoDB) to provide functionality. The Samiti is not responsible for the independent operations, outages, or terms of third-party platforms.
         </p>
       </LegalSection>
 

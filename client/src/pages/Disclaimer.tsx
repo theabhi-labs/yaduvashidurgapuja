@@ -55,7 +55,7 @@ export const Disclaimer: React.FC = () => {
       {/* 4. Third-Party */}
       <LegalSection id="third-party" number="4" title="Third-Party Payment Providers">
         <p>
-          Online voluntary contribution processing is facilitated through authorized third-party payment gateway providers (e.g., Razorpay).
+          Online voluntary contribution processing, when active, is facilitated through authorized third-party payment gateway providers.
         </p>
         <p>
           {LEGAL_ENTITY_NAME} does not operate as a financial institution or banking entity. All online payment authorizations, card verification, and banking settlements are handled independently by the user's issuing bank and the payment gateway.

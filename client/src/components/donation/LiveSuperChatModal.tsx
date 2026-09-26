@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
+import React from 'react';
+import { X, Sparkles } from 'lucide-react';
 import { Button } from '../common/Button';
 
 interface LiveSuperChatModalProps {
@@ -11,43 +9,21 @@ interface LiveSuperChatModalProps {
   streamTitle?: string;
 }
 
-const PRESET_AMOUNTS = [
-  { amount: 51, label: 'दीपक सेवा 🪔', tier: 'bronze' },
-  { amount: 101, label: 'आरती भोग 🌸', tier: 'silver' },
-  { amount: 251, label: 'विशेष पूजा 🚩', tier: 'gold' },
-  { amount: 501, label: 'पुष्पांजलि ✨', tier: 'gold' },
-  { amount: 1100, label: 'महाप्रसाद सेवा 🕉️', tier: 'ruby' },
-  { amount: 2100, label: 'यज्ञ संकल्प 👑', tier: 'ruby' },
-];
-
 export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { user } = useAuth();
-  const toast = useToast();
-
-  const [amount, setAmount] = useState<number>(101);
-  const [donorName, setDonorName] = useState<string>(user?.name || '');
-  const [message, setMessage] = useState<string>('जय माता दी! माँ के चरणों में पावन समर्पण 🙏');
-  const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
-
   if (!isOpen) return null;
 
-  const handleDonate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.info('वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily off by Administrator) है।');
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-md bg-gradient-to-b from-cream-50 to-cream-100 rounded-3xl border-2 border-gold-500 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fadeIn font-body">
+      <div className="relative w-full max-w-md bg-gradient-to-b from-cream-50 to-cream-100 rounded-3xl border-2 border-gold-500 shadow-2xl overflow-hidden text-center">
         {/* Header with Golden Theme */}
         <div className="bg-gradient-to-r from-maroon-950 via-maroon-900 to-maroon-950 text-gold-200 p-5 text-center relative border-b border-gold-500/40">
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-3.5 right-3.5 p-1.5 rounded-full bg-black/40 text-gold-300 hover:text-white hover:bg-black/60 transition-colors"
+            className="absolute top-3.5 right-3.5 p-1.5 rounded-full bg-black/40 text-gold-300 hover:text-white hover:bg-black/60 transition-colors cursor-pointer"
             title="बंद करें (Close)"
           >
             <X className="w-4 h-4" />
@@ -61,123 +37,38 @@ export const LiveSuperChatModal: React.FC<LiveSuperChatModalProps> = ({
             पावन दक्षिणा • सेवा समर्पण
           </h3>
           <p className="text-xs text-gold-300/90 font-body mt-0.5">
-            आपकी दक्षिणा और संदेश लाइव स्ट्रीम में सुनहरे रंग में हाइलाइट होगा 🌟
+            ॥ श्री यदुवंशी दुर्गा पूजा कपूरिपुर ॥
           </p>
         </div>
 
-        <form onSubmit={handleDonate} className="p-5 space-y-4">
-          {/* Preset Amount Chips */}
-          <div>
-            <label className="block text-xs font-bold text-dark-900 font-body mb-2 uppercase">
-              दक्षिणा राशि चुनें (Select Dakshina) *
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {PRESET_AMOUNTS.map((p) => {
-                const isSelected = amount === p.amount;
-                return (
-                  <button
-                    key={p.amount}
-                    type="button"
-                    onClick={() => setAmount(p.amount)}
-                    className={`py-2 px-1.5 rounded-xl border text-center transition-all ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-maroon-900 to-maroon-800 text-gold-200 border-gold-400 shadow-md ring-2 ring-gold-400/60 font-bold scale-[1.02]'
-                        : 'bg-cream-50 hover:bg-cream-200/80 text-dark-900 border-cream-300 font-semibold'
-                    }`}
-                  >
-                    <span className="text-sm font-black block">₹{p.amount}</span>
-                    <span className="text-[10px] text-muted block truncate">{p.label}</span>
-                  </button>
-                );
-              })}
+        <div className="p-6 space-y-4">
+          <div className="bg-amber-500/15 border-2 border-amber-500/50 p-4 rounded-2xl text-amber-950 space-y-2 text-center shadow-xs">
+            <div className="font-bold text-sm text-maroon-950 flex items-center justify-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              <span>प्रशासकीय सूचना (Official Notice)</span>
             </div>
+            <p className="text-xs text-maroon-900 font-medium leading-relaxed">
+              वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily off by Administrator) है।
+            </p>
+            <p className="text-[11px] text-maroon-800/80">
+              माँ दुर्गा के पावन लाइव दर्शन का आनंद लें और जयकारा लगाएं!
+            </p>
           </div>
 
-          {/* Custom Amount Input */}
-          <div>
-            <label className="block text-xs font-bold text-dark-900 font-body mb-1">
-              अन्य दक्षिणा राशि (Custom ₹ Amount)
-            </label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-maroon-900 text-sm">
-                ₹
-              </span>
-              <input
-                type="number"
-                min={1}
-                value={amount || ''}
-                onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full pl-8 pr-4 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 font-black text-sm focus:outline-none focus:ring-2 focus:ring-maroon-700"
-              />
-            </div>
-          </div>
-
-          {/* Donor Name */}
-          <div>
-            <label className="block text-xs font-bold text-dark-900 font-body mb-1">
-              भक्त का नाम (Devotee Name)
-            </label>
-            <input
-              type="text"
-              disabled={isAnonymous}
-              value={isAnonymous ? 'गुप्त भक्त (Anonymous)' : donorName}
-              onChange={(e) => setDonorName(e.target.value)}
-              placeholder="आपका नाम..."
-              className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs font-body font-semibold focus:outline-none focus:ring-2 focus:ring-maroon-700 disabled:opacity-60"
-            />
-          </div>
-
-          {/* Devotional Message */}
-          <div>
-            <label className="block text-xs font-bold text-dark-900 font-body mb-1">
-              प्रार्थना / शुभ संदेश (Devotional Note)
-            </label>
-            <input
-              type="text"
-              maxLength={150}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="माँ दुर्गा के लिए प्रार्थना या जयकारा..."
-              className="w-full px-3.5 py-2 rounded-xl border border-cream-300 bg-cream-50 text-dark-900 text-xs font-body focus:outline-none focus:ring-2 focus:ring-maroon-700"
-            />
-          </div>
-
-          {/* Anonymous checkbox */}
-          <div className="flex items-center gap-2 pt-1">
-            <input
-              type="checkbox"
-              id="scAnonymous"
-              checked={isAnonymous}
-              onChange={(e) => setIsAnonymous(e.target.checked)}
-              className="w-4 h-4 text-maroon-800 rounded"
-            />
-            <label htmlFor="scAnonymous" className="text-xs text-dark-800 cursor-pointer font-body">
-              नाम गुप्त रखें (Make donation anonymous)
-            </label>
-          </div>
-
-          {/* Action Buttons: Cancel and Submit */}
-          <div className="flex items-center gap-2 pt-2">
+          <div className="pt-2">
             <Button
               type="button"
-              variant="outline"
-              size="md"
-              onClick={onClose}
-              className="flex-1 border-cream-400 text-dark-800 hover:bg-cream-200"
-            >
-              वापस जाएँ (Cancel)
-            </Button>
-            <Button
-              type="submit"
               variant="primary"
               size="md"
-              className="flex-[2] bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-400/60 shadow-xl font-bold flex items-center justify-center gap-1.5"
+              onClick={onClose}
+              className="w-full bg-gradient-to-r from-maroon-800 via-maroon-900 to-maroon-950 text-gold-200 border border-gold-400/60 shadow-lg font-bold"
             >
-              <span>🪔 ₹{amount || 0} दक्षिणा अर्पित करें</span>
+              <span>समझ गए / बंद करें (Close)</span>
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 };
+export default LiveSuperChatModal;

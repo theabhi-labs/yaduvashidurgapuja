@@ -63,6 +63,7 @@ const InstagramLivePlayer: React.FC<{
   canManageStream?: boolean;
 }> = ({ session, currentViewers, onForceEnd, canManageStream }) => {
   const { user, isAuthenticated } = useAuth();
+  const toast = useToast();
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isSuperChatOpen, setIsSuperChatOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>('');
@@ -409,7 +410,10 @@ const InstagramLivePlayer: React.FC<{
           {session.isDonationEnabled !== false && (
             <button
               type="button"
-              onClick={() => setIsSuperChatOpen(true)}
+              onClick={() => {
+                toast.info('वर्तमान में ऑनलाइन दान / सहयोग / दक्षिणा सेवा प्रशासक (Administrator) द्वारा अस्थायी रूप से स्थगित (Temporarily off by Administrator) है।');
+                setIsSuperChatOpen(true);
+              }}
               className="shrink-0 px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-gold-500 via-amber-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-maroon-950 font-heading font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(234,179,8,0.5)] border-2 border-gold-200 flex items-center gap-1.5 transition-all active:scale-95 animate-pulse"
               title="पावन दक्षिणा अर्पित करें"
             >

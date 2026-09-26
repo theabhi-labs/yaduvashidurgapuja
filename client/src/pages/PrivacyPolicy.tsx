@@ -76,7 +76,7 @@ export const PrivacyPolicy: React.FC = () => {
             Crucial Distinction Regarding Payment Data:
           </p>
           <p>
-            Online payment transactions are processed entirely by authorized, RBI-licensed payment aggregators (e.g., Razorpay).
+            Online payment transactions, when active, are processed entirely by authorized, RBI-licensed payment aggregators.
           </p>
           <p>
             <strong>{LEGAL_ENTITY_NAME} and the website <code>kapooripur.in</code> never store, process, or have access to your credit card numbers, debit card details, CVV codes, net banking passwords, or UPI PINs.</strong> All sensitive payment credentials are entered directly into the payment gateway's secure, encrypted TLS environment.
@@ -130,7 +130,7 @@ export const PrivacyPolicy: React.FC = () => {
       {/* 9. Data Sharing */}
       <LegalSection id="sharing" number="9" title="Data Sharing & Third-Party Service Providers">
         <p>
-          We do not sell, rent, or trade personal data to commercial data brokers. Information is shared only with trusted technical infrastructure providers necessary to operate the platform (e.g., Cloudflare for CDN/DDoS protection, MongoDB Atlas for secure database storage, Brevo for transactional receipt emails, and Razorpay for payment processing).
+          We do not sell, rent, or trade personal data to commercial data brokers. Information is shared only with trusted technical infrastructure providers necessary to operate the platform (e.g., Cloudflare for CDN/DDoS protection, MongoDB Atlas for secure database storage, and Brevo for transactional receipt emails).
         </p>
       </LegalSection>
 
