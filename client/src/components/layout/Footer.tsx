@@ -13,7 +13,7 @@ import { BrandLogo } from '../common/BrandLogo';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-dark-950 text-cream-100 border-t-4 border-gold-500 pt-14 pb-8 font-body">
+    <footer className="hidden md:block bg-dark-950 text-cream-100 border-t-4 border-gold-500 pt-14 pb-8 font-body">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Sacred Top Banner */}
         <div className="flex items-center justify-center gap-2 pb-8 mb-8 border-b border-dark-800 text-gold-400 text-xs sm:text-sm font-heading font-bold text-center">

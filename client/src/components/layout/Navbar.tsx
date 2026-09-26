@@ -61,7 +61,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
-      className={`hidden md:block sticky top-0 z-40 transition-all duration-300 ${
+      className={`sticky top-0 z-40 transition-all duration-300 ${
         isScrolled
           ? 'bg-cream-100/95 backdrop-blur-md shadow-sm border-b border-cream-300/80 py-2.5 sm:py-3'
           : 'bg-cream-200 border-b border-cream-300/50 py-3 sm:py-4'
@@ -105,7 +105,6 @@ export const Navbar: React.FC = () => {
                 leftIcon={<PlusCircle className="w-4 h-4" />}
                 className="font-semibold"
               >
-
                 Share Memory
               </Button>
             </Link>
@@ -225,24 +224,38 @@ export const Navbar: React.FC = () => {
         {/* Mobile Secondary Menu Drawer */}
         {isMobileMenuOpen && (
           <div className="md:hidden pt-3 pb-5 border-t border-cream-300/80 mt-2 space-y-3 animate-fade-in">
-
-            {/* Secondary Informational Links */}
+            {/* Main & Secondary Informational Links */}
             <div className="bg-cream-100/90 rounded-2xl border border-cream-300 p-2 divide-y divide-cream-200/80">
               <Link
-                to="/contributors"
-                className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-amber-900 bg-amber-500/10 hover:bg-amber-500/20 rounded-xl transition-colors"
+                to="/support"
+                className="flex items-center gap-3 px-3 py-2.5 text-xs font-bold text-amber-950 bg-amber-500/15 hover:bg-amber-500/25 rounded-xl transition-colors"
               >
                 <Heart className="w-4 h-4 text-amber-600 fill-amber-500/30" />
-                <span>पावन सहयोगी (Contributors)</span>
+                <span>Support Durga Puja (सहयोग करें)</span>
               </Link>
 
+              <Link
+                to="/events"
+                className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
+              >
+                <Info className="w-4 h-4 text-maroon-700" />
+                <span>Events & Schedule</span>
+              </Link>
+
+              <Link
+                to="/committee"
+                className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
+              >
+                <Info className="w-4 h-4 text-maroon-700" />
+                <span>Committee Members</span>
+              </Link>
 
               <Link
                 to="/about"
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <Info className="w-4 h-4 text-maroon-700" />
-                <span>About & History</span>
+                <span>About the Samiti</span>
               </Link>
 
               <Link
@@ -250,11 +263,19 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <Phone className="w-4 h-4 text-maroon-700" />
-                <span>Contact & Support</span>
+                <span>Contact Us</span>
               </Link>
 
               <Link
-                to="/privacy"
+                to="/contribution-policy"
+                className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
+              >
+                <FileText className="w-4 h-4 text-maroon-700" />
+                <span>Contribution Policy</span>
+              </Link>
+
+              <Link
+                to="/privacy-policy"
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <Shield className="w-4 h-4 text-maroon-700" />
@@ -262,11 +283,19 @@ export const Navbar: React.FC = () => {
               </Link>
 
               <Link
-                to="/terms"
+                to="/terms-and-conditions"
                 className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
               >
                 <FileText className="w-4 h-4 text-maroon-700" />
                 <span>Terms & Conditions</span>
+              </Link>
+
+              <Link
+                to="/disclaimer"
+                className="flex items-center gap-3 px-3 py-2.5 text-xs text-dark-900 hover:bg-cream-200 rounded-xl transition-colors"
+              >
+                <Shield className="w-4 h-4 text-maroon-700" />
+                <span>Disclaimer</span>
               </Link>
 
               {isAdmin && (
@@ -288,7 +317,7 @@ export const Navbar: React.FC = () => {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="text-xs text-rose-700 font-bold flex items-center gap-1 hover:underline"
+                  className="text-xs text-rose-700 font-bold flex items-center gap-1 hover:underline cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Logout</span>
